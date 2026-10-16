@@ -1,0 +1,30 @@
+# Credenciales: nunca al repositorio
+.env
+*.token.json
+
+# Entorno local
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Crudos voluminosos (se conservan localmente con manifiesto SHA-256)
+data/raw/qqp/
+data/raw/commoncrawl/
+data/cache/
+*.rar
+*.zip
+*.part
+
+# Registros locales de ejecución
+logs/*.log
+*.egg-info/
+logs/*.out
+*.lock
+
+# Datos: se decide qué versionar al elegir el esquema de publicación (GitHub/Drive)
+data/raw/
+data/bronze/
+data/silver/
+data/cache/

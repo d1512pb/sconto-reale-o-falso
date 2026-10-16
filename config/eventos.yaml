@@ -1,0 +1,24 @@
+# Ventanas relativas a D0 (primer día del evento), idénticas al Avance 1:
+#   base: D-60 a D-15 · previo: D-14 a D-1 · evento: D0 al último día
+#   posterior: 14 días tras el último día (solo diagnóstico; incluye Black Friday / Cyber Monday)
+ventanas_relativas:
+  base: [-60, -15]
+  previo: [-14, -1]
+  posterior_dias: 14
+
+eventos:
+  - evento_id: BF2024
+    nombre: Buen Fin 2024
+    inicio: 2024-11-15
+    fin: 2024-11-18
+    fuente_fechas: Secretaría de Economía (anuncio oficial)
+  - evento_id: BF2025
+    nombre: Buen Fin 2025
+    inicio: 2025-11-13
+    fin: 2025-11-17
+    fuente_fechas: Avance 1 (QQP 2025)
+  - evento_id: BF2026
+    nombre: Buen Fin 2026
+    inicio: 2026-11-13
+    fin: 2026-11-17
+    fuente_fechas: Prensa; pendiente de confirmar en elbuenfin.org

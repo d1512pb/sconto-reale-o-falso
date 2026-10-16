@@ -1,0 +1,20 @@
+# Solo librerías open source. Versiones exactas en requirements.lock.txt
+requests>=2.32
+httpx>=0.28
+pandas>=2.2
+pyarrow>=17
+beautifulsoup4>=4.12
+lxml>=5.3
+selectolax>=0.3
+tenacity>=9.0
+pydantic>=2.10
+python-dotenv>=1.0
+pyyaml>=6.0
+pytest>=8.3
+warcio>=1.7
+duckdb>=1.1
+scikit-learn>=1.5
+matplotlib>=3.9
+nbformat>=5.10
+nbclient>=0.10
+ipykernel>=6.29

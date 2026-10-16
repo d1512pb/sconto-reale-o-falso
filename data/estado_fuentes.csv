@@ -1,0 +1,2 @@
+fuente,fecha,estado,filas,detalle,inicio_utc,fin_utc,entorno
+preciometro,2026-10-16,ok,278,"{'solicitados': 3, 'descargados': 3, 'reutilizados': 0, 'no_encontrados': 0, 'errores': 0, 'bloqueado': False, 'puntos': 270, 'ofertas': 8}",2026-10-16T10:00:42+00:00,2026-10-16T10:01:02+00:00,local
