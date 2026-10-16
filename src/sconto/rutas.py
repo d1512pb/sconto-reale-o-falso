@@ -12,7 +12,8 @@ GOLD = DATA / 'gold'
 CACHE = DATA / 'cache'
 LOGS = RAIZ / 'logs'
 REPORTS = RAIZ / 'reports'
-ESTADO_FUENTES = DATA / 'estado_fuentes.csv'
+ESTADO_FUENTES = DATA / 'estado_fuentes.csv'  # vista combinada
+ESTADO_DIR = DATA / 'estado'  # un archivo por entorno (github, local)
 ALERTA = RAIZ / 'ALERTA.md'
 
 # Evidencia del Avance 1: solo lectura. Nunca se escribe ahí.

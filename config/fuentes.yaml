@@ -1,0 +1,32 @@
+# Fuentes del colector diario. `entornos`: dónde corre cada una.
+#   github  = GitHub Actions (cron gratis en repo público; IP de centro de datos)
+#   local   = Programador de tareas de Windows en la PC de Daniel (IP residencial)
+# Cada módulo expone diario(productos, fecha=None, entorno='local') -> dict.
+fuentes:
+  preciometro:
+    modulo: sconto.fuentes.preciometro_lote
+    entornos: [github]
+    respaldo: local             # la PC sólo la corre si GitHub no logró 'ok' ese día (--solo-si-falta)
+    pasadas_temporada: 1        # su historial es diario; no gana nada con dos pasadas
+  mercadolibre:
+    modulo: sconto.fuentes.mercadolibre
+    entornos: [github]
+    respaldo: local
+    pasadas_temporada: 2
+  amazon:
+    modulo: sconto.fuentes.amazon
+    entornos: [local]           # Amazon suele bloquear IPs de centros de datos; se confirma en pruebas
+    pasadas_temporada: 2
+
+# Recolección no diaria (backfill / revisión periódica), fuera de run_diario:
+periodicas:
+  qqp: {modulo: sconto.fuentes.qqp, frecuencia: semanal}
+  wayback: {modulo: sconto.fuentes.wayback, frecuencia: reintentos}
+  commoncrawl: {modulo: sconto.fuentes.commoncrawl, frecuencia: unica}
+  inegi: {modulo: sconto.fuentes.inegi, frecuencia: quincenal}
+  promodescuentos: {modulo: sconto.fuentes.promodescuentos, frecuencia: unica}
+
+reglas:
+  pausa_segundos: [3, 8]
+  pasadas_diarias: 1
+  temporada_doble: {desde: '11-10', hasta: '11-20', pasadas: 2}

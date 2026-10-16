@@ -23,8 +23,18 @@ logs/*.log
 logs/*.out
 *.lock
 
-# Datos: se decide qué versionar al elegir el esquema de publicación (GitHub/Drive)
-data/raw/
-data/bronze/
+# Datos versionados en el repo público: bronze de todas las fuentes (salvo QQP nacional), crudos pequeños
+# (Preciómetro, Mercado Libre, Promodescuentos, INEGI), estado de fuentes y tablas gold pequeñas.
+# Lo voluminoso se queda en la PC con su SHA-256 en cada fila, o se publica como asset del release `datos`:
+data/raw/qqp/
+data/raw/amazon/
+data/raw/wayback/
+data/raw/commoncrawl/
+data/raw/preciometro_sitemap/
+data/bronze/qqp_nacional*/
 data/silver/
 data/cache/
+data/gold/observaciones.*
+data/gold/exclusiones.*
+data/gold/observaciones_qqp_nacional.*
+logs/*.err

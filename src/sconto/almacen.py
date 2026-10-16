@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from sconto.rutas import ALERTA, BRONZE, ESTADO_FUENTES, RAIZ, RAW
+from sconto.rutas import ALERTA, BRONZE, ESTADO_DIR, ESTADO_FUENTES, RAIZ, RAW
 
 
 def ahora_utc():
@@ -103,30 +103,50 @@ class _Candado:
         self.ruta.unlink(missing_ok=True)
 
 
+def _leer_estado(ruta: Path) -> list[dict]:
+    if not ruta.exists():
+        return []
+    with open(ruta, newline='', encoding='utf-8') as f:
+        return [dict(r, entorno=r.get('entorno') or 'local') for r in csv.DictReader(f)]
+
+
+def _escribir_estado(ruta: Path, filas: list[dict]):
+    filas = sorted(filas, key=lambda r: (r['fecha'], r['fuente'], r.get('entorno', '')))
+    ruta.parent.mkdir(parents=True, exist_ok=True)
+    with open(ruta, 'w', newline='', encoding='utf-8') as f:
+        w = csv.DictWriter(f, fieldnames=CAMPOS_ESTADO, extrasaction='ignore')
+        w.writeheader()
+        w.writerows(filas)
+
+
 def registrar_estado(fuente: str, estado: str, filas: int, detalle: str = '', inicio_utc: str = '',
                      fecha: str | None = None, entorno: str = 'local'):
-    """Upsert por (fuente, fecha, entorno): correr dos veces el mismo día no duplica la fila."""
+    """Upsert por (fuente, fecha, entorno): correr dos veces el mismo día no duplica la fila.
+
+    Cada entorno escribe su propio archivo (data/estado/<entorno>.csv) para que GitHub Actions y la PC local no
+    choquen al hacer push; data/estado_fuentes.csv es la vista combinada que se regenera de ellos.
+    """
     assert estado in {'ok', 'fallo', 'bloqueado', 'parcial', 'sin_credenciales'}
-    ESTADO_FUENTES.parent.mkdir(parents=True, exist_ok=True)
-    with _Candado(ESTADO_FUENTES):
-        _registrar_estado(fuente, estado, filas, detalle, inicio_utc, fecha, entorno)
-
-
-def _registrar_estado(fuente, estado, filas, detalle, inicio_utc, fecha, entorno):
     fecha = fecha or hoy()
-    filas_previas = []
-    if ESTADO_FUENTES.exists():
-        with open(ESTADO_FUENTES, newline='', encoding='utf-8') as f:
-            filas_previas = [r for r in csv.DictReader(f)
-                             if not (r['fuente'] == fuente and r['fecha'] == fecha and r.get('entorno', 'local') == entorno)]
-    filas_previas.append(dict(fuente=fuente, fecha=fecha, estado=estado, filas=filas, detalle=detalle[:500],
-                              inicio_utc=inicio_utc, fin_utc=ahora_utc(), entorno=entorno))
-    filas_previas.sort(key=lambda r: (r['fecha'], r['fuente'], r.get('entorno', '')))
-    ESTADO_FUENTES.parent.mkdir(parents=True, exist_ok=True)
-    with open(ESTADO_FUENTES, 'w', newline='', encoding='utf-8') as f:
-        w = csv.DictWriter(f, fieldnames=CAMPOS_ESTADO)
-        w.writeheader()
-        w.writerows(filas_previas)
+    ruta = ESTADO_DIR / f'{entorno}.csv'
+    ruta.parent.mkdir(parents=True, exist_ok=True)
+    with _Candado(ruta):
+        previas = [r for r in _leer_estado(ruta) if not (r['fuente'] == fuente and r['fecha'] == fecha)]
+        previas.append(dict(fuente=fuente, fecha=fecha, estado=estado, filas=filas, detalle=detalle[:500],
+                            inicio_utc=inicio_utc, fin_utc=ahora_utc(), entorno=entorno))
+        _escribir_estado(ruta, previas)
+    combinar_estados()
+
+
+def combinar_estados():
+    """Une data/estado/*.csv (y filas antiguas de la vista combinada) quedándose con la más reciente por clave."""
+    with _Candado(ESTADO_FUENTES):
+        filas = {}
+        for r in _leer_estado(ESTADO_FUENTES) + [r for p in sorted(ESTADO_DIR.glob('*.csv')) for r in _leer_estado(p)]:
+            k = (r['fuente'], r['fecha'], r['entorno'])
+            if k not in filas or str(r.get('fin_utc', '')) >= str(filas[k].get('fin_utc', '')):
+                filas[k] = r
+        _escribir_estado(ESTADO_FUENTES, list(filas.values()))
 
 
 def revisar_alertas() -> list[str]:

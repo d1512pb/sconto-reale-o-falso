@@ -28,8 +28,8 @@ def id_estable(values) -> str:
 
 
 def compacto(texto) -> str:
-    """'Hw-t420' → 'HWT420'; '65 Ur 7800 Psb' → '65UR7800PSB'."""
-    return re.sub(r'[^A-Z0-9]', '', normalizar(texto))
+    """'Hw-t420' → 'HWT420'; '65 Ur 7800 Psb' → '65UR7800PSB'; 'Tab A9+' → 'TABA9PLUS' (el + es otro modelo)."""
+    return re.sub(r'[^A-Z0-9]', '', normalizar(texto).replace('+', 'PLUS'))
 
 
 # Tokens que no son modelo aunque mezclen letras y números
@@ -115,7 +115,8 @@ def tokens_slug(slug: str) -> list[str]:
 
 
 def aparece_en_tokens(clave: str, tokens: list[str], max_union=4) -> bool:
-    """¿`clave` compacta es la unión de tokens consecutivos? Evita que 'MOTOG15' empate con 'MOTOG15POWER'."""
+    """¿`clave` compacta es la unión de tokens consecutivos? Evita que 'MOTOG15' empate con 'MOTOG15POWER' y que
+    'GALAXYTABA9' empate con 'galaxy-tab-a9-plus' (el token siguiente es un modificador de modelo)."""
     if not clave:
         return False
     for i in range(len(tokens)):
@@ -123,7 +124,15 @@ def aparece_en_tokens(clave: str, tokens: list[str], max_union=4) -> bool:
         for j in range(i, min(i + max_union, len(tokens))):
             acum += tokens[j]
             if acum == clave:
+                siguiente = tokens[j + 1] if j + 1 < len(tokens) else ''
+                if siguiente in MODIFICADORES:
+                    break
                 return True
             if len(acum) >= len(clave):
                 break
     return False
+
+
+# Sufijos que cambian el modelo: 'Galaxy Tab A9' ≠ 'Galaxy Tab A9+' ≠ 'Redmi Note 14 Pro+'
+MODIFICADORES = {'PLUS', 'PRO', 'MAX', 'ULTRA', 'LITE', 'MINI', 'FE', 'NEO', 'POWER', 'PRIME', 'EDGE', 'AIR', 'SE',
+                 'XL', 'STYLUS', 'PLAY', 'FUSION'}

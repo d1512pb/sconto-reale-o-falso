@@ -77,6 +77,23 @@ def correr(urls: list[str], fecha: str | None = None, lote: int = 25, entorno: s
     return resumen
 
 
+ROTACION_AMPLIA = 7  # el historial cubre ~90 días: refrescar la lista amplia cada 7 días no pierde ningún día
+
+
+def diario(productos: pd.DataFrame, fecha: str | None = None, entorno: str = 'local') -> dict:
+    """Fichas emparejadas con QQP (prioridad 1–3) todos los días; la lista amplia (4) rota cada 7 días."""
+    fecha = fecha or hoy()
+    lista = pd.read_csv(RAIZ / 'config' / 'preciometro_lista.csv', dtype={'preciometro_id': str})
+    ids = productos[['preciometro_ids', 'prioridad']].assign(
+        preciometro_id=lambda d: d.preciometro_ids.str.split(';')).explode('preciometro_id')
+    ids = ids.loc[ids.preciometro_id.fillna('').ne('')].groupby('preciometro_id').prioridad.min()
+    dia = pd.Timestamp(fecha).dayofyear % ROTACION_AMPLIA
+    sel = lista.loc[lista.preciometro_id.isin(ids.index)].copy()
+    sel['prioridad'] = sel.preciometro_id.map(ids)
+    sel = sel.loc[sel.prioridad.le(3) | (sel.preciometro_id.astype(int) % ROTACION_AMPLIA == dia)]
+    return correr(sel.sort_values(['prioridad', 'preciometro_id']).url.tolist(), fecha=fecha, entorno=entorno)
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument('--lista', default=str(RAIZ / 'config' / 'preciometro_lista.csv'))
