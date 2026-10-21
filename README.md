@@ -172,6 +172,9 @@ URL = 'https://github.com/d1512pb/sconto-reale-o-falso/releases/download/datos/s
 
 Los crudos se conservan fuera del repositorio público: las respuestas de tiendas y agregadores pueden contener
 campos ajenos a precios. Los paquetes públicos sólo llevan tablas de precios normalizadas y hashes de trazabilidad.
+`data/evidencia/preciometro/` preserva una **proyección de los campos de precios** de las respuestas, con el hash
+del original, para reproducir el parser sin publicar reservas/cuentas. No se presenta como el JSON íntegro del servidor.
+`python -m sconto.evidencia` genera esas proyecciones sin red; el ciclo programado también lo hace.
 Las pruebas locales de carga no equivalen a haber ejecutado el notebook en los servidores de Colab.
 
 ## Criterios metodológicos

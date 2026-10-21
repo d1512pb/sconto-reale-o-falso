@@ -86,6 +86,13 @@ try {
             $origen = Join-Path $datos "data\estado\$nombre"
             if (Test-Path -LiteralPath $origen) { Copy-Item -LiteralPath $origen -Destination (Join-Path $repo 'data\estado') -Force }
         }
+        $evidencia = Join-Path $datos "data\evidencia\preciometro\$hoy"
+        if (Test-Path -LiteralPath $evidencia) {
+            $destino = Join-Path $repo "data\evidencia\preciometro\$hoy"
+            New-Item -ItemType Directory -Force -Path $destino | Out-Null
+            Get-ChildItem -LiteralPath $evidencia -File | Copy-Item -Destination $destino -Force
+            & git -C $repo add -- data/evidencia
+        }
         & git -C $repo config user.name 'sconto-pc'
         & git -C $repo config user.email '93066782+d1512pb@users.noreply.github.com'
         & git -C $repo add -- data/bronze data/estado/local.csv data/estado/ciclo_local.json

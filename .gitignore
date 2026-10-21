@@ -27,8 +27,7 @@ logs/*.log
 logs/*.out
 *.lock
 
-# Datos versionados en el repo público: bronze de todas las fuentes (salvo QQP nacional), crudos pequeños
-# (Preciómetro, Mercado Libre, Promodescuentos, INEGI), estado de fuentes y tablas gold pequeñas.
+# Datos públicos: bronze (salvo QQP nacional), proyecciones de evidencia, estados y tablas gold pequeñas.
 # Lo voluminoso se queda en la PC con su SHA-256 en cada fila, o se publica como asset del release `datos`:
 data/raw/qqp/
 data/raw/amazon/

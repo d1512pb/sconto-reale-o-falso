@@ -33,9 +33,11 @@
 - Los 200 productos diarios son identidades de la fuente, no empates exactos con los modelos QQP.
   Los cruces probables requieren revisión humana de capacidad, RAM, color y generación.
 - Wayback tiene 109 observaciones históricas, pero ninguna durante los días de BF2024/BF2025.
-- Los crudos locales permanecen fuera del repositorio público por privacidad. Los crudos nuevos de GitHub no se publican
-  ni se respaldan fuera del runner: en esta configuración son efímeros; hashes y tablas normalizadas sí quedan publicados.
-  Esto limita la auditoría posterior del HTML/JSON íntegro de esas capturas cloud.
+- Los crudos locales permanecen fuera del repositorio público por privacidad. `data/evidencia/preciometro/` guarda
+  una proyección explícita con todos los campos usados por el parser y hash del original; elimina reservas/cuentas.
+  Se verifica que reproduce los mismos precios y metadatos, pero no se afirma que sea la respuesta íntegra del servidor.
+  La primera corrida cloud fue lanzada antes de añadir esta preservación: sus crudos íntegros son efímeros y sus nuevas
+  proyecciones no se recuperan retroactivamente. Las siguientes corridas preservan automáticamente la evidencia de precios.
 - La PC debe estar encendida, con sesión iniciada e Internet; GitHub también puede retrasar u omitir cron.
   Un día sin observación permanece faltante. La ejecución automática no garantiza cobertura suficiente de cada serie.
 
