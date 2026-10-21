@@ -164,7 +164,8 @@ La PC debe estar encendida y con sesión iniciada en algún momento del día; un
 ## Publicación para Colab
 
 Los notebooks no dependen de rutas locales. Descargan un **único ZIP** para evitar mezclar tablas de distintas
-corridas. Conserva el ZIP fechado para congelar una versión del análisis; el enlace `actual` cambia cada día:
+corridas. Descarga y conserva el ZIP con sus hashes para congelar una versión del análisis.
+Los enlaces `actual` y fechado pueden actualizarse dentro del mismo día:
 
 ```python
 URL = 'https://github.com/d1512pb/sconto-reale-o-falso/releases/download/datos/sconto_colab_actual.zip'

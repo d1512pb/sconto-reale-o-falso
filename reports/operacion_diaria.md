@@ -10,7 +10,8 @@
 - Liverpool: una URL habilitada y verificada. Amazon directo desactivado. Sears no integrado.
 - QQP: revisión semanal del archivo del año en curso; no descarga de nuevo todos los históricos.
 - Alertas: `ALERTA.md` y un issue de GitHub para fallos/bloqueos dos días consecutivos; no hay envío de correo propio.
-- Los ZIP fechados del release `datos` congelan un snapshot; `sconto_colab_actual.zip` apunta a la última publicación.
+- Los ZIP del release `datos` son snapshots consistentes; el mismo día pueden reemplazarse. Para congelar un análisis,
+  descargar una copia con su manifiesto de hashes. `sconto_colab_actual.zip` apunta a la última publicación.
 
 ## Verificaciones realizadas
 
@@ -24,7 +25,9 @@
 - Windows capturó Liverpool el 21 de octubre: una fila real con precio actual y tachado, robots permitido.
 - Revisión QQP del 21 de octubre: huella del archivo 2026 sin cambios; no se inventaron observaciones nuevas.
 - Corrida cloud de prueba completa: https://github.com/d1512pb/sconto-reale-o-falso/actions/runs/39569141291.
-  Al iniciar este registro seguía en ejecución; su resultado definitivo debe consultarse antes de afirmar éxito.
+  **Completada con éxito**: 200/200 productos, 17,586 puntos históricos y 869 ofertas actuales, cero errores/bloqueos.
+  No son 18,455 filas nuevas: el historial se solapa y se deduplica. Su ZIP contenía 666,297 observaciones,
+  antes de volver a incorporar la captura local de Liverpool del 21 de octubre.
 
 ## Límites que siguen vigentes
 

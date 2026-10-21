@@ -16,7 +16,7 @@ try {
         if ($LASTEXITCODE -ne 0) { throw 'No se pudo crear la copia operativa del repositorio.' }
     }
     & git -C $repo config credential.helper '!gh auth git-credential'
-    & git -C $repo pull --ff-only
+    & git -C $repo pull --rebase
     if ($LASTEXITCODE -ne 0) { throw 'La copia operativa requiere revisar su sincronizacion.' }
     $corridas = & gh run list --repo d1512pb/sconto-reale-o-falso --workflow recoleccion_diaria.yml --limit 5 --json databaseId,status
     $corrida = $null
@@ -71,7 +71,7 @@ try {
     & $py @argumentos
     if ($LASTEXITCODE -ne 0) { throw 'Fallo del ciclo local; revisar el log antes de publicar.' }
     if ($Publicar) {
-        foreach ($fuente in @('tiendas', 'preciometro', 'preciometro_ofertas', 'preciometro_productos')) {
+        foreach ($fuente in @('tiendas', 'mercadolibre', 'preciometro', 'preciometro_ofertas', 'preciometro_productos')) {
             $origen = Join-Path $datos "data\bronze\$fuente\$hoy.parquet"
             if (Test-Path -LiteralPath $origen) {
                 $carpeta = Join-Path $repo "data\bronze\$fuente"
