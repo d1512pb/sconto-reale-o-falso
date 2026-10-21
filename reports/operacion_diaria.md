@@ -15,7 +15,7 @@
 
 ## Verificaciones realizadas
 
-- Suite local completa: **230 pruebas aprobadas**.
+- Suite local completa: **233 pruebas aprobadas** sobre el dataset actualizado.
 - Avance 1 reproducido: **39,363 observaciones, 298 series con ahorro y 93 con alza**, matriz idéntica.
 - Primer paquete público descargado sin autenticación y verificado: **664,446 observaciones y nueve tablas**,
   56,329,755 bytes; SHA-256 y conteos coinciden. Celdas del cargador ejecutadas localmente contra la URL pública.
@@ -28,6 +28,11 @@
   **Completada con éxito**: 200/200 productos, 17,586 puntos históricos y 869 ofertas actuales, cero errores/bloqueos.
   No son 18,455 filas nuevas: el historial se solapa y se deduplica. Su ZIP contenía 666,297 observaciones,
   antes de volver a incorporar la captura local de Liverpool del 21 de octubre.
+- Respaldo Windows verificado: terminó el 21 de octubre a las **02:55 CDMX**, `LastTaskResult = 0`,
+  salud completa y próxima ejecución a las **12:30 CDMX**. No volvió a descargar Preciómetro ni Liverpool:
+  reutilizó el éxito del día y conservó los datos de ambos entornos.
+- Dataset combinado publicado: **666,298 observaciones**, nueve tablas; **869 ofertas del día** obtenidas mediante
+  el agregador, incluidas 160 de Amazon y 180 de Mercado Libre. No se atribuyen a las APIs de esas tiendas.
 
 ## Límites que siguen vigentes
 
