@@ -1,12 +1,12 @@
 # Fechas del Buen Fin usadas en el análisis
 
-Revisión: 2026-10-16.
+Revisión: 2026-10-21.
 
 | Evento | Inicio (D0) | Fin | Días | Fuente | Estado |
 |---|---|---|---|---|---|
 | BF2024 | 2024-11-15 | 2024-11-18 | 4 | Secretaría de Economía (anuncio oficial, según el planteamiento del equipo) | Tomado del prompt; pendiente citar el comunicado |
 | BF2025 | 2025-11-13 | 2025-11-17 | 5 | Avance 1 (QQP 2025) y términos de JBL México Buen Fin 2025 | Verificado en el Avance 1 |
-| BF2026 | 2026-11-13 | 2026-11-17 | 5 | Prensa (ver abajo) | **Confirmado por prensa; no en el sitio oficial** |
+| BF2026 | 2026-11-13 | 2026-11-17 | 5 | SAT, Sorteo El Buen Fin 2026 | **Confirmado en fuente oficial del SAT** |
 
 ## BF2026
 
@@ -18,7 +18,10 @@ Revisión: 2026-10-16.
   - [SDP Noticias](https://www.sdpnoticias.com/negocios/el-buen-fin-2026-fechas-oficiales-en-mexico/)
   - [N+](https://www.nmas.com.mx/economia/como-registrar-negocios-buen-fin-2026-para-participar-sorteo-260-mil-pesos/)
   - [Chilango](https://www.chilango.com/noticias/cuando-es-el-buen-fin-2026-fechas-novedades-registro-y-como-saber-que-tiendas-participan/amp/)
-- Pendiente: abrir elbuenfin.org en un navegador y confirmar. Si cambiara, basta editar `config/eventos.yaml` y
+- Actualización del 21 de octubre: las [bases oficiales del SAT para tarjetahabientes](https://www.sat.gob.mx/minisitio/SorteoElBuenFin/tarjetahabientes.html)
+  establecen compras participantes del **13 al 17 de noviembre de 2026** en los comercios registrados en El Buen Fin.
+  Esto confirma el intervalo en una fuente gubernamental primaria; no se atribuye a una lectura de la portada con JavaScript.
+- Si cambiara, basta editar `config/eventos.yaml` y
   reconstruir `data/gold/` (`python -m sconto.dataset`); las ventanas se recalculan solas.
 
 ## Ventanas BF2026 (relativas a D0 = 2026-11-13)
