@@ -184,4 +184,4 @@ def generar():
 
 if __name__ == '__main__':
     generar()
-    print((REPORTS / 'resumen_recoleccion.md').read_text(encoding='utf-8')[:3000])
+    print(REPORTS / 'resumen_recoleccion.md')
