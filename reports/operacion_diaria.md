@@ -19,6 +19,8 @@
 - Primer paquete público descargado sin autenticación y verificado: **664,446 observaciones y nueve tablas**,
   56,329,755 bytes; SHA-256 y conteos coinciden. Celdas del cargador ejecutadas localmente contra la URL pública.
 - Esto no demuestra una ejecución en los servidores de Colab: el notebook de Drive no fue modificado.
+- Evidencia pública filtrada: **2,798 respuestas** locales de Preciómetro; se verificaron las **200 de la lista diaria**
+  comparando salida del parser sobre original y proyección: precios y metadatos usados idénticos, sin campos de reservas.
 - Windows capturó Liverpool el 21 de octubre: una fila real con precio actual y tachado, robots permitido.
 - Revisión QQP del 21 de octubre: huella del archivo 2026 sin cambios; no se inventaron observaciones nuevas.
 - Corrida cloud de prueba completa: https://github.com/d1512pb/sconto-reale-o-falso/actions/runs/39569141291.

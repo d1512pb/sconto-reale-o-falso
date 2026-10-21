@@ -172,14 +172,14 @@ def combinar_estados():
 
 
 def revisar_alertas() -> list[str]:
-    """Fuente con fallo/bloqueo dos días seguidos → ALERTA.md. Sin fallas consecutivas, se elimina la alerta."""
+    """Fuente con fallo, bloqueo o cobertura parcial dos días seguidos → ALERTA.md."""
     if not ESTADO_FUENTES.exists():
         return []
     df = pd.read_csv(ESTADO_FUENTES, dtype=str)
     malas = []
     for (fuente, entorno), g in df.groupby(['fuente', 'entorno']):
         ult = g.sort_values('fecha').tail(2)
-        if len(ult) == 2 and ult.estado.isin(['fallo', 'bloqueado']).all():
+        if len(ult) == 2 and ult.estado.isin(['fallo', 'bloqueado', 'parcial']).all():
             d0, d1 = pd.to_datetime(ult.fecha)
             if (d1 - d0).days == 1:
                 malas.append(f'- **{fuente}** ({entorno}): {ult.estado.iloc[-1]} el {ult.fecha.iloc[0]} y el '

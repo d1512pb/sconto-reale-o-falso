@@ -45,3 +45,16 @@ def test_candado_se_libera_incluso_ante_excepcion(tmp_path):
         with pytest.raises(TimeoutError):
             with almacen._Candado(ruta, espera_max=0):
                 pytest.fail('No debe admitir dos ciclos simultaneos')
+
+
+@pytest.mark.parametrize('segundo,estado,esperado', [
+    ('2026-10-21', 'parcial', True), ('2026-10-22', 'parcial', False), ('2026-10-21', 'ok', False)])
+def test_alerta_cobertura_parcial_dos_dias_consecutivos(tmp_path, monkeypatch, segundo, estado, esperado):
+    ruta = tmp_path / 'estados.csv'
+    pd.DataFrame([dict(fuente='preciometro', entorno='github', fecha=fecha, estado=valor, detalle='prueba')
+                  for fecha, valor in [('2026-10-20', 'parcial'), (segundo, estado)]]).to_csv(ruta, index=False)
+    alerta = tmp_path / 'ALERTA.md'
+    monkeypatch.setattr(almacen, 'ESTADO_FUENTES', ruta)
+    monkeypatch.setattr(almacen, 'ALERTA', alerta)
+    assert bool(almacen.revisar_alertas()) is esperado
+    assert alerta.exists() is esperado
