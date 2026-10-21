@@ -5,3 +5,6 @@ preciometro,2026-10-16,parcial,255181,"{'solicitados': 2796, 'descargados': 2576
 wayback,2026-10-16,ok,1,"{""objetivos"": 2, ""consultas_cdx"": 3, ""consultas_fallidas"": 0, ""capturas_validas"": 5, ""snapshots"": 1, ""descargados"": 1, ""reutilizados"": 0, ""con_precio"": 1, ""con_tachado"": 1, ""filas"": 1, ""tiendas"": 0, ""paginas_tienda"": 0, ""tarjetas"": 0, ""cortado_por_tiempo"": false, ""bloqueado"": false, ""peticiones"": 4, ""minutos"": 0.2}",2026-10-16T16:23:48+00:00,2026-10-16T16:23:59+00:00,local
 preciometro,2026-10-20,parcial,274,Prueba acotada real: 3 fichas; 270 puntos históricos y 4 ofertas. No representa una pasada completa del catálogo.,2026-10-21T01:21:47+00:00,2026-10-21T01:23:55+00:00,local
 tiendas,2026-10-20,parcial,1,Liverpool: 1 ficha real con precio y tachado; vendedor no publicado. Sears sin captura integrada.,,2026-10-21T01:21:06+00:00,local
+qqp_cdmx,2026-10-21,ok,0,2026: huella igual,2026-10-21T08:29:32+00:00,2026-10-21T08:29:47+00:00,local
+qqp_nacional,2026-10-21,ok,0,2026: huella igual,2026-10-21T08:29:32+00:00,2026-10-21T08:29:47+00:00,local
+tiendas,2026-10-21,ok,1,fichas verificadas para la lista fija,2026-10-21T08:29:20+00:00,2026-10-21T08:29:32+00:00,local
