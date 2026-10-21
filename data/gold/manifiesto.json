@@ -1,0 +1,155 @@
+{
+  "construido_utc": "2026-10-21T08:23:22+00:00",
+  "tablas": {
+    "observaciones": {
+      "filas": 664446,
+      "columnas": 37,
+      "parquet": "observaciones.parquet",
+      "csv": "observaciones.csv.gz",
+      "sha256_parquet": "a8628fb4eb86c1cc4041506ab7a24cf8a7c109785af626c8442e284b65f54954"
+    },
+    "exclusiones": {
+      "filas": 0,
+      "columnas": 33,
+      "parquet": "exclusiones.parquet",
+      "csv": "exclusiones.csv.gz",
+      "sha256_parquet": "71bc50e33a1bf131e2fbe09d6bc0240c63855f52068264cda3586e5eb7eff1dc"
+    },
+    "productos": {
+      "filas": 1724,
+      "columnas": 24,
+      "parquet": "productos.parquet",
+      "csv": "productos.csv",
+      "sha256_parquet": "f1d435d41b904a77d4bd9c2762a8607db159707005673266bd0b302a6c1df3af"
+    },
+    "eventos": {
+      "filas": 3,
+      "columnas": 13,
+      "parquet": "eventos.parquet",
+      "csv": "eventos.csv",
+      "sha256_parquet": "0b83eec65709fc0eec97dc5fcf7cd1188929926ff3f1c58acc2c94d7cdaf1f33"
+    },
+    "series_evento": {
+      "filas": 18137,
+      "columnas": 52,
+      "parquet": "series_evento.parquet",
+      "csv": "series_evento.csv",
+      "sha256_parquet": "edb9b098992506db70790798309ac0abd50e9b588308d6013e70562da4ef15c3"
+    },
+    "sensibilidad": {
+      "filas": 36,
+      "columnas": 6,
+      "parquet": "sensibilidad.parquet",
+      "csv": "sensibilidad.csv",
+      "sha256_parquet": "6907558ce558a52b57197e242e8aae948d5943df48e5bb5139e36ded3d377959"
+    },
+    "matriz_modelo": {
+      "filas": 298,
+      "columnas": 3,
+      "parquet": "matriz_modelo.parquet",
+      "csv": "matriz_modelo.csv",
+      "sha256_parquet": "2b399dc5471900704a50587d35b7774cfa6c80e2d331177f6de61fb435586b1c"
+    },
+    "matriz_modelo_brecha": {
+      "filas": 0,
+      "columnas": 4,
+      "parquet": "matriz_modelo_brecha.parquet",
+      "csv": "matriz_modelo_brecha.csv",
+      "sha256_parquet": "f9235ffe954db7cf5b0aaac96b1e77a7c0773efbe8f3d9e525b7f8942777f6a1"
+    },
+    "metadatos_modelo": {
+      "filas": 298,
+      "columnas": 47,
+      "parquet": "metadatos_modelo.parquet",
+      "csv": "metadatos_modelo.csv",
+      "sha256_parquet": "d270b9505a3d9faffe49a6e152c8a8f8d71f7d2d7c4b9881ebead76cf611818f"
+    }
+  },
+  "fuentes": {
+    "qqp_cdmx": 409138,
+    "preciometro": 245780,
+    "preciometro_ofertas": 9417,
+    "wayback": 109,
+    "amazon": 1,
+    "tiendas": 1
+  },
+  "contabilizacion": {
+    "filas_bronze": 664704,
+    "filas_excluidas": 0,
+    "capturas_representadas": 664704
+  },
+  "series_evento": [
+    {
+      "evento_id": "BF2024",
+      "plataforma_serie": "amazon",
+      "series": 4,
+      "cobertura_ahorro": 0,
+      "cobertura_alza": 0,
+      "con_brecha": 0
+    },
+    {
+      "evento_id": "BF2024",
+      "plataforma_serie": "mercadolibre",
+      "series": 15,
+      "cobertura_ahorro": 0,
+      "cobertura_alza": 0,
+      "con_brecha": 0
+    },
+    {
+      "evento_id": "BF2024",
+      "plataforma_serie": "qqp_cdmx",
+      "series": 3296,
+      "cobertura_ahorro": 544,
+      "cobertura_alza": 205,
+      "con_brecha": 0
+    },
+    {
+      "evento_id": "BF2025",
+      "plataforma_serie": "amazon",
+      "series": 5,
+      "cobertura_ahorro": 0,
+      "cobertura_alza": 0,
+      "con_brecha": 0
+    },
+    {
+      "evento_id": "BF2025",
+      "plataforma_serie": "qqp_cdmx",
+      "series": 2606,
+      "cobertura_ahorro": 298,
+      "cobertura_alza": 93,
+      "con_brecha": 0
+    },
+    {
+      "evento_id": "BF2026",
+      "plataforma_serie": "amazon",
+      "series": 1,
+      "cobertura_ahorro": 0,
+      "cobertura_alza": 0,
+      "con_brecha": 0
+    },
+    {
+      "evento_id": "BF2026",
+      "plataforma_serie": "liverpool",
+      "series": 1,
+      "cobertura_ahorro": 0,
+      "cobertura_alza": 0,
+      "con_brecha": 0
+    },
+    {
+      "evento_id": "BF2026",
+      "plataforma_serie": "preciometro",
+      "series": 2795,
+      "cobertura_ahorro": 0,
+      "cobertura_alza": 0,
+      "con_brecha": 0
+    },
+    {
+      "evento_id": "BF2026",
+      "plataforma_serie": "preciometro_ofertas",
+      "series": 9414,
+      "cobertura_ahorro": 0,
+      "cobertura_alza": 0,
+      "con_brecha": 0
+    }
+  ]
+}

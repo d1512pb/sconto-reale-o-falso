@@ -1,0 +1,69 @@
+{
+  "qqp_cdmx": {
+    "nombre": "PROFECO QQP · CDMX · multianual",
+    "url": "https://datos.profeco.gob.mx/datos_abiertos/qqp.php",
+    "aporte": "Precios físicos por producto y sucursal de archivos oficiales",
+    "estado": "Tablas locales 2018–2026 reutilizadas; reproducción exacta QQP 2025 comprobada",
+    "limitacion": "Muestreo esporádico, sin precio tachado; nacional se mantiene aparte",
+    "uso": "Histórico principal; no mezclar con canal en línea"
+  },
+  "preciometro": {
+    "nombre": "Preciómetro · historial público",
+    "url": "https://preciometro.com/",
+    "aporte": "Historial móvil de mínimos multitienda con tienda y vendedor por punto",
+    "estado": "Descarga previa conservada; prueba actual de 3 fichas verificada el 20 oct",
+    "limitacion": "No es historial completo de una tienda ni cubre BF2025",
+    "uso": "Referencia de mercado, sin atribuir su mínimo a una sucursal"
+  },
+  "preciometro_ofertas": {
+    "nombre": "Preciómetro · ofertas vigentes de Amazon, ML y tiendas",
+    "url": "https://preciometro.com/",
+    "aporte": "Precio y enlace de la oferta, plataforma y vendedor al capturar",
+    "estado": "Ofertas reales locales; los cruces por variantes requieren revisión",
+    "limitacion": "Evidencia indirecta del agregador, no verificación independiente de tienda",
+    "uso": "Seguimiento actual por oferta y vendedor"
+  },
+  "mercadolibre": {
+    "nombre": "Mercado Libre · API oficial",
+    "url": "https://developers.mercadolibre.com.mx/api-de-precios",
+    "aporte": "Precio actual y regular_amount/original_price si el permiso permite leerlos",
+    "estado": "Conector preparado y probado offline; no hay autorización del equipo ni filas directas",
+    "estado_corto": "sin credenciales y sin filas directas",
+    "costo_api": "Autorización oficial necesaria; no se contrató ningún servicio",
+    "limitacion": "No garantiza historial retroactivo público ni acceso a todos los vendedores",
+    "uso": "Captura actual si el equipo obtiene autorización y valida mapeos"
+  },
+  "amazon": {
+    "nombre": "Amazon México · piloto directo anterior",
+    "url": "https://www.amazon.com.mx/",
+    "aporte": "Una ficha real anterior conservada en el dataset",
+    "estado": "Directo deshabilitado por el equipo el 20 oct; seguimiento mediante agregador y archivos",
+    "limitacion": "Bloqueos y condiciones de acceso; el canónico incorrecto se retira al regenerar",
+    "uso": "Evidencia piloto anterior; no afirmar una captura directa continua"
+  },
+  "tiendas": {
+    "nombre": "Liverpool/Sears · lista fija de fichas",
+    "url": "https://www.liverpool.com.mx/tienda/pdp/barra-de-sonido-ht-s20r/1097521774",
+    "aporte": "Precio actual y tachado de una ficha real Liverpool",
+    "estado": "Liverpool piloto integrado; Sears con cero filas directas y URL deshabilitada",
+    "limitacion": "Un SKU no es cobertura del catálogo; vendedor no publicado, MXN por contexto documentado",
+    "uso": "Ampliar sólo fichas y variantes verificadas con acceso permitido"
+  },
+  "wayback": {
+    "nombre": "Internet Archive · Wayback Machine",
+    "url": "https://web.archive.org/",
+    "aporte": "Páginas históricas con fecha de snapshot, precio y anuncio cuando son legibles",
+    "estado": "109 observaciones existentes reutilizadas",
+    "limitacion": "Cobertura irregular; no equivale a historia diaria completa",
+    "uso": "Evidencia histórica por producto/vendedor/canal"
+  },
+  "commoncrawl": {
+    "nombre": "Common Crawl",
+    "url": "https://index.commoncrawl.org/",
+    "aporte": "Copias archivadas potenciales",
+    "estado": "Sin filas; acceso impedido por robots en la prueba registrada",
+    "estado_corto": "bloqueada, no integrada",
+    "limitacion": "No se descargan rutas no permitidas",
+    "uso": "Reevaluar permisos y cobertura sin evasión"
+  }
+}

@@ -2,14 +2,13 @@ name: Recolección diaria de precios
 
 on:
   schedule:
-    - cron: '17 13 * * *'   # 07:17 hora CDMX: pasada diaria
-    - cron: '17 1 * * *'    # 19:17 hora CDMX: 2a pasada; run_diario la ignora fuera del 10–20 de noviembre
+    - cron: '17 13 * * *'
   workflow_dispatch:
     inputs:
-      fuentes:
-        description: 'Fuentes separadas por espacio (vacío = las del entorno github)'
+      max_productos:
+        description: '0 = lista fija completa; otro valor limita una prueba'
         required: false
-        default: ''
+        default: '0'
 
 permissions:
   contents: write
@@ -22,7 +21,7 @@ concurrency:
 jobs:
   recolectar:
     runs-on: ubuntu-latest
-    timeout-minutes: 150
+    timeout-minutes: 90
     env:
       SCONTO_CONTACTO: +https://github.com/${{ github.repository }}
       TZ: America/Mexico_City
@@ -30,54 +29,73 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: pip
-
       - name: Instalar dependencias
         run: |
           python -m pip install -r requirements.txt
           python -m pip install -e .
-
+      - name: Verificar infraestructura sin red
+        run: python -m pytest tests/test_infraestructura.py tests/test_operacion.py -q
       - name: Recolectar
+        continue-on-error: true
+        env:
+          LIMITE: ${{ inputs.max_productos || '0' }}
+          ML_ACCESS_TOKEN: ${{ secrets.ML_ACCESS_TOKEN }}
+          ML_REFRESH_TOKEN: ${{ secrets.ML_REFRESH_TOKEN }}
+          ML_CLIENT_ID: ${{ secrets.ML_CLIENT_ID }}
+          ML_CLIENT_SECRET: ${{ secrets.ML_CLIENT_SECRET }}
         run: |
-          PASADA=1
-          if [ "${{ github.event.schedule }}" = "17 1 * * *" ]; then PASADA=2; fi
-          if [ -n "${{ github.event.inputs.fuentes }}" ]; then
-            python -m sconto.run_diario --entorno github --pasada $PASADA --fuentes ${{ github.event.inputs.fuentes }}
-          else
-            python -m sconto.run_diario --entorno github --pasada $PASADA
-          fi
-
-      - name: Reconstruir dataset gold
-        if: always()
-        run: python -m sconto.dataset || echo "dataset no reconstruido (ver log)"
-
-      - name: Guardar datos en el repositorio
-        if: always()
+          argumentos=(--entorno github)
+          if ! [[ "$LIMITE" =~ ^[0-9]+$ ]]; then exit 2; fi
+          if [ "$LIMITE" -gt 0 ]; then argumentos+=(--max-productos "$LIMITE"); fi
+          python -m sconto.run_diario "${argumentos[@]}"
+      - name: Preparar dataset, reportes y paquete
+        run: python -m sconto.operacion --entorno github --solo-preparar
+      - name: Guardar snapshot de datos
         run: |
-          git config user.name "sconto-bot"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A data reports ALERTA.md 2>/dev/null || git add -A data reports
-          if git diff --cached --quiet; then echo "sin cambios"; exit 0; fi
+          git config user.name sconto-bot
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A data reports DICCIONARIO.md
+          if [ -f ALERTA.md ] || git ls-files --error-unmatch ALERTA.md >/dev/null 2>&1; then git add -A ALERTA.md; fi
+          if git diff --cached --quiet; then exit 0; fi
           git commit -m "datos: recolección $(date +%F) (GitHub Actions)"
-          for i in 1 2 3; do
-            git pull --rebase --strategy-option=theirs && git push && exit 0
-            sleep $((i * 20))
+          for intento in 1 2 3; do
+            git pull --rebase && git push && exit 0
+            sleep $((intento * 20))
           done
           exit 1
-
-      - name: Abrir issue si una fuente falla dos días seguidos
+      - name: Publicar paquete consistente para Colab
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view datos >/dev/null 2>&1 || gh release create datos --title 'Datos diarios para Colab' \
+            --notes 'Snapshot con parquet, CSV y SHA-256. No incluye credenciales ni crudos de tiendas. Ver README.'
+          paquete="data/exportaciones/sconto_colab_$(date +%F).zip"
+          cp "$paquete" data/exportaciones/sconto_colab_actual.zip
+          gh release upload datos "$paquete" data/exportaciones/sconto_colab_actual.zip --clobber
+      - name: Conservar logs de diagnóstico
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostico-${{ github.run_id }}
+          path: |
+            logs/*.log
+            data/estado/
+          retention-days: 7
+      - name: Avisar fallos consecutivos
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           if [ -f ALERTA.md ]; then
-            abiertos=$(gh issue list --label alerta-recoleccion --state open --json number --jq length || echo 0)
-            if [ "$abiertos" = "0" ]; then
-              gh label create alerta-recoleccion --color B60205 --force >/dev/null 2>&1 || true
+            gh label create alerta-recoleccion --color B60205 --force
+            abiertos=$(gh issue list --label alerta-recoleccion --state open --json number --jq length)
+            if [ "$abiertos" = '0' ]; then
               gh issue create --title "Alerta de recolección $(date +%F)" --body-file ALERTA.md --label alerta-recoleccion
             fi
           fi
+      - name: Comprobar cobertura diaria real
+        run: python -m sconto.operacion --entorno github --verificar

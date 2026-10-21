@@ -60,6 +60,7 @@ def test_reproduccion_avance1_qqp_2025(obs, se):
     assert int(bf25.cobertura_alza.sum()) == 93
 
 
+@pytest.mark.skipif(not (AVANCE1 / '07_matriz_modelo.csv').exists(), reason='Evidencia del Avance 1 sólo disponible localmente')
 def test_matriz_igual_a_avance1():
     X = pd.read_parquet(GOLD / 'matriz_modelo.parquet')
     meta = pd.read_parquet(GOLD / 'metadatos_modelo.parquet')

@@ -11,8 +11,12 @@ __pycache__/
 
 # Crudos voluminosos (se conservan localmente con manifiesto SHA-256)
 data/raw/qqp/
+data/raw/
 data/raw/commoncrawl/
 data/cache/
+data/exportaciones/
+data/operacion/
+*.tmp
 *.rar
 *.zip
 *.part
@@ -28,6 +32,8 @@ logs/*.out
 # Lo voluminoso se queda en la PC con su SHA-256 en cada fila, o se publica como asset del release `datos`:
 data/raw/qqp/
 data/raw/amazon/
+data/raw/tiendas/
+data/raw/tiendas_pruebas/
 data/raw/wayback/
 data/raw/commoncrawl/
 data/raw/preciometro_sitemap/
@@ -38,3 +44,5 @@ data/gold/observaciones.*
 data/gold/exclusiones.*
 data/gold/observaciones_qqp_nacional.*
 logs/*.err
+reports/base_recoleccion_2026-10-20.md
+reports/ultima_ejecucion_backfill.json

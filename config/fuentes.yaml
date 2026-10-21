@@ -12,19 +12,25 @@ fuentes:
     modulo: sconto.fuentes.mercadolibre
     entornos: [github]
     respaldo: local
-    pasadas_temporada: 2
+    pasadas_temporada: 1
   amazon:
     modulo: sconto.fuentes.amazon
+    habilitada: false
+    motivo: Decisión del equipo 2026-10-20; usar Amazon mediante Preciómetro y archivos históricos, sin captura directa.
     entornos: [local]           # Amazon suele bloquear IPs de centros de datos; se confirma en pruebas
-    pasadas_temporada: 2
+    pasadas_temporada: 1
+  tiendas:
+    modulo: sconto.fuentes.tiendas
+    entornos: [local]
+    pasadas_temporada: 1
 
 # Recolección no diaria (backfill / revisión periódica), fuera de run_diario:
 periodicas:
   qqp: {modulo: sconto.fuentes.qqp, frecuencia: semanal}
   wayback: {modulo: sconto.fuentes.wayback, frecuencia: reintentos}
   commoncrawl: {modulo: sconto.fuentes.commoncrawl, frecuencia: unica}
-  inegi: {modulo: sconto.fuentes.inegi, frecuencia: quincenal}
-  promodescuentos: {modulo: sconto.fuentes.promodescuentos, frecuencia: unica}
+  inegi: {estado: pendiente, frecuencia: quincenal, motivo: Sin token; no hay colector integrado verificado}
+  promodescuentos: {estado: pendiente, frecuencia: unica, motivo: Evidencia comunitaria no integrada}
 
 reglas:
   pausa_segundos: [3, 8]

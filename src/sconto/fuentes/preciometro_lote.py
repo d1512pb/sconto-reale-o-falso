@@ -48,6 +48,9 @@ def correr(urls: list[str], fecha: str | None = None, lote: int = 25, entorno: s
                 h = sha256_bytes(contenido)
                 resumen['reutilizados'] += 1
             else:
+                if fecha != hoy():
+                    resumen['errores'] += 1
+                    continue
                 contenido = pm.obtener(url)
                 ruta_rel, h = guardar_crudo(FUENTE, f'{pid}.json', contenido, fecha)
                 resumen['descargados'] += 1
@@ -69,19 +72,20 @@ def correr(urls: list[str], fecha: str | None = None, lote: int = 25, entorno: s
             log.info('%s/%s productos | %s', i, len(urls), resumen)
     volcar()
     procesados = resumen['descargados'] + resumen['reutilizados']
-    estado = 'bloqueado' if resumen['bloqueado'] else ('ok' if procesados and not resumen['errores'] else
+    estado = 'bloqueado' if resumen['bloqueado'] else ('ok' if procesados and not resumen['errores'] and resumen['puntos'] + resumen['ofertas'] > 0 else
                                                          'parcial' if procesados else 'fallo')
     registrar_estado(FUENTE, estado, resumen['puntos'] + resumen['ofertas'], detalle=str(resumen),
                      inicio_utc=inicio, fecha=fecha, entorno=entorno)
     revisar_alertas()
+    resumen['estado'] = estado
     return resumen
 
 
 ROTACION_AMPLIA = 7  # el historial cubre ~90 días: refrescar la lista amplia cada 7 días no pierde ningún día
 
 
-def diario(productos: pd.DataFrame, fecha: str | None = None, entorno: str = 'local') -> dict:
-    """Fichas emparejadas con QQP (prioridad 1–3) todos los días; la lista amplia (4) rota cada 7 días."""
+def diario(productos: pd.DataFrame, fecha: str | None = None, entorno: str = 'local', max_urls: int | None = None) -> dict:
+    """Lista diaria fija; sólo instalaciones antiguas sin configuración usan rotación semanal."""
     fecha = fecha or hoy()
     lista = pd.read_csv(RAIZ / 'config' / 'preciometro_lista.csv', dtype={'preciometro_id': str})
     ids = productos[['preciometro_ids', 'prioridad']].assign(
@@ -90,8 +94,20 @@ def diario(productos: pd.DataFrame, fecha: str | None = None, entorno: str = 'lo
     dia = pd.Timestamp(fecha).dayofyear % ROTACION_AMPLIA
     sel = lista.loc[lista.preciometro_id.isin(ids.index)].copy()
     sel['prioridad'] = sel.preciometro_id.map(ids)
-    sel = sel.loc[sel.prioridad.le(3) | (sel.preciometro_id.astype(int) % ROTACION_AMPLIA == dia)]
-    return correr(sel.sort_values(['prioridad', 'preciometro_id']).url.tolist(), fecha=fecha, entorno=entorno)
+    objetivos_diarios = RAIZ / 'config' / 'preciometro_diarios.csv'
+    if objetivos_diarios.exists():
+        fijos = pd.read_csv(objetivos_diarios, dtype=str).preciometro_id
+        sel = sel.loc[sel.preciometro_id.isin(fijos)]
+    else:
+        sel = sel.loc[sel.prioridad.le(3) | (sel.preciometro_id.astype(int) % ROTACION_AMPLIA == dia)]
+    urls = sel.sort_values(['prioridad', 'preciometro_id']).url.tolist()
+    resultado = correr(urls[:max_urls] if max_urls else urls, fecha=fecha, entorno=entorno)
+    if max_urls and len(urls) > max_urls and not resultado['bloqueado']:
+        resultado['estado'] = 'parcial'
+        registrar_estado(FUENTE, 'parcial', resultado['puntos'] + resultado['ofertas'],
+                         detalle=f'Prueba limitada a {max_urls} de {len(urls)} fichas; no es corrida completa',
+                         fecha=fecha, entorno=entorno)
+    return resultado
 
 
 def main(argv=None):

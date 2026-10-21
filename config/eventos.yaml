@@ -21,4 +21,4 @@ eventos:
     nombre: Buen Fin 2026
     inicio: 2026-11-13
     fin: 2026-11-17
-    fuente_fechas: Prensa; pendiente de confirmar en elbuenfin.org
+    fuente_fechas: Prensa (Bloomberg Línea, SDP, N+); elbuenfin.org no legible sin JS. Ver reports/fechas_buen_fin.md

@@ -1,0 +1,18 @@
+<!doctype html><html lang="es"><head>
+<!-- FIXTURE SINTÉTICA: todos los productos, vendedores y números son inventados para tests offline. -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+ {"@type":"Product","url":"https://www.liverpool.com.mx/tienda/pdp/prueba/100","sku":"100","name":"Producto sintético Liverpool","brand":{"name":"Marca ficticia"},"offers":{"@type":"Offer","price":"799.00","priceCurrency":"MXN","seller":{"@type":"Organization","name":"Vendedor sintético"},"availability":"https://schema.org/InStock"}},
+ {"@type":"ItemList","itemListElement":[{"@type":"Product","url":"https://www.liverpool.com.mx/tienda/pdp/otro/200","offers":{"@type":"Offer","price":"1","priceCurrency":"MXN"}}]}
+]}
+</script></head><body>
+<main itemscope itemtype="https://schema.org/Product">
+ <link itemprop="url" href="https://www.liverpool.com.mx/tienda/pdp/prueba/100">
+ <span itemprop="name">Producto sintético Liverpool</span>
+ <section itemscope itemtype="https://schema.org/Offer" itemprop="offers">
+  <meta itemprop="price" content="799.00"><meta itemprop="priceCurrency" content="MXN">
+  <del class="a-product__paragraphDiscountPrice">$999.00</del><span class="a-product__discount">-20%</span>
+  <del hidden>$99999.00</del><del style="display: none">$88888.00</del>
+  <aside class="carousel"><del>$5000.00</del><span itemprop="price">$5.00</span></aside>
+ </section>
+</main></body></html>

@@ -30,7 +30,10 @@ CLAVE = ['fuente', 'id_externo', 'fecha_precio', 'vendedor_o_cadena']
 
 
 def obs_id(fila: dict) -> str:
-    base = [str(fila.get(c) or '') for c in ('fuente', 'id_externo', 'fecha_precio', 'vendedor_o_cadena', 'tipo_precio')]
+    base = []
+    for columna in ('fuente', 'id_externo', 'fecha_precio', 'vendedor_o_cadena', 'tipo_precio'):
+        valor = fila.get(columna)
+        base.append('' if valor is None or pd.isna(valor) else str(valor))
     return hashlib.sha256(json.dumps(base).encode()).hexdigest()[:20]
 
 

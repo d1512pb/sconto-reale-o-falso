@@ -1,0 +1,76 @@
+{
+  "anio": 2025,
+  "url": "https://datos.profeco.gob.mx/datos_abiertos/file.php?t=b9540b181657c2bc7735892091e81f96",
+  "sha256": "41ca4cd962e696f9f19cca598566d11ce60b200e37b5a5ef46c3b6a1ae58dc59",
+  "archivo": "../datos_originales/QQP_2025.rar",
+  "bytes": 85141166,
+  "archivos_csv": 24,
+  "filas_nacionales_leidas": 13270524,
+  "filas_cdmx_todas_categorias": 2970417,
+  "evento": "BF2025",
+  "recortes": {
+    "qqp_cdmx": {
+      "calidad": {
+        "originales": 39989,
+        "invalidos": 0,
+        "repeticiones": 440,
+        "filas_en_conflicto": 186,
+        "serie_fechas_en_conflicto": 93,
+        "limpios": 39363,
+        "identidad_incompleta": 0,
+        "precio_invalido": 0,
+        "fecha_invalida": 0
+      },
+      "referencias": 231,
+      "sucursales": 80,
+      "series": 4551,
+      "alcaldias_o_municipios": 12,
+      "entidades": 1,
+      "fecha_min": "2025-01-02",
+      "fecha_max": "2025-12-31",
+      "dias_con_dato": 249,
+      "cobertura": {
+        "series": 4551,
+        "series_con_base": 1938,
+        "series_base_suficiente": 499,
+        "series_con_previo": 1112,
+        "series_con_evento": 1316,
+        "series_cobertura_ahorro": 298,
+        "series_cobertura_alza": 93
+      },
+      "matriz_filas": 93
+    },
+    "qqp_nacional": {
+      "calidad": {
+        "originales": 237405,
+        "invalidos": 0,
+        "repeticiones": 791,
+        "filas_en_conflicto": 306,
+        "serie_fechas_en_conflicto": 153,
+        "limpios": 236308,
+        "identidad_incompleta": 0,
+        "precio_invalido": 0,
+        "fecha_invalida": 0
+      },
+      "referencias": 234,
+      "sucursales": 474,
+      "series": 24428,
+      "alcaldias_o_municipios": 59,
+      "entidades": 29,
+      "fecha_min": "2025-01-02",
+      "fecha_max": "2025-12-31",
+      "dias_con_dato": 252,
+      "cobertura": {
+        "series": 24428,
+        "series_con_base": 11088,
+        "series_base_suficiente": 3325,
+        "series_con_previo": 6882,
+        "series_con_evento": 8542,
+        "series_cobertura_ahorro": 2579,
+        "series_cobertura_alza": 1108
+      }
+    }
+  },
+  "extraido_utc": "2026-10-16T16:29:50+00:00",
+  "segundos": 127
+}

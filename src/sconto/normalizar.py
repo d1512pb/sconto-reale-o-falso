@@ -47,10 +47,17 @@ def segmentos_qqp(presentacion: str) -> list[str]:
 
 def es_codigo(token: str) -> bool:
     palabras = normalizar(token).split()
+    if len(palabras) > 1 and not (len(palabras) == 2 and len(palabras[0]) <= 3
+                                                and palabras[0].isalpha()
+                                                and re.search(r'[A-Z]', palabras[1])
+                                                and re.search(r'\d{3,}', palabras[1])):
+        return False
     if palabras and palabras[0] in _NO_CODIGO:
         return False
     t = compacto(token)
     if len(t) < 4 or t in _NO_CODIGO or _UNIDADES.match(t):
+        return False
+    if any(t.endswith(sufijo) and len(t[:-len(sufijo)]) < 4 for sufijo in MODIFICADORES):
         return False
     return bool(re.search(r'[A-Z]', t) and re.search(r'\d', t))
 
@@ -86,28 +93,48 @@ def modelo_qqp(presentacion: str) -> dict:
     return dict(modelo_texto=principal, modelo_normalizado=compacto(principal), codigos=unicos)
 
 
-_RE_GB = re.compile(r'(\d{2,4})\s*-?\s*(GB|TB)\b')
-_RE_RAM = re.compile(r'(?:RAM\s*(?:DE\s*)?(\d{1,2})\s*-?\s*GB|(\d{1,2})\s*-?\s*GB\s*(?:DE\s*)?RAM)')
+_RE_GB = re.compile(r'\b(\d{1,4})\s*(GB|TB)\b')
+_RE_RAM = re.compile(r'(?:RAM\s*(?:DE\s*)?(\d{1,3})\s*GB|'
+                     r'(\d{1,3})\s*GB\s*(?:DE\s*)?RAM(?!\s*(?:DE\s*)?\d+\s*GB))')
+
+
+def variantes(texto: str) -> dict[str, set]:
+    """Valores explícitos, sin elegir arbitrariamente entre variantes de una ficha."""
+    texto = normalizar(texto).upper().replace('-', ' ')
+    texto = re.sub(r'\bRAM\s*(?:DE\s*)?(\d+)\s*(?:GB)?\s*(?:/|\bO\b)\s*(\d+)\s*GB\b',
+                   r'RAM \1 GB RAM \2 GB', texto)
+    texto = re.sub(r'\b(\d+)\s*(?:GB)?\s*(?:/|\bO\b)\s*(\d+)\s*GB\s*(?:DE\s*)?RAM\b'
+                   r'(?!\s*(?:DE\s*)?\d+\s*GB)',
+                   r'RAM \1 GB RAM \2 GB', texto)
+    texto = re.sub(r'\b(\d+)\s*[/O]\s*(\d+)\s*(GB|TB)\b', r'\1 \3 / \2 \3', texto)
+    ram = {int(match.group(1) or match.group(2)) for match in _RE_RAM.finditer(texto)}
+    sin_ram = _RE_RAM.sub(' ', texto)
+    sin_ram = re.sub(r'HASTA\s*\d+\s*(GB|TB)\b', ' ', sin_ram)
+    almacenamiento = {int(numero) * (1024 if unidad == 'TB' else 1)
+                      for numero, unidad in _RE_GB.findall(sin_ram)}
+    colores = set()
+    for color, patron in {
+        'NEGRO': r'NEGROS?|NEGRAS?|BLACK', 'BLANCO': r'BLANCOS?|BLANCAS?|WHITE',
+        'GRAFITO': r'GRAFITO|GRAPHITE', 'GRIS': r'GRIS(?:ES)?|GRAY|GREY',
+        'PLATA': r'PLATA|SILVER', 'AZUL': r'AZUL(?:ES)?|BLUE', 'ROJO': r'ROJ[OA]S?|RED',
+        'VERDE': r'VERDES?|GREEN', 'DORADO': r'DORAD[OA]S?|GOLD',
+        'ROSA': r'ROSAS?|PINK', 'MORADO': r'MORAD[OA]S?|PURPLE|VIOLETA',
+    }.items():
+        if re.search(rf'\b(?:{patron})\b', texto):
+            colores.add(color)
+    if 'GRAFITO' in colores:
+        colores.discard('GRIS')
+    generaciones = {int(match.group(1) or match.group(2)) for match in re.finditer(
+        r'\b(\d{1,2})[.\s]*(?:[AO]|TA|DA|RA|MA|VA|MO|VO|ST|ND|RD|TH)?[.\s]*GEN(?:ERACION)?\b'
+        r'|\bGEN(?:ERACION)?\s*(\d{1,2})\b', texto)}
+    return dict(almacenamiento_gb=almacenamiento, ram_gb=ram, color=colores, generacion=generaciones)
 
 
 def capacidades(texto: str) -> dict:
     """Almacenamiento y RAM en GB a partir de un texto libre (QQP o nombre de tienda)."""
-    t = normalizar(texto).replace('-', ' ')
-    ram = None
-    m = _RE_RAM.search(t)
-    if m:
-        ram = int(m.group(1) or m.group(2))
-    almac = []
-    for n, u in _RE_GB.findall(t):
-        gb = int(n) * (1024 if u == 'TB' else 1)
-        if ram is not None and gb == ram:
-            continue
-        almac.append(gb)
-    # 'Micro Sd Hasta 1 Tb' no es la memoria del equipo
-    if 'HASTA' in t:
-        hasta = {int(n) * (1024 if u == 'TB' else 1) for n, u in re.findall(r'HASTA\s*(\d+)\s*(GB|TB)', t)}
-        almac = [a for a in almac if a not in hasta]
-    return dict(almacenamiento_gb=max(almac) if almac else None, ram_gb=ram)
+    valores = variantes(texto)
+    return {campo: next(iter(valores[campo])) if len(valores[campo]) == 1 else None
+            for campo in ('almacenamiento_gb', 'ram_gb')}
 
 
 def tokens_slug(slug: str) -> list[str]:

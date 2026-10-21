@@ -1,0 +1,5 @@
+# FIXTURE SINTÉTICA offline; no representa robots.txt actual de ninguna tienda.
+User-agent: *
+Allow: /
+Disallow: /mi-cuenta/*
+Disallow: /producto/999/*

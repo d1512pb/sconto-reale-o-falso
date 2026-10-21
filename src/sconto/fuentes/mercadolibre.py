@@ -15,18 +15,21 @@ Mientras tanto, los precios de Mercado Libre llegan de forma indirecta por las o
 """
 from __future__ import annotations
 
+import argparse
 import json
 import logging
 import os
+import re
 import time
+from pathlib import Path
 from urllib.parse import quote, urlsplit
 
 import pandas as pd
 
-from sconto.almacen import ahora_utc, escribir_bronze, guardar_crudo, hoy, registrar_estado
+from sconto.almacen import ahora_utc, escribir_bronze, guardar_crudo, hoy, leer_crudo, registrar_estado, sha256_bytes
 from sconto.cliente import Bloqueado, Cliente, NoPermitido
 from sconto.esquema import CLAVE, a_dataframe, condiciones_json
-from sconto.rutas import CACHE
+from sconto.rutas import CACHE, CONFIG, RAW, RAIZ
 
 log = logging.getLogger('mercadolibre')
 
@@ -124,26 +127,31 @@ class TokenML:
     RUTA = DIR_CACHE / 'token.json'
 
     def __init__(self):
+        self.access = os.environ.get('ML_ACCESS_TOKEN', '').strip()
         self.client_id = os.environ.get('ML_CLIENT_ID', '').strip()
         self.secret = os.environ.get('ML_CLIENT_SECRET', '').strip()
         self.refresh = os.environ.get('ML_REFRESH_TOKEN', '').strip()
 
     @property
     def configurado(self) -> bool:
-        return bool(self.client_id and self.secret and (self.refresh or self.RUTA.exists()))
+        return bool(self.access or (self.client_id and self.secret and (self.refresh or self.RUTA.exists())))
 
     def access_token(self, cliente: Cliente) -> str:
+        if self.access:
+            return self.access
         guardado = json.loads(self.RUTA.read_text(encoding='utf-8')) if self.RUTA.exists() else {}
         if guardado.get('expira', 0) > time.time() + 300:
             return guardado['access_token']
-        r = cliente.sesion.post(f'{API}/oauth/token', timeout=cliente.timeout, data=dict(
+        cliente._esperar(urlsplit(API).netloc)
+        r = cliente.sesion.post(f'{API}/oauth/token', timeout=cliente.timeout, allow_redirects=False, data=dict(
             grant_type='refresh_token', client_id=self.client_id, client_secret=self.secret,
             refresh_token=guardado.get('refresh_token') or self.refresh))
-        r.raise_for_status()
+        if r.status_code != 200:
+            raise ValueError(f'No se pudo refrescar el token ML: HTTP {r.status_code}; revisar .env')
         d = r.json()
         DIR_CACHE.mkdir(parents=True, exist_ok=True)
         # ML rota el refresh token en cada uso: se guarda el nuevo para la siguiente corrida.
-        self.RUTA.write_text(json.dumps(dict(access_token=d['access_token'], refresh_token=d.get('refresh_token'),
+        self.RUTA.write_text(json.dumps(dict(access_token=d['access_token'], refresh_token=d.get('refresh_token') or guardado.get('refresh_token') or self.refresh,
                                              expira=time.time() + int(d.get('expires_in', 21600)))), encoding='utf-8')
         return d['access_token']
 
@@ -164,11 +172,29 @@ def filas_item(d: dict, precio: dict | None, ruta_raw: str, hash_raw: str, fecha
                 url=d.get('permalink'), ruta_raw=ruta_raw, hash_raw=hash_raw)
 
 
-def diario(productos: pd.DataFrame, fecha: str | None = None, entorno: str = 'local') -> dict:
+def objetivos(productos: pd.DataFrame) -> list[dict]:
+    salida = {}
+    for fila in productos.to_dict('records'):
+        if fila.get('confianza_match') != 'exacto':
+            continue
+        for columna, tipo in [('mlm_ids', 'producto'), ('mlm_item_ids', 'item')]:
+            for identificador in str(fila.get(columna) or '').split(';'):
+                identificador = identificador.strip().upper().replace('-', '')
+                if re.fullmatch(r'MLM\d+', identificador):
+                    pid = fila.get('producto_canonico_id')
+                    if identificador in salida and salida[identificador]['producto_canonico_id'] != pid:
+                        salida[identificador]['producto_canonico_id'] = None
+                    else:
+                        salida[identificador] = dict(id=identificador, tipo=tipo, producto_canonico_id=pid)
+    return [fila for fila in salida.values() if fila['producto_canonico_id']]
+
+
+def diario(productos: pd.DataFrame, fecha: str | None = None, entorno: str = 'local', max_items: int = 3) -> dict:
     fecha = fecha or hoy()
     inicio = ahora_utc()
     token = TokenML()
-    catalogo = sorted({x for v in productos.get('mlm_ids', pd.Series(dtype=str)).fillna('') for x in str(v).split(';') if x})
+    lista = objetivos(productos)
+    catalogo = [fila['id'] for fila in lista]
     if not token.configurado:
         # Sin app: un solo sondeo diario a la página pública para saber si el muro sigue.
         web = Cliente(pausa=(3.0, 8.0), reintentos=0)
@@ -186,24 +212,55 @@ def diario(productos: pd.DataFrame, fecha: str | None = None, entorno: str = 'lo
         registrar_estado(FUENTE, estado, 0, detalle=detalle, inicio_utc=inicio, fecha=fecha, entorno=entorno)
         return dict(estado=estado, filas=0, productos_catalogo=len(catalogo))
 
-    api = Cliente(pausa=(1.0, 2.0), respetar_robots=False, reintentos=2)  # API oficial: no aplica robots web
-    api.sesion.headers['Authorization'] = f'Bearer {token.access_token(api)}'
-    filas, errores = [], 0
-    for prod in catalogo:
+    api = Cliente(pausa=(3.0, 8.0), respetar_robots=False, reintentos=0)
+    filas, errores, bloqueado = [], 0, False
+    for objetivo in lista:
+        prod = objetivo['id']
         try:
-            r = api.get(f'{API}/products/{prod}/items')
-            ruta, h = guardar_crudo(FUENTE, f'products_{prod}_items.json', r.content, fecha)
-            if r.status_code != 200:
-                errores += 1
-                continue
-            for it in (r.json().get('results') or [])[:20]:
-                iid = it.get('item_id') or it.get('id')
-                ri = api.get(f'{API}/items/{iid}')
-                rp = api.get(f'{API}/items/{iid}/sale_price?context=channel_marketplace')
-                ruta_i, h_i = guardar_crudo(FUENTE, f'item_{iid}.json', ri.content + b'\n' + rp.content, fecha)
-                if ri.status_code == 200:
-                    filas.append(filas_item(ri.json(), rp.json() if rp.status_code == 200 else None, ruta_i, h_i,
-                                            fecha, prod))
+            cache = RAW / FUENTE / fecha / f'objetivo_{prod}.json.gz'
+            if cache.exists():
+                ruta = cache.relative_to(RAIZ).as_posix()
+                contenido = leer_crudo(ruta)
+                paquete = json.loads(contenido)
+                digest = sha256_bytes(contenido)
+            else:
+                if fecha != hoy():
+                    errores += 1
+                    continue
+                if 'Authorization' not in api.sesion.headers:
+                    api.sesion.headers['Authorization'] = f'Bearer {token.access_token(api)}'
+                ids = [prod]
+                if objetivo['tipo'] == 'producto':
+                    response = api.get(f'{API}/products/{prod}/items')
+                    guardar_crudo(FUENTE, f'products_{prod}_items.json', response.content, fecha)
+                    if response.status_code == 401:
+                        raise Bloqueado('401: revisar autorización de la API ML', response)
+                    response.raise_for_status()
+                    ids = [item.get('item_id') or item.get('id') for item in response.json().get('results', [])][:max_items]
+                paquete = {'capturado_utc': ahora_utc(), 'items': []}
+                for identificador in ids:
+                    response = api.get(f'{API}/items/{identificador}')
+                    guardar_crudo(FUENTE, f'item_{identificador}.json', response.content, fecha)
+                    if response.status_code == 401:
+                        raise Bloqueado('401: revisar autorización de la API ML', response)
+                    response.raise_for_status()
+                    precio = api.get(f'{API}/items/{identificador}/sale_price?context=channel_marketplace')
+                    guardar_crudo(FUENTE, f'sale_price_{identificador}.json', precio.content, fecha)
+                    if precio.status_code == 401:
+                        raise Bloqueado('401: revisar autorización de precios ML', precio)
+                    paquete['items'].append({'item': response.json(), 'sale_price': precio.json() if precio.status_code == 200 else None})
+                contenido = json.dumps(paquete, ensure_ascii=False).encode('utf-8')
+                ruta, digest = guardar_crudo(FUENTE, f'objetivo_{prod}.json', contenido, fecha)
+            for registro in paquete['items']:
+                fila = filas_item(registro['item'], registro['sale_price'], ruta, digest, fecha, prod)
+                fila['producto_canonico_id'] = objetivo['producto_canonico_id']
+                filas.append(fila)
+        except (Bloqueado, NoPermitido) as error:
+            respuesta = getattr(error, 'respuesta', None)
+            if respuesta is not None:
+                guardar_crudo(FUENTE, f'bloqueo_{prod}.json', respuesta.content, fecha)
+            bloqueado = True
+            break
         except Exception as e:
             errores += 1
             log.warning('ML %s: %s', prod, e)
@@ -211,13 +268,24 @@ def diario(productos: pd.DataFrame, fecha: str | None = None, entorno: str = 'lo
     if len(df):
         df = df.loc[df.precio.gt(0)]
         escribir_bronze(FUENTE, df, fecha, clave=CLAVE)
-    estado = 'ok' if len(df) and not errores else 'parcial' if len(df) else 'fallo'
+    estado = 'bloqueado' if bloqueado else 'ok' if len(df) and not errores else 'parcial' if len(df) else 'fallo'
     registrar_estado(FUENTE, estado, len(df), detalle=f'catalogo={len(catalogo)} errores={errores}',
                      inicio_utc=inicio, fecha=fecha, entorno=entorno)
-    return dict(estado=estado, filas=len(df), errores=errores)
+    return dict(estado=estado, filas=len(df), errores=errores, bloqueado=bloqueado)
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description='Mercado Libre: lista fija, API oficial y caché diaria; no ofrece historial retroactivo público.')
+    parser.add_argument('--productos', type=Path, default=CONFIG / 'productos_objetivo.csv')
+    parser.add_argument('--max', type=int, default=10)
+    parser.add_argument('--plan', action='store_true', help='Ver objetivos sin red ni credenciales.')
+    argumentos = parser.parse_args(argv)
+    if argumentos.max < 1:
+        parser.error('--max debe ser positivo')
+    productos = pd.read_csv(argumentos.productos, dtype=str, keep_default_na=False).head(argumentos.max)
+    logging.basicConfig(level=logging.INFO)
+    print(json.dumps(objetivos(productos) if argumentos.plan else diario(productos), ensure_ascii=False))
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
-    for f in verificar('MLM41998828', 'MLM2081699241', 'MLMU3275620030', 'samsung galaxy a06'):
-        print(f['n'], f['endpoint'], f.get('http'), f.get('mensaje'), f.get('excepcion'))
+    main()

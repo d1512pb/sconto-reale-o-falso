@@ -9,6 +9,7 @@ selectolax>=0.3
 tenacity>=9.0
 pydantic>=2.10
 python-dotenv>=1.0
+tzdata>=2024.1
 pyyaml>=6.0
 pytest>=8.3
 warcio>=1.7

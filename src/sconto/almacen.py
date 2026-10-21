@@ -6,7 +6,8 @@ import gzip
 import hashlib
 import json
 import re
-from datetime import date, datetime, timezone
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 from pathlib import Path
 
 import pandas as pd
@@ -19,7 +20,7 @@ def ahora_utc():
 
 
 def hoy():
-    return date.today().isoformat()
+    return datetime.now(ZoneInfo('America/Mexico_City')).date().isoformat()
 
 
 def sha256_bytes(contenido: bytes) -> str:
@@ -61,11 +62,15 @@ def escribir_bronze(fuente: str, filas: list[dict] | pd.DataFrame, fecha: str | 
     df = filas if isinstance(filas, pd.DataFrame) else pd.DataFrame(filas)
     ruta = BRONZE / fuente / f'{fecha or hoy()}.parquet'
     ruta.parent.mkdir(parents=True, exist_ok=True)
-    if ruta.exists() and len(df):
+    if ruta.exists():
+        if df.empty:
+            return ruta
         df = pd.concat([pd.read_parquet(ruta), df], ignore_index=True)
     if clave and len(df):
         df = df.drop_duplicates(clave, keep='last')
-    df.to_parquet(ruta, index=False)
+    temporal = ruta.with_suffix('.parquet.tmp')
+    df.to_parquet(temporal, index=False)
+    temporal.replace(ruta)
     return ruta
 
 
@@ -80,27 +85,42 @@ CAMPOS_ESTADO = ['fuente', 'fecha', 'estado', 'filas', 'detalle', 'inicio_utc', 
 
 
 class _Candado:
-    """Candado entre procesos por archivo (varias fuentes pueden terminar a la vez)."""
+    """Candado del sistema operativo: al morir un proceso se libera sin borrar archivos ajenos."""
     def __init__(self, ruta: Path, espera_max=60):
         self.ruta, self.espera_max = ruta.with_suffix(ruta.suffix + '.lock'), espera_max
 
     def __enter__(self):
         import os
         import time
+        self.ruta.parent.mkdir(parents=True, exist_ok=True)
+        self.archivo = self.ruta.open('a+b')
         inicio = time.monotonic()
         while True:
             try:
-                self.fd = os.open(self.ruta, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+                self.archivo.seek(0)
+                if os.name == 'nt':
+                    import msvcrt
+                    msvcrt.locking(self.archivo.fileno(), msvcrt.LK_NBLCK, 1)
+                else:
+                    import fcntl
+                    fcntl.flock(self.archivo.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
                 return self
-            except FileExistsError:
+            except OSError:
                 if time.monotonic() - inicio > self.espera_max:
-                    self.ruta.unlink(missing_ok=True)  # candado huérfano de un proceso caído
+                    self.archivo.close()
+                    raise TimeoutError(f'Candado ocupado: {self.ruta}; revisar si hay otra corrida activa')
                 time.sleep(0.2)
 
     def __exit__(self, *exc):
         import os
-        os.close(self.fd)
-        self.ruta.unlink(missing_ok=True)
+        self.archivo.seek(0)
+        if os.name == 'nt':
+            import msvcrt
+            msvcrt.locking(self.archivo.fileno(), msvcrt.LK_UNLCK, 1)
+        else:
+            import fcntl
+            fcntl.flock(self.archivo.fileno(), fcntl.LOCK_UN)
+        self.archivo.close()
 
 
 def _leer_estado(ruta: Path) -> list[dict]:
@@ -113,10 +133,12 @@ def _leer_estado(ruta: Path) -> list[dict]:
 def _escribir_estado(ruta: Path, filas: list[dict]):
     filas = sorted(filas, key=lambda r: (r['fecha'], r['fuente'], r.get('entorno', '')))
     ruta.parent.mkdir(parents=True, exist_ok=True)
-    with open(ruta, 'w', newline='', encoding='utf-8') as f:
+    temporal = ruta.with_suffix('.csv.tmp')
+    with open(temporal, 'w', newline='', encoding='utf-8') as f:
         w = csv.DictWriter(f, fieldnames=CAMPOS_ESTADO, extrasaction='ignore')
         w.writeheader()
         w.writerows(filas)
+    temporal.replace(ruta)
 
 
 def registrar_estado(fuente: str, estado: str, filas: int, detalle: str = '', inicio_utc: str = '',

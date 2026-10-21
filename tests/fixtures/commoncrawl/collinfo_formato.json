@@ -1,0 +1,6 @@
+[
+  {"id": "CC-MAIN-2025-47", "name": "November 2025 Index", "timegate": "https://index.commoncrawl.org/CC-MAIN-2025-47/", "cdx-api": "https://index.commoncrawl.org/CC-MAIN-2025-47-index", "from": "2025-11-06T00:00:00", "to": "2025-11-19T00:00:00"},
+  {"id": "CC-MAIN-2025-26", "name": "June 2025 Index", "timegate": "https://index.commoncrawl.org/CC-MAIN-2025-26/", "cdx-api": "https://index.commoncrawl.org/CC-MAIN-2025-26-index", "from": "2025-06-12T00:00:00", "to": "2025-06-25T00:00:00"},
+  {"id": "CC-MAIN-2024-46", "name": "November 2024 Index", "timegate": "https://index.commoncrawl.org/CC-MAIN-2024-46/", "cdx-api": "https://index.commoncrawl.org/CC-MAIN-2024-46-index", "from": "2024-11-01T00:00:00", "to": "2024-11-15T00:00:00"},
+  {"id": "CC-MAIN-2024-38", "name": "September 2024 Index", "timegate": "https://index.commoncrawl.org/CC-MAIN-2024-38/", "cdx-api": "https://index.commoncrawl.org/CC-MAIN-2024-38-index", "from": "2024-09-07T00:00:00", "to": "2024-09-21T00:00:00"}
+]
