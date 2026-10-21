@@ -1,5 +1,6 @@
 param([switch]$Publicar, [switch]$SoloPreparar, [int]$MaxProductos = 0)
 $ErrorActionPreference = 'Stop'
+$env:PATH = "$env:ProgramFiles\Git\cmd;$env:ProgramFiles\GitHub CLI;$env:SystemRoot\System32;$env:PATH"
 $raiz = Split-Path -Parent $PSScriptRoot
 $servicio = Join-Path $raiz 'data\operacion'
 $repo = Join-Path $servicio 'repo'
@@ -17,6 +18,12 @@ try {
     & git -C $repo config credential.helper '!gh auth git-credential'
     & git -C $repo pull --ff-only
     if ($LASTEXITCODE -ne 0) { throw 'La copia operativa requiere revisar su sincronizacion.' }
+    $corrida = & gh run list --repo d1512pb/sconto-reale-o-falso --workflow recoleccion_diaria.yml --limit 5 --json databaseId,status --jq 'map(select(.status != "completed")) | .[0].databaseId'
+    if ($LASTEXITCODE -eq 0 -and "$corrida".Trim() -match '^\d+$') {
+        & gh run watch "$corrida" --repo d1512pb/sconto-reale-o-falso --interval 60 --compact --exit-status
+        & git -C $repo pull --ff-only
+        if ($LASTEXITCODE -ne 0) { throw 'No se pudo sincronizar el resultado cloud.' }
+    }
     $env:SCONTO_RAIZ = $datos
     $env:SCONTO_ENVFILE = Join-Path $raiz '.env'
     $env:SCONTO_CONTACTO = '+https://github.com/d1512pb/sconto-reale-o-falso'

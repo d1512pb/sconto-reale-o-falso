@@ -72,7 +72,7 @@ def correr(urls: list[str], fecha: str | None = None, lote: int = 25, entorno: s
             log.info('%s/%s productos | %s', i, len(urls), resumen)
     volcar()
     procesados = resumen['descargados'] + resumen['reutilizados']
-    estado = 'bloqueado' if resumen['bloqueado'] else ('ok' if procesados and not resumen['errores'] and resumen['puntos'] + resumen['ofertas'] > 0 else
+    estado = 'bloqueado' if resumen['bloqueado'] else ('ok' if procesados == len(urls) and procesados and not resumen['errores'] and resumen['puntos'] + resumen['ofertas'] > 0 else
                                                          'parcial' if procesados else 'fallo')
     registrar_estado(FUENTE, estado, resumen['puntos'] + resumen['ofertas'], detalle=str(resumen),
                      inicio_utc=inicio, fecha=fecha, entorno=entorno)

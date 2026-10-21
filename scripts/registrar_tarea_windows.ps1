@@ -2,7 +2,8 @@ $ErrorActionPreference = 'Stop'
 $raiz = Split-Path -Parent $PSScriptRoot
 $script = Join-Path $raiz 'scripts\correr_local.ps1'
 $usuario = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
-$accion = New-ScheduledTaskAction -Execute 'powershell.exe' -WorkingDirectory $raiz `
+$powershell = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+$accion = New-ScheduledTaskAction -Execute $powershell -WorkingDirectory $raiz `
     -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$script`" -Publicar"
 $ajustes = New-ScheduledTaskSettingsSet -StartWhenAvailable -DontStopIfGoingOnBatteries -AllowStartIfOnBatteries `
     -ExecutionTimeLimit (New-TimeSpan -Hours 3) -MultipleInstances IgnoreNew
