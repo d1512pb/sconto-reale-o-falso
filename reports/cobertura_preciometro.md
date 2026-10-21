@@ -9,15 +9,15 @@ El gráfico **no** es la serie de una sola tienda: se analiza como serie `MINIMO
 
 ## Historial (gráfico)
 
-- Fichas con historial: **2,795** · filas (ficha × día): **245,780**
-- Rango obtenido: **2026-07-18 → 2026-10-20** · días con dato: **95**
-- Puntos por ficha: mediana **90**, máximo **94**
-- Tienda que tuvo el mínimo (top 8): Amazon 127,755, Mercadolibre 32,607, El Palacio de Hierro 15,070, Walmart 14,300, Cyberpuerta 13,602, Sam's Club 6,209, El Palacio De Hierro 5,753, Sanborns 5,166
+- Fichas con historial: **2,795** · filas (ficha × día): **246,762**
+- Rango obtenido: **2026-07-18 → 2026-10-21** · días con dato: **96**
+- Puntos por ficha: mediana **90**, máximo **95**
+- Tienda que tuvo el mínimo (top 8): Amazon 128,119, Mercadolibre 32,811, El Palacio de Hierro 15,091, Walmart 14,389, Cyberpuerta 13,624, Sam's Club 6,259, El Palacio De Hierro 5,753, Sanborns 5,214
 
 ## Ofertas vigentes (desde el 2026-10-16)
 
-- Ofertas: **9,417** de **2,780** fichas;
-  con ASIN: 2,462; con catálogo MLM: 1,157
+- Ofertas: **10,286** de **2,780** fichas;
+  con ASIN: 2,622; con catálogo MLM: 1,264
 
 ## Emparejamiento con QQP
 

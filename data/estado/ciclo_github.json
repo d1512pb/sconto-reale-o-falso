@@ -1,0 +1,21 @@
+{
+  "fecha": "2026-10-21",
+  "entorno": "github",
+  "construido_utc": "2026-10-21T08:45:18+00:00",
+  "filas": 666297,
+  "paquete": "exportaciones/sconto_colab_2026-10-21.zip",
+  "fuentes": {
+    "qqp_cdmx": 409138,
+    "preciometro": 246762,
+    "preciometro_ofertas": 10286,
+    "wayback": 109,
+    "amazon": 1,
+    "tiendas": 1
+  },
+  "salud": {
+    "fecha": "2026-10-21",
+    "entorno": "github",
+    "ok": true,
+    "fuentes_sin_cobertura_completa": []
+  }
+}

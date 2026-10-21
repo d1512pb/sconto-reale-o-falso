@@ -7,25 +7,25 @@ Tipos y rangos calculados sobre los datos actuales al generar este archivo (`pyt
 
 Una fila por precio observado (formato largo). Todas las fuentes salvo QQP nacional. Clave única: (fuente, id_externo, fecha_precio, vendedor_o_cadena).
 
-Filas: 664,446
+Filas: 666,297
 
 | Campo | Descripción | Tipo | Rango observado | Fuente |
 |---|---|---|---|---|
-| `obs_id` | Identificador estable de la observación (hash). | str | 664,446 valores distintos | todas |
+| `obs_id` | Identificador estable de la observación (hash). | str | 666,297 valores distintos | todas |
 | `fuente` | Origen: qqp_cdmx, preciometro, preciometro_ofertas, mercadolibre, amazon, wayback, commoncrawl, promodescuentos. | str | amazon, preciometro, preciometro_ofertas, qqp_cdmx, tiendas, wayback | todas |
 | `metodo` | archivo_oficial \| api \| scraping \| wayback \| commoncrawl \| agregador \| comunidad. | str | agregador, archivo_oficial, scraping, wayback | todas |
 | `canal` | tienda_fisica (QQP) \| en_linea. Nunca se mezclan en una serie. | str | en_linea, tienda_fisica | todas |
 | `tipo_precio` | minimo_diario_multitienda (gráfico de Preciómetro: el más bajo entre tiendas ese día), oferta_vigente, precio_vigente, observado_sucursal, etc. | str | minimo_diario_multitienda, oferta_vigente, precio_registrado_qqp, publicado | todas |
-| `fecha_precio` | Día al que corresponde el precio (en Wayback/Common Crawl, fecha del snapshot). | str | 2,171 valores distintos | todas |
-| `fecha_captura` | Día en que se descargó. | str | 2026-10-16, 2026-10-20 | todas |
+| `fecha_precio` | Día al que corresponde el precio (en Wayback/Common Crawl, fecha del snapshot). | str | 2,172 valores distintos | todas |
+| `fecha_captura` | Día en que se descargó. | str | 2026-10-16, 2026-10-20, 2026-10-21 | todas |
 | `producto_canonico_id` | Producto canónico de config/productos_objetivo.csv; vacío si no se emparejó. | str | 1,724 valores distintos | derivado |
-| `id_externo` | Id en la fuente: producto_id QQP, id de ficha u oferta Preciómetro, ASIN, MLM. | str | 12,971 valores distintos | todas |
+| `id_externo` | Id en la fuente: producto_id QQP, id de ficha u oferta Preciómetro, ASIN, MLM. | str | 12,995 valores distintos | todas |
 | `tipo_id_externo` | qqp \| preciometro \| preciometro_oferta \| asin \| mlm \| mlm_item \| url. | str | asin, mlm, preciometro, preciometro_oferta, qqp, url | todas |
 | `marca` | Marca según la fuente. | str | 413 valores distintos | todas |
 | `modelo_normalizado` | Código o nombre de modelo en mayúsculas sin espacios ni guiones. | str | 980 valores distintos | derivado |
-| `descripcion_original` | Texto original del producto en la fuente. | str | 12,194 valores distintos | todas |
+| `descripcion_original` | Texto original del producto en la fuente. | str | 12,213 valores distintos | todas |
 | `plataforma` | Tienda o marketplace (Amazon, Mercadolibre, Elektra, …) en fuentes en línea. | str | Amazon, Bodega Aurrera, Chedraui, Costco, Cyberpuerta, El Palacio De Hierro, El Palacio de Hierro, Elektra … (21 distintos) | en línea |
-| `vendedor_o_cadena` | Vendedor (en línea) o cadena + sucursal (QQP). | str | 2,561 valores distintos | todas |
+| `vendedor_o_cadena` | Vendedor (en línea) o cadena + sucursal (QQP). | str | 2,572 valores distintos | todas |
 | `sucursal_id` | Sucursal QQP (hash de cadena, nombre, dirección y alcaldía, igual que el Avance 1). | str | 185 valores distintos | QQP |
 | `estado` | Entidad federativa (QQP). | str | CIUDAD DE MÉXICO, Ciudad de Mexico, Ciudad de México | QQP |
 | `alcaldia` | Municipio/alcaldía (QQP). | str | AZCAPOTZALCO, Azcapotzalco, BENITO JUÁREZ, Benito Juárez, COYOACÁN, CUAUHTÉMOC, Coyoacán, Cuauhtémoc … (24 distintos) | QQP |
@@ -34,31 +34,31 @@ Filas: 664,446
 | `pct_descuento_anunciado` | % de descuento SÓLO si la fuente lo muestra; entre −100 y 100. | float64 | 2.00 – 47.00 | en línea |
 | `moneda` | MXN. | str | MXN | todas |
 | `disponibilidad` | Disponible, agotado, etc., según la fuente. | str | Disponible, Disponible 1 día después de tu compra, Disponible 5 días después de tu compra, Disponible 7 días después de tu compra, Disponible {"isInternal":false,"isRobot":false,"showFaceout":true,"merchantId":"A1AYA2LE3BV7SY","availableBadges":"","loggedIn":false,"asin":"B0CPL6NDWH","showBadge":false,"availableFaceouts":"TK_BOUGHT"}, Disponible {"isInternal":false,"isRobot":false,"showFaceout":true,"merchantId":"AVDBXBAVVSXLQ","availableBadges":"","loggedIn":false,"asin":"B09WNK39JN","showBadge":false,"availableFaceouts":"TK_BOUGHT"}, Disponible {"isInternal":false,"isRobot":false,"showFaceout":true,"merchantId":"AVDBXBAVVSXLQ","availableBadges":"","loggedIn":false,"asin":"B0CPL6NDWH","showBadge":false,"availableFaceouts":"TK_BOUGHT"}, Disponible {"isInternal":false,"showInsightsHub":false,"isRobot":false,"showFaceout":true,"merchantId":"A10YF1TK1RC4IY","availableBadges":"","loggedIn":false,"asin":"B0CPL6NDWH","showBadge":false,"ingressFaceout":"","availableFaceouts":"TK_BOUGHT"} … (16 distintos) | en línea |
-| `condiciones` | JSON: MSI, cupón, envío, membresía (Prime), vendido/enviado por, marketplace. | str | 6,319 valores distintos | en línea |
-| `url` | URL del producto/oferta/archivo oficial. | str | 11,994 valores distintos | todas |
-| `ruta_raw` | Ruta del crudo (relativa a la raíz del repo; los voluminosos viven en la PC local). | str | 412,047 valores distintos | todas |
-| `hash_raw` | SHA-256 del crudo sin comprimir. | str | 2,918 valores distintos | todas |
-| `serie_id` | Serie = plataforma × id externo × vendedor/sucursal × canal (QQP: el serie_id del Avance 1). | str | 39,078 valores distintos | derivado |
+| `condiciones` | JSON: MSI, cupón, envío, membresía (Prime), vendido/enviado por, marketplace. | str | 6,476 valores distintos | en línea |
+| `url` | URL del producto/oferta/archivo oficial. | str | 12,018 valores distintos | todas |
+| `ruta_raw` | Ruta del crudo (relativa a la raíz del repo; los voluminosos viven en la PC local). | str | 412,247 valores distintos | todas |
+| `hash_raw` | SHA-256 del crudo sin comprimir. | str | 3,118 valores distintos | todas |
+| `serie_id` | Serie = plataforma × id externo × vendedor/sucursal × canal (QQP: el serie_id del Avance 1). | str | 39,173 valores distintos | derivado |
 | `preciometro_producto_id` |  | str | 2,780 valores distintos |  |
-| `asin` |  | str | 2,393 valores distintos |  |
-| `mlm_producto` |  | str | 1,110 valores distintos |  |
+| `asin` |  | str | 2,399 valores distintos |  |
+| `mlm_producto` |  | str | 1,113 valores distintos |  |
 | `mlm_item` |  | object | vacío |  |
-| `n_capturas` | Cuántas capturas trajeron esa misma clave (el historial de 90 días se repite cada día). | int64 | 1.00 – 2.00 | derivado |
-| `precio_revisado_por_fuente` | True si capturas distintas dieron precios distintos para la misma clave. | bool | True 0 / False 664,446 | derivado |
+| `n_capturas` | Cuántas capturas trajeron esa misma clave (el historial de 90 días se repite cada día). | int64 | 1.00 – 3.00 | derivado |
+| `precio_revisado_por_fuente` | True si capturas distintas dieron precios distintos para la misma clave. | bool | True 30 / False 666,267 | derivado |
 | `plataforma_serie` | Plataforma con la que se agrupa la serie (Wayback de Amazon se agrupa con amazon). | str | amazon, liverpool, mercadolibre, preciometro, preciometro_ofertas, qqp_cdmx | derivado |
-| `vendedor_serie` | Vendedor de la serie (MINIMO_MULTITIENDA para el gráfico de Preciómetro; sucursal en QQP). | str | 1,491 valores distintos | derivado |
-| `revisar_captura` | True si el precio está fuera de 1.5×IQR de su serie: posible error, NO se borra. | bool | True 45,723 / False 618,723 | derivado |
+| `vendedor_serie` | Vendedor de la serie (MINIMO_MULTITIENDA para el gráfico de Preciómetro; sucursal en QQP). | str | 1,506 valores distintos | derivado |
+| `revisar_captura` | True si el precio está fuera de 1.5×IQR de su serie: posible error, NO se borra. | bool | True 45,758 / False 620,539 | derivado |
 
 ## series_evento
 
 Una fila por serie × evento (BF2024, BF2025, BF2026). Medianas sobre fechas observadas, sin imputar.
 
-Filas: 18,137
+Filas: 18,232
 
 | Campo | Descripción | Tipo | Rango observado | Fuente |
 |---|---|---|---|---|
-| `serie_evento_id` | Hash de serie_id + evento_id. | str | 18,137 valores distintos | derivado |
-| `serie_id` |  | str | 17,090 valores distintos |  |
+| `serie_evento_id` | Hash de serie_id + evento_id. | str | 18,232 valores distintos | derivado |
+| `serie_id` |  | str | 17,185 valores distintos |  |
 | `evento_id` | BF2024 \| BF2025 \| BF2026. | str | BF2024, BF2025, BF2026 | config/eventos.yaml |
 | `fuente` |  | str | amazon, preciometro, preciometro_ofertas, qqp_cdmx, tiendas, wayback |  |
 | `plataforma_serie` |  | str | amazon, liverpool, mercadolibre, preciometro, preciometro_ofertas, qqp_cdmx |  |
@@ -66,20 +66,20 @@ Filas: 18,137
 | `canal` |  | str | en_linea, tienda_fisica |  |
 | `tipo_precio` |  | str | minimo_diario_multitienda, oferta_vigente, precio_registrado_qqp, publicado |  |
 | `producto_canonico_id` |  | str | 1,716 valores distintos |  |
-| `id_externo` |  | str | 12,183 valores distintos |  |
+| `id_externo` |  | str | 12,207 valores distintos |  |
 | `tipo_id_externo` |  | str | asin, mlm, preciometro, preciometro_oferta, qqp, url |  |
-| `vendedor_serie` |  | str | 1,374 valores distintos |  |
+| `vendedor_serie` |  | str | 1,389 valores distintos |  |
 | `marca` |  | str | 367 valores distintos |  |
 | `modelo_normalizado` |  | str | 237 valores distintos |  |
-| `descripcion_original` |  | str | 11,150 valores distintos |  |
+| `descripcion_original` |  | str | 11,169 valores distintos |  |
 | `estado` |  | str | Ciudad de Mexico |  |
 | `alcaldia` |  | str | Azcapotzalco, Benito Juárez, Coyoacán, Cuauhtémoc, Gustavo a. Madero, Iztacalco, Iztapalapa, Miguel Hidalgo … (12 distintos) |  |
 | `metodos` |  | str | agregador, archivo_oficial, scraping, wayback |  |
-| `n_base` | Fechas distintas con precio en la base (D-60..D-15). | int64 | 0.00 – 37.00 | derivado |
+| `n_base` | Fechas distintas con precio en la base (D-60..D-15). | int64 | 0.00 – 38.00 | derivado |
 | `mediana_base` | Mediana de precios de la base, MXN. | float64 | 35.00 – 629,999.00 | derivado |
 | `minimo_base` |  | float64 | 31.00 – 629,999.00 |  |
-| `inicio_base` |  | datetime64[us] | 2024-09-17 – 2026-10-20 |  |
-| `fin_base` |  | datetime64[us] | 2024-09-17 – 2026-10-20 |  |
+| `inicio_base` |  | datetime64[us] | 2024-09-17 – 2026-10-21 |  |
+| `fin_base` |  | datetime64[us] | 2024-09-17 – 2026-10-21 |  |
 | `n_previo` | Fechas en el previo (D-14..D-1). | int64 | 0.00 – 3.00 | derivado |
 | `mediana_previo` |  | float64 | 490.00 – 50,799.00 |  |
 | `minimo_previo` |  | float64 | 390.00 – 50,799.00 |  |
@@ -96,9 +96,9 @@ Filas: 18,137
 | `inicio_posterior` |  | datetime64[us] | 2024-11-19 – 2025-12-01 |  |
 | `fin_posterior` |  | datetime64[us] | 2024-11-19 – 2025-12-01 |  |
 | `amplitud_base_dias` | Días entre la primera y la última fecha base. | float64 | 0.00 – 42.00 | derivado |
-| `cobertura_ahorro` | ≥4 fechas base en ≥21 días y ≥1 en el evento (Avance 1). | bool | True 842 / False 17,295 | derivado |
-| `vendedor_confirmado` | Vendedor o sucursal presente; si falta, no se calcula ahorro de una supuesta tienda fija. | bool | True 18,135 / False 2 | derivado |
-| `cobertura_alza` | cobertura_ahorro y ≥2 fechas en el previo. | bool | True 298 / False 17,839 | derivado |
+| `cobertura_ahorro` | ≥4 fechas base en ≥21 días y ≥1 en el evento (Avance 1). | bool | True 842 / False 17,390 | derivado |
+| `vendedor_confirmado` | Vendedor o sucursal presente; si falta, no se calcula ahorro de una supuesta tienda fija. | bool | True 18,230 / False 2 | derivado |
+| `cobertura_alza` | cobertura_ahorro y ≥2 fechas en el previo. | bool | True 298 / False 17,934 | derivado |
 | `ahorro_historico_pct` | 100 × (1 − mediana evento / mediana base). Sólo con cobertura_ahorro. | float64 | -84.59 – 63.18 | derivado |
 | `alza_previa_pct` | 100 × (mediana previa / mediana base − 1). Sólo con cobertura_alza. | float64 | -50.24 – 74.62 | derivado |
 | `bajada_desde_previo_pct` | 100 × (1 − mediana evento / mediana previa). Sólo con cobertura_alza. | float64 | -57.90 – 45.12 | derivado |
