@@ -33,6 +33,11 @@
   reutilizó el éxito del día y conservó los datos de ambos entornos.
 - Dataset combinado publicado: **666,298 observaciones**, nueve tablas; **869 ofertas del día** obtenidas mediante
   el agregador, incluidas 160 de Amazon y 180 de Mercado Libre. No se atribuyen a las APIs de esas tiendas.
+- Repetición idempotente verificada: https://github.com/d1512pb/sconto-reale-o-falso/actions/runs/39573354879,
+  **exitosa sin volver a consultar las tiendas**. GitHub aprobó 22 pruebas de infraestructura y 11 de dataset/exportación;
+  omitió una comparación que requiere la evidencia privada local del Avance 1 (sí aprobada en las 233 pruebas locales).
+- ZIP público final descargado y comprobado contra el manifiesto de Git: **nueve tablas, 666,298 observaciones**,
+  hashes de parquet coincidentes, dataset construido a las `2026-10-21T09:00:02+00:00`.
 
 ## Límites que siguen vigentes
 
