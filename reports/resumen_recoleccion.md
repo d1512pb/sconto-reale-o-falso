@@ -49,6 +49,7 @@ Mínimos del Avance 1 (≥4 fechas base en ≥21 días, ≥1 en el evento; alza:
 | amazon | local | bloqueado | 1 |
 | commoncrawl | local | bloqueado | 1 |
 | mercadolibre | github | sin_credenciales | 1 |
+| mercadolibre | local | sin_credenciales | 1 |
 | preciometro | github | ok | 1 |
 | preciometro | local | parcial | 2 |
 | qqp_cdmx | local | ok | 1 |
