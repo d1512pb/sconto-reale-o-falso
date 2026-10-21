@@ -14,7 +14,7 @@
 
 ## Verificaciones realizadas
 
-- Suite local completa: **229 pruebas aprobadas**.
+- Suite local completa: **230 pruebas aprobadas**.
 - Avance 1 reproducido: **39,363 observaciones, 298 series con ahorro y 93 con alza**, matriz idéntica.
 - Primer paquete público descargado sin autenticación y verificado: **664,446 observaciones y nueve tablas**,
   56,329,755 bytes; SHA-256 y conteos coinciden. Celdas del cargador ejecutadas localmente contra la URL pública.

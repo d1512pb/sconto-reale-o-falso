@@ -18,7 +18,12 @@ try {
     & git -C $repo config credential.helper '!gh auth git-credential'
     & git -C $repo pull --ff-only
     if ($LASTEXITCODE -ne 0) { throw 'La copia operativa requiere revisar su sincronizacion.' }
-    $corrida = & gh run list --repo d1512pb/sconto-reale-o-falso --workflow recoleccion_diaria.yml --limit 5 --json databaseId,status --jq 'map(select(.status != "completed")) | .[0].databaseId'
+    $corridas = & gh run list --repo d1512pb/sconto-reale-o-falso --workflow recoleccion_diaria.yml --limit 5 --json databaseId,status
+    $corrida = $null
+    if ($LASTEXITCODE -eq 0) {
+        $activa = $corridas | ConvertFrom-Json | Where-Object { $_.status -ne 'completed' } | Select-Object -First 1
+        if ($activa) { $corrida = $activa.databaseId }
+    }
     if ($LASTEXITCODE -eq 0 -and "$corrida".Trim() -match '^\d+$') {
         & gh run watch "$corrida" --repo d1512pb/sconto-reale-o-falso --interval 60 --compact --exit-status
         & git -C $repo pull --ff-only
