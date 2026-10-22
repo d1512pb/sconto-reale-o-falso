@@ -1,82 +1,82 @@
 {
-  "construido_utc": "2026-10-21T18:07:20+00:00",
+  "construido_utc": "2026-10-22T18:21:22+00:00",
   "tablas": {
     "observaciones": {
-      "filas": 666298,
+      "filas": 667373,
       "columnas": 37,
       "parquet": "observaciones.parquet",
       "csv": "observaciones.csv.gz",
-      "sha256_parquet": "31545f241d25add823bcb78f2e73f6eaaf5df28badece759d40893a7a0a4c5ef"
+      "sha256_parquet": "c7394bccae4239d15569fdaaccaee4a46339f494d8862e5dd4d45f261e98398c"
     },
     "exclusiones": {
       "filas": 0,
       "columnas": 33,
       "parquet": "exclusiones.parquet",
       "csv": "exclusiones.csv.gz",
-      "sha256_parquet": "71bc50e33a1bf131e2fbe09d6bc0240c63855f52068264cda3586e5eb7eff1dc"
+      "sha256_parquet": "e210dd8f5c09ffd0ccc74cbfa8f849b5830f5403278213671dab77dfb3a335e2"
     },
     "productos": {
       "filas": 1724,
       "columnas": 24,
       "parquet": "productos.parquet",
       "csv": "productos.csv",
-      "sha256_parquet": "f1d435d41b904a77d4bd9c2762a8607db159707005673266bd0b302a6c1df3af"
+      "sha256_parquet": "08ad51a1eb4eae8719d16b5672e48451ee31466cf8927e45a1ba299709a7559b"
     },
     "eventos": {
       "filas": 3,
       "columnas": 13,
       "parquet": "eventos.parquet",
       "csv": "eventos.csv",
-      "sha256_parquet": "e5518a24612678820d263bb64000b2c207ddc7395642a6ebc3042b85213641e3"
+      "sha256_parquet": "6882ef1fa69c895f146255b6f437d9a89fd6ce249d5652b3362da6c9dcc5918c"
     },
     "series_evento": {
-      "filas": 18232,
+      "filas": 18277,
       "columnas": 52,
       "parquet": "series_evento.parquet",
       "csv": "series_evento.csv",
-      "sha256_parquet": "c46afdf847809ceb1146541c05cb71962e4bdf73882a44fc88fbea13a8a50286"
+      "sha256_parquet": "3ec4ca373b50c3b1309ad294620346d606d50f8ca24ee631d5a8efdd4ac994ad"
     },
     "sensibilidad": {
       "filas": 36,
       "columnas": 6,
       "parquet": "sensibilidad.parquet",
       "csv": "sensibilidad.csv",
-      "sha256_parquet": "6907558ce558a52b57197e242e8aae948d5943df48e5bb5139e36ded3d377959"
+      "sha256_parquet": "35cb4c19fc1b0d958bef3546f70c166f344057e307a2e6d16e49bc061aafb382"
     },
     "matriz_modelo": {
       "filas": 298,
       "columnas": 3,
       "parquet": "matriz_modelo.parquet",
       "csv": "matriz_modelo.csv",
-      "sha256_parquet": "2b399dc5471900704a50587d35b7774cfa6c80e2d331177f6de61fb435586b1c"
+      "sha256_parquet": "c974acdeedf9859c627140f04d4f59877fda847221a8a683bcf7ad0735d5c89d"
     },
     "matriz_modelo_brecha": {
       "filas": 0,
       "columnas": 4,
       "parquet": "matriz_modelo_brecha.parquet",
       "csv": "matriz_modelo_brecha.csv",
-      "sha256_parquet": "f9235ffe954db7cf5b0aaac96b1e77a7c0773efbe8f3d9e525b7f8942777f6a1"
+      "sha256_parquet": "b626071cd5bd8ee5a151131ba1c88f57866b46406b374a10fef200b40ced0435"
     },
     "metadatos_modelo": {
       "filas": 298,
       "columnas": 47,
       "parquet": "metadatos_modelo.parquet",
       "csv": "metadatos_modelo.csv",
-      "sha256_parquet": "d270b9505a3d9faffe49a6e152c8a8f8d71f7d2d7c4b9881ebead76cf611818f"
+      "sha256_parquet": "20be7029007b1d7babf3740fcc90e49f3e1879597b5bccc69c322dc473d43298"
     }
   },
   "fuentes": {
     "qqp_cdmx": 409138,
-    "preciometro": 246762,
-    "preciometro_ofertas": 10286,
+    "preciometro": 246966,
+    "preciometro_ofertas": 11157,
     "wayback": 109,
     "tiendas": 2,
     "amazon": 1
   },
   "contabilizacion": {
-    "filas_bronze": 683160,
+    "filas_bronze": 701623,
     "filas_excluidas": 0,
-    "capturas_representadas": 683160
+    "capturas_representadas": 701623
   },
   "series_evento": [
     {
@@ -146,7 +146,7 @@
     {
       "evento_id": "BF2026",
       "plataforma_serie": "preciometro_ofertas",
-      "series": 9509,
+      "series": 9554,
       "cobertura_ahorro": 0,
       "cobertura_alza": 0,
       "con_brecha": 0
