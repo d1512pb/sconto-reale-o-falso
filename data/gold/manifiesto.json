@@ -1,12 +1,12 @@
 {
-  "construido_utc": "2026-10-22T18:21:22+00:00",
+  "construido_utc": "2026-10-23T18:13:10+00:00",
   "tablas": {
     "observaciones": {
-      "filas": 667373,
+      "filas": 668456,
       "columnas": 37,
       "parquet": "observaciones.parquet",
       "csv": "observaciones.csv.gz",
-      "sha256_parquet": "c7394bccae4239d15569fdaaccaee4a46339f494d8862e5dd4d45f261e98398c"
+      "sha256_parquet": "aa6f0748a1cb07849ab51150293dba6c09d96e5c451475cda7ae43d23559d07f"
     },
     "exclusiones": {
       "filas": 0,
@@ -30,11 +30,11 @@
       "sha256_parquet": "6882ef1fa69c895f146255b6f437d9a89fd6ce249d5652b3362da6c9dcc5918c"
     },
     "series_evento": {
-      "filas": 18277,
+      "filas": 18300,
       "columnas": 52,
       "parquet": "series_evento.parquet",
       "csv": "series_evento.csv",
-      "sha256_parquet": "3ec4ca373b50c3b1309ad294620346d606d50f8ca24ee631d5a8efdd4ac994ad"
+      "sha256_parquet": "a9dbe9eb441127348d2950ce52c317a89220bcc78a2da70249707fcecd71d394"
     },
     "sensibilidad": {
       "filas": 36,
@@ -67,16 +67,16 @@
   },
   "fuentes": {
     "qqp_cdmx": 409138,
-    "preciometro": 246966,
-    "preciometro_ofertas": 11157,
+    "preciometro": 247169,
+    "preciometro_ofertas": 12037,
     "wayback": 109,
     "tiendas": 2,
     "amazon": 1
   },
   "contabilizacion": {
-    "filas_bronze": 701623,
+    "filas_bronze": 720101,
     "filas_excluidas": 0,
-    "capturas_representadas": 701623
+    "capturas_representadas": 720101
   },
   "series_evento": [
     {
@@ -146,7 +146,7 @@
     {
       "evento_id": "BF2026",
       "plataforma_serie": "preciometro_ofertas",
-      "series": 9554,
+      "series": 9577,
       "cobertura_ahorro": 0,
       "cobertura_alza": 0,
       "con_brecha": 0
