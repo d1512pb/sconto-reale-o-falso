@@ -17,3 +17,5 @@ mercadolibre,2026-10-23,sin_credenciales,0,API exige token (401/403 verificado 2
 preciometro,2026-10-23,ok,18478,"{'solicitados': 200, 'descargados': 200, 'reutilizados': 0, 'no_encontrados': 0, 'errores': 0, 'bloqueado': False, 'puntos': 17598, 'ofertas': 880}",2026-10-23T17:54:28+00:00,2026-10-23T18:12:53+00:00,github
 mercadolibre,2026-10-24,sin_credenciales,0,API exige token (401/403 verificado 2026-10-16); sin app registrada,2026-10-24T16:58:50+00:00,2026-10-24T16:58:50+00:00,github
 preciometro,2026-10-24,ok,18472,"{'solicitados': 200, 'descargados': 200, 'reutilizados': 0, 'no_encontrados': 0, 'errores': 0, 'bloqueado': False, 'puntos': 17604, 'ofertas': 868}",2026-10-24T16:40:01+00:00,2026-10-24T16:58:50+00:00,github
+mercadolibre,2026-10-25,sin_credenciales,0,API exige token (401/403 verificado 2026-10-16); sin app registrada,2026-10-25T17:24:01+00:00,2026-10-25T17:24:01+00:00,github
+preciometro,2026-10-25,ok,18479,"{'solicitados': 200, 'descargados': 200, 'reutilizados': 0, 'no_encontrados': 0, 'errores': 0, 'bloqueado': False, 'puntos': 17610, 'ofertas': 869}",2026-10-25T17:05:15+00:00,2026-10-25T17:24:01+00:00,github
