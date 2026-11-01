@@ -1,12 +1,12 @@
 {
-  "construido_utc": "2026-10-31T18:07:22+00:00",
+  "construido_utc": "2026-11-01T03:27:16+00:00",
   "tablas": {
     "observaciones": {
-      "filas": 676793,
+      "filas": 676797,
       "columnas": 37,
       "parquet": "observaciones.parquet",
       "csv": "observaciones.csv.gz",
-      "sha256_parquet": "d0c12d69a8e694beb6838159b29e6b56d60ba7a8ea90c2b5ba4e677de95f26f8"
+      "sha256_parquet": "4bf8f5202b44125372e42e5bcadcf4d07ebf39b83712fcd1071c66623da5e51e"
     },
     "exclusiones": {
       "filas": 0,
@@ -34,7 +34,7 @@
       "columnas": 52,
       "parquet": "series_evento.parquet",
       "csv": "series_evento.csv",
-      "sha256_parquet": "c546f9cd3c65fc605db326d006b54df95203456ab8d2bba6b705e8bbf9b45d03"
+      "sha256_parquet": "addcc49152a94419fca4c5a1e74fd35a46d2236531ae21a898f1714d72836cf5"
     },
     "sensibilidad": {
       "filas": 36,
@@ -68,15 +68,15 @@
   "fuentes": {
     "qqp_cdmx": 409138,
     "preciometro": 248736,
-    "preciometro_ofertas": 18807,
+    "preciometro_ofertas": 18809,
     "wayback": 109,
-    "tiendas": 2,
+    "tiendas": 4,
     "amazon": 1
   },
   "contabilizacion": {
-    "filas_bronze": 867871,
+    "filas_bronze": 886335,
     "filas_excluidas": 0,
-    "capturas_representadas": 867871
+    "capturas_representadas": 886335
   },
   "series_evento": [
     {

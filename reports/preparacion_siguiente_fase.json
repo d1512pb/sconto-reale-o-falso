@@ -1,0 +1,107 @@
+{
+  "fecha_auditoria": "2026-10-31",
+  "construido_utc": "2026-11-01T03:27:16+00:00",
+  "filas": 676797,
+  "tablas": {
+    "observaciones": 676797,
+    "exclusiones": 0,
+    "productos": 1724,
+    "eventos": 3,
+    "series_evento": 18487,
+    "sensibilidad": 36,
+    "matriz_modelo": 298,
+    "matriz_modelo_brecha": 0,
+    "metadatos_modelo": 298
+  },
+  "errores": [],
+  "cobertura_fuentes": [
+    {
+      "fuente": "amazon",
+      "filas": 1,
+      "ids_externos": 1,
+      "desde": "2026-10-16",
+      "hasta": "2026-10-16",
+      "dias_con_dato": 1,
+      "ultima_captura": "2026-10-16",
+      "con_precio_anterior": 0
+    },
+    {
+      "fuente": "preciometro",
+      "filas": 248736,
+      "ids_externos": 2795,
+      "desde": "2026-07-18",
+      "hasta": "2026-10-31",
+      "dias_con_dato": 106,
+      "ultima_captura": "2026-10-31",
+      "con_precio_anterior": 0
+    },
+    {
+      "fuente": "preciometro_ofertas",
+      "filas": 18809,
+      "ids_externos": 9497,
+      "desde": "2026-10-16",
+      "hasta": "2026-10-31",
+      "dias_con_dato": 13,
+      "ultima_captura": "2026-10-31",
+      "con_precio_anterior": 0
+    },
+    {
+      "fuente": "qqp_cdmx",
+      "filas": 409138,
+      "ids_externos": 1022,
+      "desde": "2018-01-02",
+      "hasta": "2026-08-31",
+      "dias_con_dato": 2077,
+      "ultima_captura": "2026-10-16",
+      "con_precio_anterior": 0
+    },
+    {
+      "fuente": "tiendas",
+      "filas": 4,
+      "ids_externos": 1,
+      "desde": "2026-10-20",
+      "hasta": "2026-10-31",
+      "dias_con_dato": 4,
+      "ultima_captura": "2026-10-31",
+      "con_precio_anterior": 4
+    },
+    {
+      "fuente": "wayback",
+      "filas": 109,
+      "ids_externos": 28,
+      "desde": "2024-09-06",
+      "hasta": "2025-10-17",
+      "dias_con_dato": 81,
+      "ultima_captura": "2026-10-16",
+      "con_precio_anterior": 67
+    }
+  ],
+  "avance1": {
+    "observaciones": 39363,
+    "series_ahorro": 298,
+    "series_alza": 93
+  },
+  "fechas_sin_observacion_no_imputadas": {
+    "preciometro_ofertas": [
+      "2026-10-17",
+      "2026-10-18",
+      "2026-10-19"
+    ],
+    "tiendas": [
+      "2026-10-23",
+      "2026-10-24",
+      "2026-10-25",
+      "2026-10-26",
+      "2026-10-27",
+      "2026-10-28",
+      "2026-10-29",
+      "2026-10-30"
+    ]
+  },
+  "limites": [
+    "Amazon y Mercado Libre indirectos no son una captura verificada de su API.",
+    "Los cruces probables de modelos requieren validación humana de variante.",
+    "Los faltantes no se rellenan. Una captura no demuestra cobertura completa por producto.",
+    "Antes de concluir sobre BF2026, esperar el evento y comprobar cobertura de cada serie."
+  ]
+}

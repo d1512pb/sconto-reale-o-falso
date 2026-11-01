@@ -12,7 +12,10 @@ qqp_cdmx,2026-10-21,ok,0,2026: huella igual,2026-10-21T08:29:32+00:00,2026-10-21
 qqp_nacional,2026-10-21,ok,0,2026: huella igual,2026-10-21T08:29:32+00:00,2026-10-21T08:29:47+00:00,local
 tiendas,2026-10-21,ok,1,fichas verificadas para la lista fija,2026-10-21T08:29:20+00:00,2026-10-21T08:29:32+00:00,local
 mercadolibre,2026-10-22,sin_credenciales,0,API exige token (401/403 verificado 2026-10-16); sin app registrada,2026-10-22T18:21:01+00:00,2026-10-22T18:21:01+00:00,github
+mercadolibre,2026-10-22,sin_credenciales,0,API exige token (401/403 verificado 2026-10-16); sin app registrada,2026-10-22T18:56:02+00:00,2026-10-22T18:56:02+00:00,local
 preciometro,2026-10-22,ok,18463,"{'solicitados': 200, 'descargados': 200, 'reutilizados': 0, 'no_encontrados': 0, 'errores': 0, 'bloqueado': False, 'puntos': 17592, 'ofertas': 871}",2026-10-22T18:02:24+00:00,2026-10-22T18:21:01+00:00,github
+preciometro,2026-10-22,ok,18462,"{'solicitados': 200, 'descargados': 200, 'reutilizados': 0, 'no_encontrados': 0, 'errores': 0, 'bloqueado': False, 'puntos': 17592, 'ofertas': 870}",2026-10-22T16:50:10+00:00,2026-10-22T18:56:02+00:00,local
+tiendas,2026-10-22,ok,1,fichas verificadas para la lista fija,2026-10-22T16:50:03+00:00,2026-10-22T16:50:10+00:00,local
 mercadolibre,2026-10-23,sin_credenciales,0,API exige token (401/403 verificado 2026-10-16); sin app registrada,2026-10-23T18:12:53+00:00,2026-10-23T18:12:53+00:00,github
 preciometro,2026-10-23,ok,18478,"{'solicitados': 200, 'descargados': 200, 'reutilizados': 0, 'no_encontrados': 0, 'errores': 0, 'bloqueado': False, 'puntos': 17598, 'ofertas': 880}",2026-10-23T17:54:28+00:00,2026-10-23T18:12:53+00:00,github
 mercadolibre,2026-10-24,sin_credenciales,0,API exige token (401/403 verificado 2026-10-16); sin app registrada,2026-10-24T16:58:50+00:00,2026-10-24T16:58:50+00:00,github
@@ -30,4 +33,9 @@ preciometro,2026-10-29,ok,18466,"{'solicitados': 200, 'descargados': 200, 'reuti
 mercadolibre,2026-10-30,sin_credenciales,0,API exige token (401/403 verificado 2026-10-16); sin app registrada,2026-10-30T18:57:38+00:00,2026-10-30T18:57:38+00:00,github
 preciometro,2026-10-30,ok,18478,"{'solicitados': 200, 'descargados': 200, 'reutilizados': 0, 'no_encontrados': 0, 'errores': 0, 'bloqueado': False, 'puntos': 17640, 'ofertas': 838}",2026-10-30T18:39:23+00:00,2026-10-30T18:57:38+00:00,github
 mercadolibre,2026-10-31,sin_credenciales,0,API exige token (401/403 verificado 2026-10-16); sin app registrada,2026-10-31T18:06:56+00:00,2026-10-31T18:06:56+00:00,github
+mercadolibre,2026-10-31,sin_credenciales,0,API exige token (401/403 verificado 2026-10-16); sin app registrada,2026-11-01T03:22:27+00:00,2026-11-01T03:22:27+00:00,local
 preciometro,2026-10-31,ok,18482,"{'solicitados': 200, 'descargados': 200, 'reutilizados': 0, 'no_encontrados': 0, 'errores': 0, 'bloqueado': False, 'puntos': 17646, 'ofertas': 836}",2026-10-31T17:48:18+00:00,2026-10-31T18:06:56+00:00,github
+qqp_cdmx,2026-10-31,fallo,0,HTTPError: 404 Client Error: Not Found for url: https://datos.profeco.gob.mx/datos_abiertos/qqp.php,2026-11-01T03:22:27+00:00,2026-11-01T03:22:34+00:00,local
+qqp_nacional,2026-10-31,fallo,0,HTTPError: 404 Client Error: Not Found for url: https://datos.profeco.gob.mx/datos_abiertos/qqp.php,2026-11-01T03:22:27+00:00,2026-11-01T03:22:34+00:00,local
+servicio_local,2026-10-31,ok,0,Ciclo local completado; la publicación del ZIP se delega exclusivamente a GitHub,,2026-11-01T03:26:03+00:00,local
+tiendas,2026-10-31,ok,1,fichas verificadas para la lista fija,2026-11-01T03:22:21+00:00,2026-11-01T03:22:26+00:00,local

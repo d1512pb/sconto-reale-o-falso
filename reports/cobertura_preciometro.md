@@ -16,8 +16,8 @@ El gráfico **no** es la serie de una sola tienda: se analiza como serie `MINIMO
 
 ## Ofertas vigentes (desde el 2026-10-16)
 
-- Ofertas: **18,807** de **2,780** fichas;
-  con ASIN: 4,218; con catálogo MLM: 2,303
+- Ofertas: **18,809** de **2,780** fichas;
+  con ASIN: 4,220; con catálogo MLM: 2,303
 
 ## Emparejamiento con QQP
 

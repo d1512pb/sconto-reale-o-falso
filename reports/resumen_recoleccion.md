@@ -1,6 +1,6 @@
 # Resumen de la recolección
 
-Generado 2026-10-31 desde `data/gold/` (construido 2026-10-31T18:07:22+00:00). Cifras calculadas,
+Generado 2026-10-31 desde `data/gold/` (construido 2026-11-01T03:27:16+00:00). Cifras calculadas,
 no escritas a mano. Resultados de **ejecución local** salvo que se indique otra cosa; las corridas de GitHub Actions
 quedan en `data/estado/github.csv` y las de Colab no se cuentan aquí.
 
@@ -10,9 +10,9 @@ quedan en `data/estado/github.csv` y las de Colab no se cuentan aquí.
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | amazon | scraping | en_linea | 1 | 1 | 0 | 2026-10-16 | 2026-10-16 | 1 | 1 | 1 | 0 | 0 |
 | preciometro | agregador | en_linea | 248,736 | 2,795 | 1,493 | 2026-07-18 | 2026-10-31 | 106 | 90 | 105 | 0 | 0 |
-| preciometro_ofertas | agregador | en_linea | 18,807 | 9,497 | 1,485 | 2026-10-16 | 2026-10-31 | 13 | 1 | 12 | 0 | 0 |
+| preciometro_ofertas | agregador | en_linea | 18,809 | 9,497 | 1,485 | 2026-10-16 | 2026-10-31 | 13 | 1 | 12 | 0 | 0 |
 | qqp_cdmx | archivo_oficial | tienda_fisica | 409,138 | 1,022 | 231 | 2018-01-02 | 2026-08-31 | 2,077 | 93 | 1,803 | 0 | 0 |
-| tiendas | scraping | en_linea | 2 | 1 | 1 | 2026-10-20 | 2026-10-21 | 2 | 2 | 2 | 2 | 0 |
+| tiendas | scraping | en_linea | 4 | 1 | 1 | 2026-10-20 | 2026-10-31 | 4 | 4 | 4 | 4 | 0 |
 | wayback | wayback | en_linea | 109 | 28 | 0 | 2024-09-06 | 2025-10-17 | 81 | 2 | 24 | 67 | 67 |
 
 Una fuente sólo se considera integrada si tiene filas en `observaciones`. Detalle y límites de cada una en
@@ -38,9 +38,9 @@ Mínimos del Avance 1 (≥4 fechas base en ≥21 días, ≥1 en el evento; alza:
 ## Qué cubre cada hueco del Avance 1
 
 - **1. Precio anunciado / tachado**: amazon 1 filas (2026-10-16 → 2026-10-16, tachado 0); wayback 109 filas (2024-09-06 → 2025-10-17, tachado 67)
-- **2. Más fuentes y eventos (BF2024–BF2026)**: amazon 1 filas (2026-10-16 → 2026-10-16, tachado 0); preciometro 248,736 filas (2026-07-18 → 2026-10-31, tachado 0); preciometro_ofertas 18,807 filas (2026-10-16 → 2026-10-31, tachado 0); qqp_cdmx 409,138 filas (2018-01-02 → 2026-08-31, tachado 0); wayback 109 filas (2024-09-06 → 2025-10-17, tachado 67)
-- **3. Amazon / Mercado Libre, por día y en el tiempo**: amazon 1 filas (2026-10-16 → 2026-10-16, tachado 0); preciometro 248,736 filas (2026-07-18 → 2026-10-31, tachado 0); preciometro_ofertas 18,807 filas (2026-10-16 → 2026-10-31, tachado 0)
-- **4. Días faltantes de QQP**: amazon 1 filas (2026-10-16 → 2026-10-16, tachado 0); preciometro 248,736 filas (2026-07-18 → 2026-10-31, tachado 0); preciometro_ofertas 18,807 filas (2026-10-16 → 2026-10-31, tachado 0)
+- **2. Más fuentes y eventos (BF2024–BF2026)**: amazon 1 filas (2026-10-16 → 2026-10-16, tachado 0); preciometro 248,736 filas (2026-07-18 → 2026-10-31, tachado 0); preciometro_ofertas 18,809 filas (2026-10-16 → 2026-10-31, tachado 0); qqp_cdmx 409,138 filas (2018-01-02 → 2026-08-31, tachado 0); wayback 109 filas (2024-09-06 → 2025-10-17, tachado 67)
+- **3. Amazon / Mercado Libre, por día y en el tiempo**: amazon 1 filas (2026-10-16 → 2026-10-16, tachado 0); preciometro 248,736 filas (2026-07-18 → 2026-10-31, tachado 0); preciometro_ofertas 18,809 filas (2026-10-16 → 2026-10-31, tachado 0)
+- **4. Días faltantes de QQP**: amazon 1 filas (2026-10-16 → 2026-10-16, tachado 0); preciometro 248,736 filas (2026-07-18 → 2026-10-31, tachado 0); preciometro_ofertas 18,809 filas (2026-10-16 → 2026-10-31, tachado 0)
 
 ## Estado de las corridas
 
@@ -49,12 +49,16 @@ Mínimos del Avance 1 (≥4 fechas base en ≥21 días, ≥1 en el evento; alza:
 | amazon | local | bloqueado | 1 |
 | commoncrawl | local | bloqueado | 1 |
 | mercadolibre | github | sin_credenciales | 11 |
-| mercadolibre | local | sin_credenciales | 1 |
+| mercadolibre | local | sin_credenciales | 3 |
 | preciometro | github | ok | 11 |
+| preciometro | local | ok | 1 |
 | preciometro | local | parcial | 2 |
+| qqp_cdmx | local | fallo | 1 |
 | qqp_cdmx | local | ok | 1 |
+| qqp_nacional | local | fallo | 1 |
 | qqp_nacional | local | ok | 1 |
-| tiendas | local | ok | 1 |
+| servicio_local | local | ok | 1 |
+| tiendas | local | ok | 3 |
 | tiendas | local | parcial | 1 |
 | wayback | local | ok | 1 |
 
