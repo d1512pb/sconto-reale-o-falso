@@ -22,6 +22,10 @@
   Disparadores: 12:30, 20:30 y al iniciar sesión. El respaldo PM/ML se permite desde las 20:00 si falta éxito del día.
 - Publicación cloud de recuperación **exitosa**:
   [corrida 41269172981](https://github.com/d1512pb/sconto-reale-o-falso/actions/runs/41269172981).
+- Repetición final **exitosa y sin nuevas consultas a tiendas**:
+  [corrida 41269961768](https://github.com/d1512pb/sconto-reale-o-falso/actions/runs/41269961768).
+  GitHub aprobó 33 pruebas de infraestructura y 11 de dataset/exportación; omitió una prueba que requiere la
+  evidencia privada local del Avance 1, sí aprobada dentro de las 244 pruebas locales.
 - Se agregó alerta por más de dos días sin confirmación local, aunque la tarea no alcance a registrar un error.
 
 ## Datos listos para la siguiente fase
