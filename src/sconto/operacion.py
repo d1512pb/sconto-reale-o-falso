@@ -31,12 +31,14 @@ def preparar(entorno):
     from sconto.diccionario import generar as generar_diccionario
     from sconto.exportar import empaquetar
     from sconto.evidencia import preservar
+    from sconto.auditar_recoleccion import generar as auditar
     from sconto.reportes import generar as generar_reportes
 
     preservar()
     manifiesto = construir()
     generar_diccionario()
     generar_reportes()
+    auditar()
     paquete = empaquetar()
     resultado = dict(fecha=hoy(), entorno=entorno, construido_utc=ahora_utc(),
                      filas=manifiesto['tablas']['observaciones']['filas'],
