@@ -147,19 +147,27 @@ Para correrlo a mano: pestaña **Actions → Recolección diaria de precios → 
    ```powershell
    powershell -ExecutionPolicy Bypass -File scripts\registrar_tarea_windows.ps1
    ```
-   Crea **Sconto recoleccion diaria**, a las **12:30 hora local de Windows** (configurada en CDMX).
+   Crea **Sconto recoleccion diaria**, a las **12:30 y 20:30 hora local de Windows** (configurada en CDMX).
    Tiene **“Ejecutar lo antes posible si se perdió el inicio”**, disparador **al iniciar sesión**,
    ejecución oculta, límite de tres horas y una sola instancia. No guarda contraseñas.
 3. Comprueba en **Programador de tareas → Biblioteca** que aparezca; clic derecho → **Ejecutar** permite probar.
    Revisa `logs/servicio_<fecha>.log`. Resultado 0 significa cobertura exigida completa; 2, faltantes; 1, error técnico.
 4. La tarea usa `scripts/correr_local.ps1 -Publicar`. Sincroniza una **copia operativa independiente** en
-   `data/operacion/`, conserva sus crudos y no modifica ni hace rebase sobre tu checkout de trabajo.
+   `data/operacion/repo_servicio/`, conserva sus crudos y no modifica ni hace rebase sobre tu checkout de trabajo.
    Requiere `git`, `gh` autenticado, el entorno `.venv` instalado y acceso a Internet.
-   Captura Liverpool, revisa QQP del año actual semanalmente y respalda Preciómetro/ML sólo si falta el éxito del día
-   y no hay una corrida cloud activa. No reintenta una fuente bloqueada ese mismo día.
+   Captura Liverpool y revisa QQP del año actual semanalmente. El respaldo de Preciómetro/ML sólo se habilita
+   desde las 20:00 CDMX y si falta el éxito del día, para dar margen a los retrasos del cron de GitHub.
+   No reintenta una fuente bloqueada ese mismo día. La llamada de las 20:30 no duplica las fichas capturadas al mediodía.
+   Las capturas de la PC se escriben como `*.local.parquet` y las evidencias bajo `preciometro/local/`:
+   no sobrescriben archivos del colector cloud aunque ambos corran ese día.
+   **Sólo GitHub publica el ZIP del release.** La PC envía sus particiones y solicita una corrida idempotente
+   del workflow; así no puede reemplazar el paquete público con un snapshot local atrasado.
 5. Para desactivar: `Disable-ScheduledTask -TaskName 'Sconto recoleccion diaria'`.
 
 La PC debe estar encendida y con sesión iniciada en algún momento del día; un día sin corrida queda como faltante.
+Si la PC deja de confirmar sus capturas más de dos días, el colector cloud también genera una alerta;
+no depende de que la tarea averiada llegue a escribir un estado de error. El antiguo checkout `data/operacion/repo/`
+se conserva intacto como evidencia del conflicto del 22 de octubre; el servicio nuevo no lo reutiliza.
 
 ## Publicación para Colab
 

@@ -38,7 +38,7 @@ jobs:
           python -m pip install -r requirements.txt
           python -m pip install -e .
       - name: Verificar infraestructura sin red
-        run: python -m pytest tests/test_infraestructura.py tests/test_operacion.py tests/test_evidencia.py -q
+        run: python -m pytest tests/test_infraestructura.py tests/test_operacion.py tests/test_evidencia.py tests/test_servicio.py -q
       - name: Recolectar
         continue-on-error: true
         env:
@@ -51,7 +51,7 @@ jobs:
           argumentos=(--entorno github)
           if ! [[ "$LIMITE" =~ ^[0-9]+$ ]]; then exit 2; fi
           if [ "$LIMITE" -gt 0 ]; then argumentos+=(--max-productos "$LIMITE"); fi
-          python -m sconto.run_diario "${argumentos[@]}"
+          python -m sconto.run_diario "${argumentos[@]}" --solo-si-falta
       - name: Preparar dataset, reportes y paquete
         run: python -m sconto.operacion --entorno github --solo-preparar
       - name: Validar dataset antes de publicarlo

@@ -5,14 +5,16 @@ import csv
 import gzip
 import hashlib
 import json
+import os
 import re
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 from pathlib import Path
 
 import pandas as pd
+import yaml
 
-from sconto.rutas import ALERTA, BRONZE, ESTADO_DIR, ESTADO_FUENTES, RAIZ, RAW
+from sconto.rutas import ALERTA, BRONZE, CONFIG, ESTADO_DIR, ESTADO_FUENTES, RAIZ, RAW
 
 
 def ahora_utc():
@@ -60,7 +62,11 @@ def escribir_bronze(fuente: str, filas: list[dict] | pd.DataFrame, fecha: str | 
                     clave: list[str] | None = None) -> Path:
     """Una tabla por fuente y fecha de captura. Re-ejecutar el mismo día reemplaza filas con la misma clave."""
     df = filas if isinstance(filas, pd.DataFrame) else pd.DataFrame(filas)
-    ruta = BRONZE / fuente / f'{fecha or hoy()}.parquet'
+    particion = os.environ.get('SCONTO_PARTICION', '')
+    if particion and not re.fullmatch(r'[a-z][a-z0-9_-]*', particion):
+        raise ValueError('Partición de captura inválida')
+    sufijo = f'.{particion}' if particion else ''
+    ruta = BRONZE / fuente / f'{fecha or hoy()}{sufijo}.parquet'
     ruta.parent.mkdir(parents=True, exist_ok=True)
     if ruta.exists():
         if df.empty:
@@ -184,6 +190,17 @@ def revisar_alertas() -> list[str]:
             if (d1 - d0).days == 1:
                 malas.append(f'- **{fuente}** ({entorno}): {ult.estado.iloc[-1]} el {ult.fecha.iloc[0]} y el '
                              f'{ult.fecha.iloc[-1]}. Último detalle: {ult.detalle.iloc[-1]}')
+    configuracion = CONFIG / 'fuentes.yaml'
+    fuentes = yaml.safe_load(configuracion.read_text(encoding='utf-8')).get('fuentes', {}) if configuracion.exists() else {}
+    for fuente, opciones in fuentes.items():
+        if not opciones.get('habilitada', True) or 'local' not in opciones.get('entornos', []):
+            continue
+        locales = df.loc[df.fuente.eq(fuente) & df.entorno.eq('local')]
+        if not locales.empty:
+            ultima = locales.fecha.max()
+            if (pd.Timestamp(hoy()) - pd.Timestamp(ultima)).days > 2:
+                malas.append(f'- **{fuente}** (local): sin confirmación desde {ultima}; revisar la PC y '
+                             'el servicio. La ausencia de corrida no equivale a una observación de precio.')
     if malas:
         ALERTA.write_text('# ALERTA de recolección\n\nFuentes con falla dos días seguidos '
                           f'(generado {ahora_utc()}):\n\n' + '\n'.join(malas) + '\n', encoding='utf-8')
