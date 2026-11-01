@@ -3,15 +3,15 @@
     "nombre": "PROFECO QQP · CDMX · multianual",
     "url": "https://datos.profeco.gob.mx/datos_abiertos/qqp.php",
     "aporte": "Precios físicos por producto y sucursal de archivos oficiales",
-    "estado": "Tablas locales 2018–2026 reutilizadas; reproducción exacta QQP 2025 comprobada",
-    "limitacion": "Muestreo esporádico, sin precio tachado; nacional se mantiene aparte",
+    "estado": "Histórico 2018–2026 conservado; actualización del 31 oct 2026 impedida por HTTP 404 en índice y enlace oficial previo",
+    "limitacion": "Último precio QQP 2026 disponible: 31 agosto; muestreo esporádico, sin tachado; nacional aparte",
     "uso": "Histórico principal; no mezclar con canal en línea"
   },
   "preciometro": {
     "nombre": "Preciómetro · historial público",
     "url": "https://preciometro.com/",
     "aporte": "Historial móvil de mínimos multitienda con tienda y vendedor por punto",
-    "estado": "Descarga previa conservada; prueba actual de 3 fichas verificada el 20 oct",
+    "estado": "Verificadas 200 fichas de la lista fija cada día del 21 al 31 oct 2026; corridas cloud exitosas",
     "limitacion": "No es historial completo de una tienda ni cubre BF2025",
     "uso": "Referencia de mercado, sin atribuir su mínimo a una sucursal"
   },
@@ -19,7 +19,7 @@
     "nombre": "Preciómetro · ofertas vigentes de Amazon, ML y tiendas",
     "url": "https://preciometro.com/",
     "aporte": "Precio y enlace de la oferta, plataforma y vendedor al capturar",
-    "estado": "Ofertas reales locales; los cruces por variantes requieren revisión",
+    "estado": "Ofertas reales diarias en GitHub; capturas locales pendientes del 22 oct recuperadas sin sobrescribir cloud",
     "limitacion": "Evidencia indirecta del agregador, no verificación independiente de tienda",
     "uso": "Seguimiento actual por oferta y vendedor"
   },
@@ -45,8 +45,8 @@
     "nombre": "Liverpool/Sears · lista fija de fichas",
     "url": "https://www.liverpool.com.mx/tienda/pdp/barra-de-sonido-ht-s20r/1097521774",
     "aporte": "Precio actual y tachado de una ficha real Liverpool",
-    "estado": "Liverpool piloto integrado; Sears con cero filas directas y URL deshabilitada",
-    "limitacion": "Un SKU no es cobertura del catálogo; vendedor no publicado, MXN por contexto documentado",
+    "estado": "Liverpool: capturas reales 20, 21, 22 y 31 oct 2026; servicio local reparado el 31; Sears no integrado",
+    "limitacion": "Un SKU, huecos del 23 al 30 oct sin imputar; vendedor no publicado; base insuficiente para concluir descuentos",
     "uso": "Ampliar sólo fichas y variantes verificadas con acceso permitido"
   },
   "wayback": {

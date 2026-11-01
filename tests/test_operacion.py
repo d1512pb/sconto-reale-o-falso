@@ -1,8 +1,10 @@
 import pandas as pd
 import pytest
+import json
 
 from sconto import almacen, operacion
 from sconto.objetivos_diarios import seleccionar
+from sconto.fuentes import qqp
 
 
 def test_lista_fija_equilibrada_no_modifica_catalogo():
@@ -45,6 +47,16 @@ def test_candado_se_libera_incluso_ante_excepcion(tmp_path):
         with pytest.raises(TimeoutError):
             with almacen._Candado(ruta, espera_max=0):
                 pytest.fail('No debe admitir dos ciclos simultaneos')
+
+
+def test_qqp_fallido_no_se_reintenta_en_cada_inicio_del_mismo_dia(tmp_path, monkeypatch):
+    marca = tmp_path / 'cache/revision_qqp.json'
+    marca.parent.mkdir()
+    marca.write_text(json.dumps({'fecha': '2026-10-31', 'resultado': {'fallos': ['HTTP 404']}}), encoding='utf-8')
+    monkeypatch.setattr(operacion, 'DATA', tmp_path)
+    monkeypatch.setattr(operacion, 'hoy', lambda: '2026-10-31')
+    monkeypatch.setattr(qqp, 'diario', lambda **kwargs: pytest.fail('No debe repetir peticiones hoy'))
+    operacion.revisar_qqp('local')
 
 
 @pytest.mark.parametrize('segundo,estado,esperado', [

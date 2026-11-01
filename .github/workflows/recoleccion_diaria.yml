@@ -38,7 +38,10 @@ jobs:
           python -m pip install -r requirements.txt
           python -m pip install -e .
       - name: Verificar infraestructura sin red
-        run: python -m pytest tests/test_infraestructura.py tests/test_operacion.py tests/test_evidencia.py tests/test_servicio.py -q
+        run: |
+          python -m pytest tests/test_infraestructura.py tests/test_operacion.py tests/test_evidencia.py \
+            tests/test_servicio.py tests/test_auditar_recoleccion.py \
+            tests/test_qqp.py::test_indice_404_usa_enlace_oficial_previamente_descargado -q
       - name: Recolectar
         continue-on-error: true
         env:
