@@ -49,6 +49,7 @@ from urllib.parse import urljoin
 
 import numpy as np
 import pandas as pd
+import requests
 from bs4 import BeautifulSoup
 
 from sconto.almacen import (ahora_utc, escribir_bronze, escribir_manifiesto, guardar_crudo, hoy, leer_crudo,
@@ -710,7 +711,16 @@ def diario(productos: pd.DataFrame | None = None, fecha: str | None = None, ento
     cliente = Cliente()
     resumenes, fallos, bloqueado, cambios = [], [], False, []
     try:
-        enlaces = leer_pagina(cliente)[0]
+        try:
+            enlaces = leer_pagina(cliente)[0]
+        except requests.HTTPError as error:
+            if error.response is None or error.response.status_code != 404:
+                raise
+            previo = leer_manifiesto(anio_actual)
+            if not previo.get('url'):
+                raise
+            log.warning('Índice QQP retirado (404); se comprueba el enlace oficial del manifiesto anterior')
+            enlaces = {'anios': {anio_actual: previo['url']}}
         objetivo = [a for a in enlaces['anios'] if a == anio_actual]
         for anio in objetivo:
             if anio == 2025 and QQP_2025_RAR.exists():

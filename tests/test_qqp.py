@@ -5,6 +5,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytest
+import requests
 
 from sconto.esquema import CLAVE, COLUMNAS
 from sconto.normalizar import modelo_qqp
@@ -13,6 +14,30 @@ from sconto.fuentes import qqp
 
 FIX = Path(__file__).parent / 'fixtures' / 'qqp'
 CSV = FIX / 'muestra_2025.csv'
+
+
+def test_indice_404_usa_enlace_oficial_previamente_descargado(monkeypatch):
+    respuesta = requests.Response()
+    respuesta.status_code = 404
+    respuesta.url = qqp.PAGINA
+    consultas = []
+
+    def retirado(cliente):
+        raise requests.HTTPError('404', response=respuesta)
+
+    def actualizar(anio, cliente, enlaces):
+        consultas.append(enlaces['anios'][anio])
+        return dict(anio=anio, cambio=False, detalle='huella igual')
+
+    monkeypatch.setattr(qqp, 'leer_pagina', retirado)
+    monkeypatch.setattr(qqp, 'leer_manifiesto', lambda anio: {'url': 'https://datos.profeco.gob.mx/datos_abiertos/file.php?t=previo'})
+    monkeypatch.setattr(qqp, 'actualizar', actualizar)
+    monkeypatch.setattr(qqp, 'registrar_estado', lambda *args, **kwargs: None)
+    monkeypatch.setattr(qqp, 'revisar_alertas', lambda: [])
+    monkeypatch.setattr(qqp, 'asegurar_directorios', lambda: None)
+    resultado = qqp.diario(fecha='2026-10-31')
+    assert consultas == ['https://datos.profeco.gob.mx/datos_abiertos/file.php?t=previo']
+    assert resultado['fallos'] == []
 
 
 def _leer(contenido: bytes, bloque=4):

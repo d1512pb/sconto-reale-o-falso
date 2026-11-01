@@ -65,7 +65,8 @@ def escribir_bronze(fuente: str, filas: list[dict] | pd.DataFrame, fecha: str | 
     particion = os.environ.get('SCONTO_PARTICION', '')
     if particion and not re.fullmatch(r'[a-z][a-z0-9_-]*', particion):
         raise ValueError('Partición de captura inválida')
-    sufijo = f'.{particion}' if particion else ''
+    diaria = bool(re.fullmatch(r'\d{4}-\d{2}-\d{2}', str(fecha or hoy())))
+    sufijo = f'.{particion}' if particion and diaria else ''
     ruta = BRONZE / fuente / f'{fecha or hoy()}{sufijo}.parquet'
     ruta.parent.mkdir(parents=True, exist_ok=True)
     if ruta.exists():

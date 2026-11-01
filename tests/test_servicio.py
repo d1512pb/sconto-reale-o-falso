@@ -31,6 +31,13 @@ def test_rechaza_particion_con_rutas(tmp_path, monkeypatch):
         almacen.escribir_bronze('fuente', [{'precio': 10}], '2026-10-31')
 
 
+def test_particion_local_no_cambia_nombre_de_tabla_anual(tmp_path, monkeypatch):
+    monkeypatch.setattr(almacen, 'BRONZE', tmp_path)
+    monkeypatch.setenv('SCONTO_PARTICION', 'local')
+    ruta = almacen.escribir_bronze('qqp_cdmx', [{'precio': 10}], '2026')
+    assert ruta.name == '2026.parquet'
+
+
 def test_recupera_historia_local_sin_sobrescribir_cloud(tmp_path):
     datos, copia = tmp_path / 'datos', tmp_path / 'repo'
     archivo(datos, 'data/raw/preciometro/2026-10-22/1.json.gz', b'privado')

@@ -72,6 +72,8 @@ def revisar_qqp(entorno):
     from sconto.fuentes.qqp import diario
     marca = DATA / 'cache' / 'revision_qqp.json'
     previo = json.loads(marca.read_text(encoding='utf-8')) if marca.exists() else {}
+    if previo.get('fecha') == hoy():
+        return
     revision_ok = previo and not previo.get('resultado', {}).get('fallos') and not previo.get('resultado', {}).get('bloqueado')
     if revision_ok and (pd.Timestamp(hoy()) - pd.Timestamp(previo['fecha'])).days < 7:
         return
