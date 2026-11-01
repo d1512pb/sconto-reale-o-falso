@@ -9,3 +9,11 @@ mercadolibre,2026-10-21,sin_credenciales,0,API exige token (401/403 verificado 2
 qqp_cdmx,2026-10-21,ok,0,2026: huella igual,2026-10-21T08:29:32+00:00,2026-10-21T08:29:47+00:00,local
 qqp_nacional,2026-10-21,ok,0,2026: huella igual,2026-10-21T08:29:32+00:00,2026-10-21T08:29:47+00:00,local
 tiendas,2026-10-21,ok,1,fichas verificadas para la lista fija,2026-10-21T08:29:20+00:00,2026-10-21T08:29:32+00:00,local
+mercadolibre,2026-10-22,sin_credenciales,0,API exige token (401/403 verificado 2026-10-16); sin app registrada,2026-10-22T18:56:02+00:00,2026-10-22T18:56:02+00:00,local
+preciometro,2026-10-22,ok,18462,"{'solicitados': 200, 'descargados': 200, 'reutilizados': 0, 'no_encontrados': 0, 'errores': 0, 'bloqueado': False, 'puntos': 17592, 'ofertas': 870}",2026-10-22T16:50:10+00:00,2026-10-22T18:56:02+00:00,local
+tiendas,2026-10-22,ok,1,fichas verificadas para la lista fija,2026-10-22T16:50:03+00:00,2026-10-22T16:50:10+00:00,local
+mercadolibre,2026-10-31,sin_credenciales,0,API exige token (401/403 verificado 2026-10-16); sin app registrada,2026-11-01T03:22:27+00:00,2026-11-01T03:22:27+00:00,local
+qqp_cdmx,2026-10-31,fallo,0,HTTPError: 404 Client Error: Not Found for url: https://datos.profeco.gob.mx/datos_abiertos/qqp.php,2026-11-01T03:22:27+00:00,2026-11-01T03:22:34+00:00,local
+qqp_nacional,2026-10-31,fallo,0,HTTPError: 404 Client Error: Not Found for url: https://datos.profeco.gob.mx/datos_abiertos/qqp.php,2026-11-01T03:22:27+00:00,2026-11-01T03:22:34+00:00,local
+servicio_local,2026-10-31,ok,0,Ciclo local completado; la publicación del ZIP se delega exclusivamente a GitHub,,2026-11-01T03:26:03+00:00,local
+tiendas,2026-10-31,ok,1,fichas verificadas para la lista fija,2026-11-01T03:22:21+00:00,2026-11-01T03:22:26+00:00,local
