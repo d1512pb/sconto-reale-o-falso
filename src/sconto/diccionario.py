@@ -102,7 +102,9 @@ def _rango(s: pd.Series) -> str:
 def generar() -> str:
     partes = ['# Diccionario de datos (`data/gold/`)\n',
               'Tipos y rangos calculados sobre los datos actuales al generar este archivo '
-              '(`python -m sconto.diccionario`). Los rangos describen lo observado, no límites teóricos.\n']
+              '(`python -m sconto.diccionario`). Los rangos describen lo observado, no límites teóricos.\n',
+              'Para las 11 tablas del ETL del Avance 2, consultar [CONTRATO_WEB.md](CONTRATO_WEB.md) '
+              'y [el esquema completo del mart](reports/diccionario_mart.json).\n']
     for tabla, desc in D.items():
         p = GOLD / f'{tabla}.parquet'
         if not p.exists():

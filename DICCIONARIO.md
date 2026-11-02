@@ -2,6 +2,8 @@
 
 Tipos y rangos calculados sobre los datos actuales al generar este archivo (`python -m sconto.diccionario`). Los rangos describen lo observado, no límites teóricos.
 
+Para las 11 tablas del ETL del Avance 2, consultar [CONTRATO_WEB.md](CONTRATO_WEB.md) y [el esquema completo del mart](reports/diccionario_mart.json).
+
 
 ## observaciones
 

@@ -1,5 +1,40 @@
 # Sconto reale o falso · recolección multifuente de precios
 
+## Avance 2: análisis y entrega para la web
+
+Abrir [03 · CRISP-DM y ETL en Colab](https://colab.research.google.com/drive/1bnrjKM-Wz0YPo8UuQKrEHBm4mtDrn3KP).
+La copia en Drive contiene resultados de una **ejecución local completa**, sin errores. No se afirma una ejecución en la nube.
+El cuaderno 01 original permanece intacto. El 03 fija código, dependencias y snapshot por hash para reproducir el avance.
+
+El notebook produce `sconto_web.zip`: SQLite, 11 tablas en Parquet/CSV.gz, feed JSON, tarjeta de modelo,
+casos para revisión y manifiesto SHA-256. Ver [CONTRATO_WEB.md](CONTRATO_WEB.md) y
+[resumen del Avance 2](reports/avance2_2026-11-01.md). El job `analitica` actualiza la entrega diariamente tras la captura.
+
+Consulta pública: [Sconto · Antes de comprar](https://d1512pb.github.io/sconto-reale-o-falso/).
+GitHub Pages publica una proyección JSON del mart; no necesita servidor, nuevas cuentas ni costos.
+El sitio muestra corte, historia, ofertas por vendedor y evidencia insuficiente. El código está en `web/`.
+Construcción local: `python -m sconto.publicar_web`. El despliegue usa las
+[acciones oficiales de Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
+
+Para ejecutar el mismo análisis en la PC:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-analitica.txt
+gh release download datos --repo d1512pb/sconto-reale-o-falso --pattern sconto_colab_actual.zip --dir data/exportaciones --clobber
+.\.venv\Scripts\python.exe -m sconto.mart --paquete data/exportaciones/sconto_colab_actual.zip
+```
+
+Para abrir el prototipo con SQLite:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-web.txt
+.\.venv\Scripts\python.exe -m streamlit run app/streamlit_app.py
+```
+
+También acepta `SCONTO_WEB_DATOS` como carpeta de exportación o `SCONTO_WEB_URL` como URL HTTPS del
+ZIP analítico publicado. El prototipo muestra fechas de corte y faltantes; no consulta tiendas al navegar.
+La nube de Colab no aloja la aplicación. La revisión de variantes y de casos del modelo sigue pendiente.
+
 **ESCOM-IPN · Minería de Datos** · Daniel Peredo Borgonio · Kevin Celis Torres · Igor Cappelli
 
 Pregunta del proyecto: ¿los descuentos de **El Buen Fin** en productos de tecnología son reales o simulados?

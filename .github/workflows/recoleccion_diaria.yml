@@ -104,3 +104,71 @@ jobs:
           fi
       - name: Comprobar cobertura diaria real
         run: python -m sconto.operacion --entorno github --verificar
+
+  analitica:
+    needs: recolectar
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TZ: America/Mexico_City
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Instalar ETL analítico
+        run: |
+          python -m pip install -r requirements-analitica.txt pytest
+          python -m pip install -e .
+      - name: Obtener snapshot consistente publicado por recolección
+        run: |
+          mkdir -p data/exportaciones
+          gh release download datos --pattern sconto_colab_actual.zip --dir data/exportaciones
+      - name: Producir tablas para web con el mismo ETL del Colab
+        run: |
+          python -m sconto.mart --paquete data/exportaciones/sconto_colab_actual.zip
+          python -m pytest tests/test_mineria_web.py tests/test_publicar_web.py -q
+      - name: Publicar entrega analítica
+        run: |
+          python - <<'PY'
+          import hashlib, shutil
+          from pathlib import Path
+          p = Path('data/analitica/sconto_web.zip')
+          h = hashlib.sha256(p.read_bytes()).hexdigest()[:12]
+          shutil.copy2(p, p.with_name(f'sconto_web_run_${{ github.run_id }}_{h}.zip'))
+          shutil.copy2(p, p.with_name('sconto_web_actual.zip'))
+          PY
+          gh release upload datos data/analitica/sconto_web_run_*.zip data/analitica/sconto_web_actual.zip --clobber
+      - name: Construir consulta pública
+        run: python -m sconto.publicar_web
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: data/analitica/site
+      - name: Conservar contrato y evaluación
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: analitica-${{ github.run_id }}
+          path: |
+            data/analitica/manifest.json
+            data/analitica/modelo.json
+            data/analitica/evaluacion_modelo.csv.gz
+            data/analitica/casos_para_revision.csv
+          retention-days: 30
+
+  web:
+    needs: analitica
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
+      - name: Desplegar consulta pública
+        id: deployment
+        uses: actions/deploy-pages@v4

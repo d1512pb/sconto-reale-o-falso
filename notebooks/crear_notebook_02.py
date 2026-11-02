@@ -13,6 +13,8 @@ def code(s): cells.append(nbf.v4.new_code_cell(textwrap.dedent(s).strip()))
 md('''
 # Sconto reale o falso
 ## 02 · Precios multifuente y Buen Fin (CRISP-DM)
+> Cuaderno exploratorio anterior. Para el Avance 2 usar `03_Sconto_CRISP_DM_ETL_web.ipynb`,
+> con evaluación temporal separada, código fijado y entrega SQLite/JSON para la web.
 **ESCOM-IPN · Minería de Datos** · Daniel Peredo Borgonio · Kevin Celis Torres · Igor Cappelli
 
 Este cuaderno continúa el Avance 1 (PROFECO QQP 2025, CDMX). Añade fuentes en línea, más eventos
@@ -228,9 +230,9 @@ print('Correlación de Spearman puntaje vs. alza previa:',
 ''')
 md('''
 ## 6. Despliegue
-- El colector diario corre en GitHub Actions (Preciómetro, Mercado Libre) y en la PC del equipo (Amazon), con una
-  pasada diaria y dos del 10 al 20 de noviembre. Cada corrida guarda el crudo con su SHA-256 y registra
-  ok / fallo / bloqueado por fuente; una falla dos días seguidos abre una alerta.
+- El colector diario corre en GitHub Actions con respaldo en Windows. Amazon directo está desactivado;
+  Mercado Libre requiere credenciales y mapeos validados. La recolección respeta estados de bloqueo y no
+  repite una captura ya concluida. Los resultados reales se revisan en los reportes por fuente.
 - Este cuaderno se vuelve a ejecutar tras el Buen Fin 2026 (13–17 nov) para obtener las series del evento.
 - Límites: QQP muestrea días sueltos; el gráfico de Preciómetro es el mínimo entre tiendas (no una sola tienda);
   Mercado Libre exige token para su API; el precio tachado retroactivo de 2024–2025 depende de lo que archivaron

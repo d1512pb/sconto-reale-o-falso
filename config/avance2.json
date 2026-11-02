@@ -1,0 +1,37 @@
+{
+  "repo": "d1512pb/sconto-reale-o-falso",
+  "revision_codigo": "d5732fb43c3d3f63c75edb656c35b6f39aea6125",
+  "snapshot": {
+    "fecha": "2026-11-01",
+    "archivo": "sconto_colab_2026-11-01_verificado_2c098732f67a.zip",
+    "sha256_zip": "2c098732f67a411c2d009f19f96986e14e96f1acf35bb04eafb5aa7cb0c043cd",
+    "filas": 677828,
+    "tablas": {
+      "observaciones": 677828,
+      "exclusiones": 0,
+      "productos": 1724,
+      "eventos": 3,
+      "series_evento": 18543,
+      "sensibilidad": 36,
+      "matriz_modelo": 298,
+      "matriz_modelo_brecha": 0,
+      "metadatos_modelo": 298
+    },
+    "url": "https://github.com/d1512pb/sconto-reale-o-falso/releases/download/datos/sconto_colab_2026-11-01_verificado_2c098732f67a.zip"
+  },
+  "dependencias": [
+    "numpy==2.4.6",
+    "pandas==3.0.6",
+    "pyarrow==26.0.0",
+    "scikit-learn==1.9.1",
+    "matplotlib==3.11.2",
+    "requests==2.34.2"
+  ],
+  "archivos_codigo": {
+    "src/sconto/colab.py": "7fd7d7d49cce2647a822d1ff93097c1dab0d4b9a8e425a427175e6301ed2facb",
+    "src/sconto/consulta.py": "a1247ed63ae91e567c7da58cfb7af307d605173c94355123d65d3aed51864323",
+    "src/sconto/mineria.py": "370fa2cc1934f5b76575b6f4f80eacfcae28fe3887fa3cbb61ead09ca8ebd336",
+    "src/sconto/mart.py": "f119080c1b5a8bb1199d3e8e6aaad9a9a7c87e6c3935a7343d444e95c0b5fe06",
+    "config/preciometro_diarios.csv": "0fcafb4b4493321b0986e1c06d159dd47ab16145d6a9912bf77a30d0ea404591"
+  }
+}

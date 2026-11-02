@@ -1,0 +1,18 @@
+{
+  "fecha": "2026-11-01",
+  "archivo": "sconto_colab_2026-11-01_verificado_2c098732f67a.zip",
+  "sha256_zip": "2c098732f67a411c2d009f19f96986e14e96f1acf35bb04eafb5aa7cb0c043cd",
+  "filas": 677828,
+  "tablas": {
+    "observaciones": 677828,
+    "exclusiones": 0,
+    "productos": 1724,
+    "eventos": 3,
+    "series_evento": 18543,
+    "sensibilidad": 36,
+    "matriz_modelo": 298,
+    "matriz_modelo_brecha": 0,
+    "metadatos_modelo": 298
+  },
+  "url": "https://github.com/d1512pb/sconto-reale-o-falso/releases/download/datos/sconto_colab_2026-11-01_verificado_2c098732f67a.zip"
+}

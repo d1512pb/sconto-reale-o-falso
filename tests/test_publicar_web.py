@@ -1,0 +1,44 @@
+import json
+from pathlib import Path
+import shutil
+import subprocess
+
+import pytest
+
+from sconto.consulta import evaluar_oferta
+from sconto.publicar_web import construir
+
+
+def test_javascript_coincide_con_consulta_python():
+    if not shutil.which('node'):
+        pytest.skip('Node no disponible para probar la consulta estática')
+    ref = dict(serie_id='A', moneda='MXN', canal='en_linea', cobertura_base=True, base_cerrada=True,
+               mediana_base=1000, p25_base=900, p75_base=1100, contexto='serie_vendedor')
+    casos = []
+    for contexto in ['minimo_multitienda', 'serie_vendedor']:
+        for cobertura in [True, False]:
+            for precio in [800, 1000, 1200]:
+                casos.append(dict(ref={**ref, 'contexto': contexto, 'cobertura_base': cobertura}, precio=precio))
+    modulo = (Path('web') / 'consulta.mjs').resolve().as_uri()
+    codigo = f"import {{comparar}} from {json.dumps(modulo)}; let s=''; for await(const b of process.stdin)s+=b; console.log(JSON.stringify(JSON.parse(s).map(c=>comparar(c.ref,c.precio,2000,60,true))));"
+    respuesta = subprocess.run(['node', '--input-type=module', '-e', codigo], input=json.dumps(casos), text=True, capture_output=True, check=True)
+    for caso, js in zip(casos, json.loads(respuesta.stdout), strict=True):
+        py = evaluar_oferta(caso['ref'], caso['precio'], 2000, 60, serie_oferta_id='A')
+        assert js['estado'] == py['estado']
+        assert js['diferencia'] == pytest.approx(py['diferencia_frente_referencia_pct']) if py['diferencia_frente_referencia_pct'] is not None else js['diferencia'] is None
+        assert js['brecha'] == pytest.approx(py['brecha_consulta_pp']) if py['brecha_consulta_pp'] is not None else js['brecha'] is None
+
+
+def test_sitio_solo_publica_precios_del_catalogo_y_conserva_faltantes(tmp_path):
+    datos = Path('data/analitica')
+    if not (datos / 'manifest.json').exists():
+        pytest.skip('Necesita la entrega del ETL')
+    resumen = construir(datos, tmp_path, Path('web'))
+    feed = json.loads((tmp_path / 'datos.json').read_text(encoding='utf-8'))
+    ids = {serie['serie_id'] for serie in feed['series']}
+    assert resumen['productos'] == 200
+    assert all(p['serie_id'] in ids and p['precio_mediano'] > 0 for p in feed['precios_diarios'])
+    assert len({(p['serie_id'], p['fecha_precio']) for p in feed['precios_diarios']}) == len(feed['precios_diarios'])
+    assert all(o['precio_anterior_anunciado'] is None or o['precio_anterior_anunciado'] > 0 for o in feed['ofertas'])
+    assert not list(tmp_path.glob('*.sqlite'))
+    assert (tmp_path / 'snapshot.json').exists()

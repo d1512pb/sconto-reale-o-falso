@@ -1,0 +1,903 @@
+{
+  "productos": [
+    {
+      "campo": "producto_canonico_id",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "nombre",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "marca",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "modelo_normalizado",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "familia",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "categoria",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "origen",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "confianza_match",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "identidad",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "en_catalogo_web",
+      "tipo": "bool",
+      "nulos": 0,
+      "rango": [
+        "False",
+        "True"
+      ]
+    },
+    {
+      "campo": "en_piloto",
+      "tipo": "bool",
+      "nulos": 0,
+      "rango": [
+        "False",
+        "True"
+      ]
+    },
+    {
+      "campo": "orden_web",
+      "tipo": "float64",
+      "nulos": 1524,
+      "rango": [
+        "1.0",
+        "200.0"
+      ]
+    }
+  ],
+  "eventos": [
+    {
+      "campo": "evento_id",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "nombre",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "d0",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "fin",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "base_inicio",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "base_fin",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "previo_inicio",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "previo_fin",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "evento_inicio",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "evento_fin",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "posterior_inicio",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "posterior_fin",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "fuente_fechas",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    }
+  ],
+  "series": [
+    {
+      "campo": "serie_id",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "producto_canonico_id",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "fuente",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "plataforma_serie",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "canal",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "tipo_precio",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "id_externo",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "vendedor_serie",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "moneda",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "descripcion_original",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "contexto",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "vendedor_confirmado",
+      "tipo": "bool",
+      "nulos": 0,
+      "rango": [
+        "False",
+        "True"
+      ]
+    }
+  ],
+  "observaciones": [
+    {
+      "campo": "obs_id",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "serie_id",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "fuente",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "metodo",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "fecha_precio",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "fecha_captura",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "precio",
+      "tipo": "float64",
+      "nulos": 0,
+      "rango": [
+        "139.0",
+        "118799.0"
+      ]
+    },
+    {
+      "campo": "precio_anterior_anunciado",
+      "tipo": "float64",
+      "nulos": 45130,
+      "rango": [
+        "6699.0",
+        "6699.0"
+      ]
+    },
+    {
+      "campo": "pct_descuento_anunciado",
+      "tipo": "float64",
+      "nulos": 45135,
+      "rango": [
+        "nan",
+        "nan"
+      ]
+    },
+    {
+      "campo": "moneda",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "condiciones",
+      "tipo": "str",
+      "nulos": 34021,
+      "rango": null
+    },
+    {
+      "campo": "url",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "ruta_raw",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "hash_raw",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    }
+  ],
+  "precios_diarios": [
+    {
+      "campo": "serie_id",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "fecha_precio",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "precio_mediano",
+      "tipo": "float64",
+      "nulos": 0,
+      "rango": [
+        "139.0",
+        "118799.0"
+      ]
+    },
+    {
+      "campo": "n_observaciones",
+      "tipo": "int64",
+      "nulos": 0,
+      "rango": [
+        "1",
+        "1"
+      ]
+    },
+    {
+      "campo": "obs_ejemplo_id",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    }
+  ],
+  "referencias_base": [
+    {
+      "campo": "serie_id",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "contexto",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "vendedor_confirmado",
+      "tipo": "bool",
+      "nulos": 0,
+      "rango": [
+        "False",
+        "True"
+      ]
+    },
+    {
+      "campo": "moneda",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "canal",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "n_fechas_base",
+      "tipo": "int64",
+      "nulos": 0,
+      "rango": [
+        "0",
+        "46"
+      ]
+    },
+    {
+      "campo": "mediana_base",
+      "tipo": "float64",
+      "nulos": 3540,
+      "rango": [
+        "139.0",
+        "96227.0"
+      ]
+    },
+    {
+      "campo": "minimo_base",
+      "tipo": "float64",
+      "nulos": 3540,
+      "rango": [
+        "139.0",
+        "90287.0"
+      ]
+    },
+    {
+      "campo": "maximo_base",
+      "tipo": "float64",
+      "nulos": 3540,
+      "rango": [
+        "196.0",
+        "118799.0"
+      ]
+    },
+    {
+      "campo": "inicio_observado",
+      "tipo": "str",
+      "nulos": 3540,
+      "rango": null
+    },
+    {
+      "campo": "fin_observado",
+      "tipo": "str",
+      "nulos": 3540,
+      "rango": null
+    },
+    {
+      "campo": "p25_base",
+      "tipo": "float64",
+      "nulos": 3540,
+      "rango": [
+        "139.0",
+        "96227.0"
+      ]
+    },
+    {
+      "campo": "p75_base",
+      "tipo": "float64",
+      "nulos": 3540,
+      "rango": [
+        "196.0",
+        "106919.0"
+      ]
+    },
+    {
+      "campo": "evento_id",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "amplitud_base_dias",
+      "tipo": "float64",
+      "nulos": 3540,
+      "rango": [
+        "0.0",
+        "45.0"
+      ]
+    },
+    {
+      "campo": "base_cerrada",
+      "tipo": "bool",
+      "nulos": 0,
+      "rango": [
+        "True",
+        "True"
+      ]
+    },
+    {
+      "campo": "cobertura_base",
+      "tipo": "bool",
+      "nulos": 0,
+      "rango": [
+        "False",
+        "True"
+      ]
+    },
+    {
+      "campo": "base_inicio",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "base_fin",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    }
+  ],
+  "ofertas": [
+    {
+      "campo": "obs_id",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "serie_id",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "producto_canonico_id",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "fecha_precio",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "plataforma",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "vendedor_o_cadena",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "precio",
+      "tipo": "float64",
+      "nulos": 0,
+      "rango": [
+        "139.0",
+        "106919.0"
+      ]
+    },
+    {
+      "campo": "precio_anterior_anunciado",
+      "tipo": "float64",
+      "nulos": 1286,
+      "rango": [
+        "6699.0",
+        "6699.0"
+      ]
+    },
+    {
+      "campo": "pct_descuento_anunciado",
+      "tipo": "float64",
+      "nulos": 1287,
+      "rango": [
+        "nan",
+        "nan"
+      ]
+    },
+    {
+      "campo": "moneda",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "disponibilidad",
+      "tipo": "str",
+      "nulos": 1287,
+      "rango": null
+    },
+    {
+      "campo": "condiciones",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "url",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "edad_dias",
+      "tipo": "int64",
+      "nulos": 0,
+      "rango": [
+        "0",
+        "16"
+      ]
+    },
+    {
+      "campo": "observada_en_corte",
+      "tipo": "bool",
+      "nulos": 0,
+      "rango": [
+        "False",
+        "True"
+      ]
+    }
+  ],
+  "resultados_modelo": [
+    {
+      "campo": "serie_evento_id",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "serie_id",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "evento_id",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "producto_canonico_id",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "descripcion_original",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "vendedor_serie",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "ahorro_historico_pct",
+      "tipo": "float64",
+      "nulos": 0,
+      "rango": [
+        "-62.51562890722682",
+        "52.11634622156489"
+      ]
+    },
+    {
+      "campo": "alza_previa_pct",
+      "tipo": "float64",
+      "nulos": 0,
+      "rango": [
+        "-50.23755938984746",
+        "74.62112470190014"
+      ]
+    },
+    {
+      "campo": "variabilidad_base_pct",
+      "tipo": "float64",
+      "nulos": 0,
+      "rango": [
+        "0.0",
+        "57.55001370238421"
+      ]
+    },
+    {
+      "campo": "puntaje_anomalia",
+      "tipo": "float64",
+      "nulos": 0,
+      "rango": [
+        "0.33050638798275744",
+        "0.7964813488269297"
+      ]
+    },
+    {
+      "campo": "umbral_revision",
+      "tipo": "float64",
+      "nulos": 0,
+      "rango": [
+        "0.5326177940436693",
+        "0.5326177940436693"
+      ]
+    },
+    {
+      "campo": "senal_revision_modelo",
+      "tipo": "bool",
+      "nulos": 0,
+      "rango": [
+        "False",
+        "True"
+      ]
+    },
+    {
+      "campo": "etapa",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "modelo_id",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "regla_sin_ahorro",
+      "tipo": "bool",
+      "nulos": 0,
+      "rango": [
+        "False",
+        "True"
+      ]
+    },
+    {
+      "campo": "regla_alza_previa_5",
+      "tipo": "bool",
+      "nulos": 0,
+      "rango": [
+        "False",
+        "True"
+      ]
+    },
+    {
+      "campo": "motivos_reglas",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "revision_humana",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    }
+  ],
+  "evaluacion_modelo": [
+    {
+      "campo": "experimento",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "metrica",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "valor",
+      "tipo": "float64",
+      "nulos": 0,
+      "rango": [
+        "0.8181818181818182",
+        "205.0"
+      ]
+    },
+    {
+      "campo": "n_casos",
+      "tipo": "int64",
+      "nulos": 0,
+      "rango": [
+        "10",
+        "298"
+      ]
+    },
+    {
+      "campo": "interpretacion",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    }
+  ],
+  "sensibilidad": [
+    {
+      "campo": "evento_id",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "plataforma_serie",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "min_fechas_base",
+      "tipo": "int64",
+      "nulos": 0,
+      "rango": [
+        "2",
+        "5"
+      ]
+    },
+    {
+      "campo": "series_cobertura_ahorro",
+      "tipo": "int64",
+      "nulos": 0,
+      "rango": [
+        "0",
+        "755"
+      ]
+    },
+    {
+      "campo": "series_cobertura_alza",
+      "tipo": "int64",
+      "nulos": 0,
+      "rango": [
+        "0",
+        "240"
+      ]
+    },
+    {
+      "campo": "series_con_brecha",
+      "tipo": "int64",
+      "nulos": 0,
+      "rango": [
+        "0",
+        "0"
+      ]
+    }
+  ],
+  "calidad_fuentes": [
+    {
+      "campo": "fuente",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "filas",
+      "tipo": "int64",
+      "nulos": 0,
+      "rango": [
+        "1",
+        "409138"
+      ]
+    },
+    {
+      "campo": "ids_externos",
+      "tipo": "int64",
+      "nulos": 0,
+      "rango": [
+        "1",
+        "9499"
+      ]
+    },
+    {
+      "campo": "primera_fecha",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "ultima_fecha",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "ultima_captura",
+      "tipo": "str",
+      "nulos": 0,
+      "rango": null
+    },
+    {
+      "campo": "con_tachado",
+      "tipo": "int64",
+      "nulos": 0,
+      "rango": [
+        "0",
+        "67"
+      ]
+    }
+  ]
+}
