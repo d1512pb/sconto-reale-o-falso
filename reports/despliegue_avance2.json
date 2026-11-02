@@ -1,0 +1,40 @@
+{
+  "verificado_utc": "2026-11-02T03:35:44.496512+00:00",
+  "sitio": "https://d1512pb.github.io/sconto-reale-o-falso/",
+  "http": 200,
+  "fecha_corte": "2026-11-01",
+  "productos": 200,
+  "puntos_diarios": 31824,
+  "sha256": "74828040a4627a7f08763600490e6c51c10fd800f4f2529c5038aea235d3dddb",
+  "modelo": {
+    "entrenamiento": 205,
+    "evaluacion": 93
+  },
+  "corrida_completa": "https://github.com/d1512pb/sconto-reale-o-falso/actions/runs/41382973232",
+  "actualizacion_sin_recaptura": "https://github.com/d1512pb/sconto-reale-o-falso/actions/runs/41383710410",
+  "resultados": {
+    "recolectar": "skipped",
+    "analitica": "success",
+    "web": "success"
+  },
+  "revision_visual": "pendiente",
+  "colab_nube": "no_ejecutado",
+  "notebook_local": "17 celdas, 9 ejecutables, sin errores",
+  "recursos_web": {
+    "app.mjs": {
+      "http": 200,
+      "mime": "text/javascript; charset=utf-8",
+      "hash_correcto": true
+    },
+    "consulta.mjs": {
+      "http": 200,
+      "mime": "text/javascript; charset=utf-8",
+      "hash_correcto": true
+    },
+    "styles.css": {
+      "http": 200,
+      "mime": "text/css; charset=utf-8",
+      "hash_correcto": true
+    }
+  }
+}
