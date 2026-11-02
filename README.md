@@ -15,6 +15,8 @@ GitHub Pages publica una proyección JSON del mart; no necesita servidor, nuevas
 El sitio muestra corte, historia, ofertas por vendedor y evidencia insuficiente. El código está en `web/`.
 Construcción local: `python -m sconto.publicar_web`. El despliegue usa las
 [acciones oficiales de Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
+Para actualizar el sitio desde el último paquete sin hacer otra captura, ejecutar el workflow con
+`solo_analitica=true`. La web enlaza a la copia pública del notebook en GitHub; el archivo en Drive conserva su acceso original.
 
 Para ejecutar el mismo análisis en la PC:
 

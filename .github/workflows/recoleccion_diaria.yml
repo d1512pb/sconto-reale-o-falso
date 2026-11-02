@@ -5,6 +5,11 @@ on:
     - cron: '17 13 * * *'
   workflow_dispatch:
     inputs:
+      solo_analitica:
+        description: 'Actualizar análisis y web desde el último ZIP, sin recolectar'
+        type: boolean
+        required: false
+        default: false
       max_productos:
         description: '0 = lista fija completa; otro valor limita una prueba'
         required: false
@@ -20,6 +25,7 @@ concurrency:
 
 jobs:
   recolectar:
+    if: ${{ !inputs.solo_analitica }}
     runs-on: ubuntu-latest
     timeout-minutes: 90
     env:
@@ -107,6 +113,7 @@ jobs:
 
   analitica:
     needs: recolectar
+    if: ${{ always() && !cancelled() && (needs.recolectar.result == 'success' || (github.event_name == 'workflow_dispatch' && inputs.solo_analitica)) }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
