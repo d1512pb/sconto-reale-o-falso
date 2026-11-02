@@ -9,11 +9,11 @@ Para las 11 tablas del ETL del Avance 2, consultar [CONTRATO_WEB.md](CONTRATO_WE
 
 Una fila por precio observado (formato largo). Todas las fuentes salvo QQP nacional. Clave única: (fuente, id_externo, fecha_precio, vendedor_o_cadena).
 
-Filas: 677,827
+Filas: 677,828
 
 | Campo | Descripción | Tipo | Rango observado | Fuente |
 |---|---|---|---|---|
-| `obs_id` | Identificador estable de la observación (hash). | str | 677,827 valores distintos | todas |
+| `obs_id` | Identificador estable de la observación (hash). | str | 677,828 valores distintos | todas |
 | `fuente` | Origen: qqp_cdmx, preciometro, preciometro_ofertas, mercadolibre, amazon, wayback, commoncrawl, promodescuentos. | str | amazon, preciometro, preciometro_ofertas, qqp_cdmx, tiendas, wayback | todas |
 | `metodo` | archivo_oficial \| api \| scraping \| wayback \| commoncrawl \| agregador \| comunidad. | str | agregador, archivo_oficial, scraping, wayback | todas |
 | `canal` | tienda_fisica (QQP) \| en_linea. Nunca se mezclan en una serie. | str | en_linea, tienda_fisica | todas |
@@ -36,20 +36,20 @@ Filas: 677,827
 | `pct_descuento_anunciado` | % de descuento SÓLO si la fuente lo muestra; entre −100 y 100. | float64 | 2.00 – 47.00 | en línea |
 | `moneda` | MXN. | str | MXN | todas |
 | `disponibilidad` | Disponible, agotado, etc., según la fuente. | str | Disponible, Disponible 1 día después de tu compra, Disponible 5 días después de tu compra, Disponible 7 días después de tu compra, Disponible {"isInternal":false,"isRobot":false,"showFaceout":true,"merchantId":"A1AYA2LE3BV7SY","availableBadges":"","loggedIn":false,"asin":"B0CPL6NDWH","showBadge":false,"availableFaceouts":"TK_BOUGHT"}, Disponible {"isInternal":false,"isRobot":false,"showFaceout":true,"merchantId":"AVDBXBAVVSXLQ","availableBadges":"","loggedIn":false,"asin":"B09WNK39JN","showBadge":false,"availableFaceouts":"TK_BOUGHT"}, Disponible {"isInternal":false,"isRobot":false,"showFaceout":true,"merchantId":"AVDBXBAVVSXLQ","availableBadges":"","loggedIn":false,"asin":"B0CPL6NDWH","showBadge":false,"availableFaceouts":"TK_BOUGHT"}, Disponible {"isInternal":false,"showInsightsHub":false,"isRobot":false,"showFaceout":true,"merchantId":"A10YF1TK1RC4IY","availableBadges":"","loggedIn":false,"asin":"B0CPL6NDWH","showBadge":false,"ingressFaceout":"","availableFaceouts":"TK_BOUGHT"} … (16 distintos) | en línea |
-| `condiciones` | JSON: MSI, cupón, envío, membresía (Prime), vendido/enviado por, marketplace. | str | 7,104 valores distintos | en línea |
+| `condiciones` | JSON: MSI, cupón, envío, membresía (Prime), vendido/enviado por, marketplace. | str | 7,105 valores distintos | en línea |
 | `url` | URL del producto/oferta/archivo oficial. | str | 12,079 valores distintos | todas |
-| `ruta_raw` | Ruta del crudo (relativa a la raíz del repo; los voluminosos viven en la PC local). | str | 414,413 valores distintos | todas |
-| `hash_raw` | SHA-256 del crudo sin comprimir. | str | 5,286 valores distintos | todas |
+| `ruta_raw` | Ruta del crudo (relativa a la raíz del repo; los voluminosos viven en la PC local). | str | 414,414 valores distintos | todas |
+| `hash_raw` | SHA-256 del crudo sin comprimir. | str | 5,287 valores distintos | todas |
 | `serie_id` | Serie = plataforma × id externo × vendedor/sucursal × canal (QQP: el serie_id del Avance 1). | str | 39,484 valores distintos | derivado |
 | `preciometro_producto_id` |  | str | 2,780 valores distintos |  |
 | `asin` |  | str | 2,415 valores distintos |  |
 | `mlm_producto` |  | str | 1,117 valores distintos |  |
 | `mlm_item` |  | object | vacío |  |
 | `n_capturas` | Cuántas capturas trajeron esa misma clave (el historial de 90 días se repite cada día). | int64 | 1.00 – 15.00 | derivado |
-| `precio_revisado_por_fuente` | True si capturas distintas dieron precios distintos para la misma clave. | bool | True 229 / False 677,598 | derivado |
+| `precio_revisado_por_fuente` | True si capturas distintas dieron precios distintos para la misma clave. | bool | True 229 / False 677,599 | derivado |
 | `plataforma_serie` | Plataforma con la que se agrupa la serie (Wayback de Amazon se agrupa con amazon). | str | amazon, liverpool, mercadolibre, preciometro, preciometro_ofertas, qqp_cdmx | derivado |
 | `vendedor_serie` | Vendedor de la serie (MINIMO_MULTITIENDA para el gráfico de Preciómetro; sucursal en QQP). | str | 1,577 valores distintos | derivado |
-| `revisar_captura` | True si el precio está fuera de 1.5×IQR de su serie: posible error, NO se borra. | bool | True 46,259 / False 631,568 | derivado |
+| `revisar_captura` | True si el precio está fuera de 1.5×IQR de su serie: posible error, NO se borra. | bool | True 46,259 / False 631,569 | derivado |
 
 ## series_evento
 
