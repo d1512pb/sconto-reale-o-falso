@@ -167,6 +167,7 @@ jobs:
 
   web:
     needs: analitica
+    if: ${{ always() && !cancelled() && needs.analitica.result == 'success' }}
     runs-on: ubuntu-latest
     permissions:
       pages: write
