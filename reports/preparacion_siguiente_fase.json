@@ -1,9 +1,9 @@
 {
   "fecha_auditoria": "2026-11-02",
-  "construido_utc": "2026-11-02T22:40:52+00:00",
-  "filas": 678860,
+  "construido_utc": "2026-11-03T02:49:52+00:00",
+  "filas": 678861,
   "tablas": {
-    "observaciones": 678860,
+    "observaciones": 678861,
     "exclusiones": 0,
     "productos": 1724,
     "eventos": 3,
@@ -57,13 +57,13 @@
     },
     {
       "fuente": "tiendas",
-      "filas": 5,
+      "filas": 6,
       "ids_externos": 1,
       "desde": "2026-10-20",
-      "hasta": "2026-11-01",
-      "dias_con_dato": 5,
-      "ultima_captura": "2026-11-01",
-      "con_precio_anterior": 5
+      "hasta": "2026-11-02",
+      "dias_con_dato": 6,
+      "ultima_captura": "2026-11-02",
+      "con_precio_anterior": 6
     },
     {
       "fuente": "wayback",
@@ -95,8 +95,7 @@
       "2026-10-27",
       "2026-10-28",
       "2026-10-29",
-      "2026-10-30",
-      "2026-11-02"
+      "2026-10-30"
     ]
   },
   "limites": [
