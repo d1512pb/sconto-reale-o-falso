@@ -64,5 +64,5 @@ mercadolibre,2026-11-04,sin_credenciales,0,API exige token (401/403 verificado 2
 preciometro,2026-11-04,ok,18501,"{'solicitados': 200, 'descargados': 200, 'reutilizados': 0, 'no_encontrados': 0, 'errores': 0, 'bloqueado': False, 'puntos': 17670, 'ofertas': 831}",2026-11-04T15:19:52+00:00,2026-11-04T15:38:23+00:00,github
 qqp_cdmx,2026-11-04,fallo,0,HTTPError: 404 Client Error: Not Found for url: https://datos.profeco.gob.mx/datos_abiertos/file.php?t=9d62040eae6dcc63e36b8ac821427647,2026-11-04T15:08:29+00:00,2026-11-04T15:08:45+00:00,local
 qqp_nacional,2026-11-04,fallo,0,HTTPError: 404 Client Error: Not Found for url: https://datos.profeco.gob.mx/datos_abiertos/file.php?t=9d62040eae6dcc63e36b8ac821427647,2026-11-04T15:08:29+00:00,2026-11-04T15:08:45+00:00,local
-servicio_local,2026-11-04,parcial,0,Ciclo local completado; la publicación del ZIP se delega exclusivamente a GitHub,,2026-11-04T15:19:05+00:00,local
+servicio_local,2026-11-04,ok,0,Ciclo local completado; la publicación del ZIP se delega exclusivamente a GitHub,,2026-11-04T18:36:52+00:00,local
 tiendas,2026-11-04,ok,1,fichas verificadas para la lista fija,2026-11-04T15:08:19+00:00,2026-11-04T15:08:28+00:00,local
