@@ -67,3 +67,9 @@ qqp_cdmx,2026-11-04,fallo,0,HTTPError: 404 Client Error: Not Found for url: http
 qqp_nacional,2026-11-04,fallo,0,HTTPError: 404 Client Error: Not Found for url: https://datos.profeco.gob.mx/datos_abiertos/file.php?t=9d62040eae6dcc63e36b8ac821427647,2026-11-04T15:08:29+00:00,2026-11-04T15:08:45+00:00,local
 servicio_local,2026-11-04,ok,0,Ciclo local completado; la publicación del ZIP se delega exclusivamente a GitHub,,2026-11-05T02:35:20+00:00,local
 tiendas,2026-11-04,ok,1,fichas verificadas para la lista fija,2026-11-04T15:08:19+00:00,2026-11-04T15:08:28+00:00,local
+mercadolibre,2026-11-05,sin_credenciales,0,API exige token (401/403 verificado 2026-10-16); sin app registrada,2026-11-05T17:36:07+00:00,2026-11-05T17:36:07+00:00,github
+preciometro,2026-11-05,ok,18492,"{'solicitados': 200, 'descargados': 200, 'reutilizados': 0, 'no_encontrados': 0, 'errores': 0, 'bloqueado': False, 'puntos': 17676, 'ofertas': 816}",2026-11-05T17:17:46+00:00,2026-11-05T17:36:07+00:00,github
+qqp_cdmx,2026-11-05,fallo,0,HTTPError: 404 Client Error: Not Found for url: https://datos.profeco.gob.mx/datos_abiertos/file.php?t=9d62040eae6dcc63e36b8ac821427647,2026-11-05T16:09:52+00:00,2026-11-05T17:01:09+00:00,local
+qqp_nacional,2026-11-05,fallo,0,HTTPError: 404 Client Error: Not Found for url: https://datos.profeco.gob.mx/datos_abiertos/file.php?t=9d62040eae6dcc63e36b8ac821427647,2026-11-05T16:09:52+00:00,2026-11-05T17:01:11+00:00,local
+servicio_local,2026-11-05,parcial,0,Ciclo local completado; la publicación del ZIP se delega exclusivamente a GitHub,,2026-11-05T17:16:50+00:00,local
+tiendas,2026-11-05,ok,1,fichas verificadas para la lista fija,2026-11-05T16:09:40+00:00,2026-11-05T16:09:52+00:00,local
