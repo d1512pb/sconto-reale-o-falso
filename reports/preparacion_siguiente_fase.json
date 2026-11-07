@@ -1,13 +1,13 @@
 {
-  "fecha_auditoria": "2026-11-06",
-  "construido_utc": "2026-11-07T02:37:11+00:00",
-  "filas": 682935,
+  "fecha_auditoria": "2026-11-07",
+  "construido_utc": "2026-11-07T17:20:10+00:00",
+  "filas": 683942,
   "tablas": {
-    "observaciones": 682935,
+    "observaciones": 683942,
     "exclusiones": 0,
     "productos": 1724,
     "eventos": 3,
-    "series_evento": 18697,
+    "series_evento": 18713,
     "sensibilidad": 36,
     "matriz_modelo": 298,
     "matriz_modelo_brecha": 0,
@@ -27,22 +27,22 @@
     },
     {
       "fuente": "preciometro",
-      "filas": 249904,
+      "filas": 250095,
       "ids_externos": 2795,
       "desde": "2026-07-18",
-      "hasta": "2026-11-06",
-      "dias_con_dato": 112,
-      "ultima_captura": "2026-11-06",
+      "hasta": "2026-11-07",
+      "dias_con_dato": 113,
+      "ultima_captura": "2026-11-07",
       "con_precio_anterior": 0
     },
     {
       "fuente": "preciometro_ofertas",
-      "filas": 23773,
-      "ids_externos": 9513,
+      "filas": 24588,
+      "ids_externos": 9516,
       "desde": "2026-10-16",
-      "hasta": "2026-11-06",
-      "dias_con_dato": 19,
-      "ultima_captura": "2026-11-06",
+      "hasta": "2026-11-07",
+      "dias_con_dato": 20,
+      "ultima_captura": "2026-11-07",
       "con_precio_anterior": 0
     },
     {
@@ -57,13 +57,13 @@
     },
     {
       "fuente": "tiendas",
-      "filas": 10,
+      "filas": 11,
       "ids_externos": 1,
       "desde": "2026-10-20",
-      "hasta": "2026-11-06",
-      "dias_con_dato": 10,
-      "ultima_captura": "2026-11-06",
-      "con_precio_anterior": 10
+      "hasta": "2026-11-07",
+      "dias_con_dato": 11,
+      "ultima_captura": "2026-11-07",
+      "con_precio_anterior": 11
     },
     {
       "fuente": "wayback",
