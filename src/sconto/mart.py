@@ -34,6 +34,10 @@ PK = {'productos': ['producto_canonico_id'], 'eventos': ['evento_id'], 'series':
       'observaciones': ['obs_id'], 'precios_diarios': ['serie_id', 'fecha_precio'],
       'referencias_base': ['serie_id', 'evento_id'], 'ofertas': ['obs_id'],
       'resultados_modelo': ['serie_evento_id']}
+PK.update(catalogo_consulta=['producto_canonico_id'], ofertas_evaluadas=['obs_id'], revision_identidades=['obs_id'])
+FK.update(catalogo_consulta=[('producto_canonico_id', 'productos', 'producto_canonico_id')],
+          ofertas_evaluadas=[('obs_id', 'ofertas', 'obs_id'), ('referencia_serie_id', 'series', 'serie_id')],
+          revision_identidades=[('obs_id', 'ofertas_evaluadas', 'obs_id')])
 
 
 def registros(datos):
@@ -173,7 +177,7 @@ def guardar_sqlite(tablas, ruta):
     temporal.replace(ruta)
 
 
-def exportar(tablas, analisis, salida, fuente, fecha_corte):
+def exportar(tablas, analisis, salida, fuente, fecha_corte, extras_json=None):
     salida.mkdir(parents=True, exist_ok=True)
     archivos = []
     for nombre, tabla in tablas.items():
@@ -207,6 +211,14 @@ def exportar(tablas, analisis, salida, fuente, fecha_corte):
     feed_ruta = salida / 'web_feed.json'
     feed_ruta.write_text(json.dumps(feed, ensure_ascii=False, allow_nan=False, separators=(',', ':')), encoding='utf-8')
     archivos.append(feed_ruta)
+    for nombre, objeto in (extras_json or {}).items():
+        if not re.fullmatch(r'[a-zA-Z_][a-zA-Z0-9_]*\.json', nombre):
+            raise ValueError('Nombre de JSON inválido')
+        destino = salida / nombre
+        if destino.name in {archivo.name for archivo in archivos} or destino.name == 'manifest.json':
+            raise ValueError('Un extra no puede reemplazar un archivo del contrato')
+        destino.write_text(json.dumps(objeto, ensure_ascii=False, allow_nan=False, separators=(',', ':')), encoding='utf-8')
+        archivos.append(destino)
     manifiesto = dict(version=VERSION, generado_utc=datetime.now(timezone.utc).isoformat(timespec='seconds'),
                       fecha_corte=fecha_corte, fuente=fuente, revision_codigo=os.environ.get('GITHUB_SHA'),
                       tablas={nombre: len(tabla) for nombre, tabla in tablas.items()},

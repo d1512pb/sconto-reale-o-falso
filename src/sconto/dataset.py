@@ -53,7 +53,7 @@ def cargar_observaciones() -> pd.DataFrame:
     return df
 
 
-def validar(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+def validar(df: pd.DataFrame, fecha_referencia=None) -> tuple[pd.DataFrame, pd.DataFrame]:
     df = df.copy()
     df['precio'] = pd.to_numeric(df.precio, errors='coerce')
     df['precio_anterior_anunciado'] = pd.to_numeric(df.precio_anterior_anunciado, errors='coerce')
@@ -64,7 +64,7 @@ def validar(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     for cond, m in [(df.precio.isna() | ~np.isfinite(df.precio) | df.precio.le(0), 'precio_no_positivo'),
                     (df.fecha_precio.isna(), 'fecha_invalida'),
                     (df.fecha_captura.isna(), 'captura_invalida'),
-                    (df.fecha_precio.gt(pd.Timestamp(hoy())), 'fecha_futura'),
+                    (df.fecha_precio.gt(pd.Timestamp(fecha_referencia or hoy())), 'fecha_futura'),
                     (df.fecha_precio.gt(df.fecha_captura), 'precio_posterior_a_captura'),
                     (df.pct_descuento_anunciado.notna() & ~df.pct_descuento_anunciado.between(-100, 100), 'pct_fuera_de_rango'),
                     (df.precio_anterior_anunciado.notna() & df.precio_anterior_anunciado.le(0), 'precio_anterior_no_positivo'),
