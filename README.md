@@ -1,14 +1,24 @@
 # Sconto reale o falso · recolección multifuente de precios
 
-## Avance 2: análisis y entrega para la web
+## Avance 2: notebook completo y datos para la app
 
 Abrir [03 · CRISP-DM y ETL en Colab](https://colab.research.google.com/drive/1bnrjKM-Wz0YPo8UuQKrEHBm4mtDrn3KP).
 La copia en Drive contiene resultados de una **ejecución local completa**, sin errores. No se afirma una ejecución en la nube.
 El cuaderno 01 original permanece intacto. El 03 fija código, dependencias y snapshot por hash para reproducir el avance.
 
-El notebook produce `sconto_web.zip`: SQLite, 11 tablas en Parquet/CSV.gz, feed JSON, tarjeta de modelo,
-casos para revisión y manifiesto SHA-256. Ver [CONTRATO_WEB.md](CONTRATO_WEB.md) y
-[resumen del Avance 2](reports/avance2_2026-11-01.md). El job `analitica` actualiza la entrega diariamente tras la captura.
+La edición del 7 de noviembre ejecuta el ETL desde 1,015,811 capturas extraídas, reconstruye 683,942 observaciones,
+reproduce el Avance 1 y documenta las seis fases de CRISP-DM. Incluye extracción de una evidencia pública real,
+cobertura diaria, Isolation Forest temporal, búsqueda por nombre y reglas de precio con demo de Sears/Liverpool.
+
+Produce `entrega_sconto.zip`: dataset limpio completo en Parquet/CSV.gz, auditoría, diccionario y un segundo ZIP
+con SQLite, tablas de consulta, JSON de la app, índice de búsqueda y manifiestos. Ver [CONTRATO_APP.md](CONTRATO_APP.md).
+La interfaz instalable y la actualización diaria del nuevo contrato se integrarán en la siguiente fase.
+El job `analitica` existente sigue actualizando el [contrato web anterior](CONTRATO_WEB.md).
+
+En Colab, ejecutar todas las celdas en CPU; al final se puede activar `DESCARGAR` o `GUARDAR_EN_DRIVE`.
+El bootstrap descarga entradas públicas congeladas y verifica cada hash. Para repetir la comprobación local
+con las entradas del corte disponibles: `python notebooks/ejecutar_notebook_03.py`.
+El generador `notebooks/crear_notebook_03.py` mantiene el notebook a partir de `config/avance2.json`.
 
 Consulta pública: [Sconto · Antes de comprar](https://d1512pb.github.io/sconto-reale-o-falso/).
 GitHub Pages publica una proyección JSON del mart; no necesita servidor, nuevas cuentas ni costos.

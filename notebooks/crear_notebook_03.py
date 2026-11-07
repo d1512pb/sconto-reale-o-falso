@@ -176,7 +176,9 @@ gold = dict(observaciones=obs, exclusiones=exclusiones, productos=entrada['produ
             series_evento=series_evento, sensibilidad=sensibilidad, matriz_modelo=matriz,
             matriz_modelo_brecha=matriz_brecha, metadatos_modelo=metadatos)
 for nombre in ('matriz_modelo', 'matriz_modelo_brecha', 'metadatos_modelo'):
-    pd.testing.assert_frame_equal(gold[nombre], referencia_publicada[nombre], check_dtype=False)
+    calculada = gold[nombre].astype(object).where(gold[nombre].notna(), None)
+    publicada = referencia_publicada[nombre].astype(object).where(referencia_publicada[nombre].notna(), None)
+    pd.testing.assert_frame_equal(calculada, publicada, check_dtype=False, check_exact=True)
 qqp25 = obs.loc[obs.fuente.eq('qqp_cdmx') & obs.fecha_precio.dt.year.eq(2025)]
 bf25 = series_evento.loc[series_evento.evento_id.eq('BF2025') & series_evento.plataforma_serie.eq('qqp_cdmx')]
 assert len(qqp25) == 39363
@@ -358,6 +360,10 @@ feed = dict(version='sconto-app-v1', fecha_corte=CORTE, vigencia_maxima_dias=1,
             requiere_confirmacion_sku=True, precio_total_verificado=False,
             reglas={'ventaja_minima_pct': 5, 'cuantil_favorable': .25, 'cuantil_alto': .75},
             contrato='CONTRATO_APP.md')
+series_app = tablas['series'].loc[tablas['series'].producto_canonico_id.isin(compra['catalogo_consulta'].producto_canonico_id)]
+feed['series'] = registros(series_app)
+feed['referencias'] = registros(tablas['referencias_base'].loc[tablas['referencias_base'].serie_id.isin(series_app.serie_id)])
+feed['historial'] = registros(tablas['precios_diarios'].loc[tablas['precios_diarios'].serie_id.isin(series_app.serie_id)])
 manifest = exportar(tablas, analisis, SALIDA, fuente, CORTE,
                     extras_json={'app_feed.json': feed, 'indice_busqueda.json': buscador.indice()})
 import sqlite3
@@ -384,8 +390,9 @@ for nombre, tabla in gold.items():
         else:
             exportable.to_csv(destino, index=False, compression={'method': 'gzip', 'mtime': 0})
         archivos_etl.append(destino)
-diccionario = pd.DataFrame([dict(tabla=nombre, campo=campo, tipo=str(tabla[campo].dtype), nulos=int(tabla[campo].isna().sum()))
-                            for nombre, tabla in {**gold, **tablas}.items() for campo in tabla.columns])
+diccionario = pd.DataFrame([dict(capa=capa, tabla=nombre, campo=campo, tipo=str(tabla[campo].dtype), nulos=int(tabla[campo].isna().sum()))
+                            for capa, coleccion in [('etl', gold), ('app', tablas)]
+                            for nombre, tabla in coleccion.items() for campo in tabla.columns])
 diccionario.to_csv(ETL / 'esquema.csv', index=False)
 archivos_etl.append(ETL / 'esquema.csv')
 auditoria_etl.to_csv(ETL / 'auditoria_etl.csv', index=False)

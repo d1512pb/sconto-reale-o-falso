@@ -19,8 +19,8 @@ El notebook 03 produce `entrega_sconto.zip`: dataset limpio completo en Parquet 
 | `revision_identidades` | PK obs_id → ofertas_evaluadas; conflictos y descripciones insuficientes |
 | `evaluacion_busqueda` | Casos de aceptación elegidos para la demo; no estimación de exactitud general |
 | `sensibilidad_indicador` | Clasificación con umbrales 5% y 10% por obs_id |
-| `app_feed.json` | Catálogo y ofertas evaluadas, versión, corte y reglas |
-| `indice_busqueda.json` | Vocabulario, IDF y matriz CSR; TF-IDF char_wb 3–5, norma l2, coseno, mínimo 0.15 |
+| `app_feed.json` | Catálogo, ofertas evaluadas, series, referencias e historial diario; versión, corte y reglas |
+| `indice_busqueda.json` | Vocabulario, IDF y matriz CSR; TF-IDF char_wb 3–5, norma l2, coseno mínimo 0.15; ancla de palabra exacta (≥3 caracteres) o difflib ≥0.85 (≥4); excluir contradicciones |
 | `web_feed.json` | Contrato anterior conservado; incluye series y referencias de la lista diaria |
 | `sconto_web.sqlite` | Todas las tablas de aplicación, con claves e integridad comprobadas |
 | `modelo.json` | Dominio, muestra, semilla y límites de Isolation Forest |

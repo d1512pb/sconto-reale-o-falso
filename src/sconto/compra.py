@@ -103,7 +103,7 @@ class Buscador:
         return dict(version='sconto-busqueda-v1', normalizacion='Mayúsculas sin acentos, espacios compactados',
                     algoritmo='TF-IDF char_wb 3..5, l2, coseno >=0.15; ancla léxica exacta >=3 caracteres o difflib >=0.85 con >=4; sin contradicciones',
                     ids=self.productos.producto_canonico_id.tolist(),
-                    vocabulario=self.vectorizador.vocabulary_, idf=self.vectorizador.idf_.tolist(),
+                    vocabulario={k: int(v) for k, v in self.vectorizador.vocabulary_.items()}, idf=self.vectorizador.idf_.tolist(),
                     matriz_csr=dict(data=matriz.data.tolist(), indices=matriz.indices.tolist(),
                                     indptr=matriz.indptr.tolist(), shape=list(matriz.shape)))
 
