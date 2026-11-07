@@ -69,7 +69,9 @@ runtime = BASE / 'runtime'
 BASE.mkdir(parents=True, exist_ok=True)
 raw = f"https://raw.githubusercontent.com/{CONFIG['repo']}/{CONFIG['revision_codigo']}/"
 for relativo, digest in CONFIG['archivos_codigo'].items():
-    if LOCAL:
+    if digest == hashlib.sha256(b'').hexdigest():
+        contenido = b''
+    elif LOCAL:
         contenido = subprocess.check_output(['git', '-C', LOCAL, 'show', CONFIG['revision_codigo'] + ':' + relativo])
     else:
         respuesta = requests.get(raw + relativo, timeout=90)
