@@ -1,23 +1,11 @@
 {
   "repo": "d1512pb/sconto-reale-o-falso",
-  "revision_codigo": "d5732fb43c3d3f63c75edb656c35b6f39aea6125",
+  "revision_codigo": "03832f59a4e90c1e94fb315a6f04081f0c42b4fa",
   "snapshot": {
-    "fecha": "2026-11-01",
-    "archivo": "sconto_colab_2026-11-01_verificado_2c098732f67a.zip",
-    "sha256_zip": "2c098732f67a411c2d009f19f96986e14e96f1acf35bb04eafb5aa7cb0c043cd",
-    "filas": 677828,
-    "tablas": {
-      "observaciones": 677828,
-      "exclusiones": 0,
-      "productos": 1724,
-      "eventos": 3,
-      "series_evento": 18543,
-      "sensibilidad": 36,
-      "matriz_modelo": 298,
-      "matriz_modelo_brecha": 0,
-      "metadatos_modelo": 298
-    },
-    "url": "https://github.com/d1512pb/sconto-reale-o-falso/releases/download/datos/sconto_colab_2026-11-01_verificado_2c098732f67a.zip"
+    "fecha": "2026-11-07",
+    "archivo": "sconto_colab_2026-11-07_verificado_d5c9bf3945d1.zip",
+    "sha256_zip": "d5c9bf3945d1b604703db97ffdb17a2afcbe7b1ea9cb4080dbb3ec75da21dc74",
+    "url": "https://github.com/d1512pb/sconto-reale-o-falso/releases/download/datos/sconto_colab_2026-11-07_verificado_d5c9bf3945d1.zip"
   },
   "dependencias": [
     "numpy==2.4.6",
@@ -25,13 +13,37 @@
     "pyarrow==26.0.0",
     "scikit-learn==1.9.1",
     "matplotlib==3.11.2",
-    "requests==2.34.2"
+    "requests==2.34.2",
+    "PyYAML==6.0.3",
+    "python-dotenv==1.2.4",
+    "beautifulsoup4==4.15.0"
   ],
   "archivos_codigo": {
+    "src/sconto/__init__.py": "1a914e50ecaabc28841fb53719aa0274dfaee6c0ca865afe21ccb45f800bec0e",
     "src/sconto/colab.py": "7fd7d7d49cce2647a822d1ff93097c1dab0d4b9a8e425a427175e6301ed2facb",
     "src/sconto/consulta.py": "a1247ed63ae91e567c7da58cfb7af307d605173c94355123d65d3aed51864323",
     "src/sconto/mineria.py": "370fa2cc1934f5b76575b6f4f80eacfcae28fe3887fa3cbb61ead09ca8ebd336",
-    "src/sconto/mart.py": "f119080c1b5a8bb1199d3e8e6aaad9a9a7c87e6c3935a7343d444e95c0b5fe06",
-    "config/preciometro_diarios.csv": "0fcafb4b4493321b0986e1c06d159dd47ab16145d6a9912bf77a30d0ea404591"
+    "src/sconto/mart.py": "8adf45f747d565d1e7c6def57a5484bb14b849d10442c2be85c0bf00760c7888",
+    "src/sconto/compra.py": "8b86cf1526adc38006ac99425170dbe2cdf706a1fcca0776e9c5aa2ef482fec3",
+    "src/sconto/cuaderno.py": "5b9e84aae284170ce5977851dca1f25bc07fd4eb7f57f3b605b20fcabb2fdd15",
+    "src/sconto/dataset.py": "c74b8a2a6db2efa1f46d9527142cb55d5b9fc2711e4b38ac712cb0f4e94eb11e",
+    "src/sconto/almacen.py": "22c22447f3a634787b12b2f283f7bc2eaddb67dcc4d62105f030a4db38ac81cf",
+    "src/sconto/esquema.py": "4c0e4c2ce58b1bc0f1706027590b576f036abc892de73014ccca13aa1af494bf",
+    "src/sconto/eventos.py": "58942c444b38aae6a90b03656d8f0e1e44138f3cc3e014cdbc622479a0be5e43",
+    "src/sconto/normalizar.py": "b9985cb1a8e461042d1d9ed224a045cc543a1f3397550986ba8e236e13f970f2",
+    "src/sconto/rutas.py": "82a1cccb5ba0e6d13e5afb034dd29299123deec7d45b5125a0e6f91ac0df967c",
+    "src/sconto/cliente.py": "3c604c12ee134efd2a16530b82b9043f5450cabf2c71a67f93531aa567433297",
+    "src/sconto/fuentes/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/sconto/fuentes/preciometro.py": "21fc2cc29fbb55b949f02fa3761bbbf407885bf71528f8233a17069b2c449100",
+    "config/preciometro_diarios.csv": "0fcafb4b4493321b0986e1c06d159dd47ab16145d6a9912bf77a30d0ea404591",
+    "DICCIONARIO.md": "449da0f711d82ae89fca70035a456f3435177c6074e314294b4ace1cbbc42291",
+    "CONTRATO_APP.md": "132e722f7461c62d5cdd00037f02adf489b746fb43d7eeb3620976c7f4b0c8e3",
+    "data/evidencia/preciometro/2026-11-07/11008.json.gz": "dd2f30559bd6b83a5b94907ea89f52c1ca0d5f9b0e86e7ca7cdd9f87d8b376c4"
+  },
+  "entrada": {
+    "fecha": "2026-11-07",
+    "archivo": "sconto_entrada_notebook_2026-11-07_verificado_7250c0371be8.zip",
+    "sha256_zip": "7250c0371be88ec26ad20974d1069d3a2db380cdf633b027f68ea8247517cb17",
+    "url": "https://github.com/d1512pb/sconto-reale-o-falso/releases/download/datos/sconto_entrada_notebook_2026-11-07_verificado_7250c0371be8.zip"
   }
 }
