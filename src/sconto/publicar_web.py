@@ -49,7 +49,7 @@ def construir(datos, salida, recursos):
             destino = salida / archivo.relative_to(recursos)
             destino.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(archivo, destino)
-    recursos_shell = ['index.html', 'styles.css', 'app.mjs', 'motor.mjs', 'datos.mjs', 'manifest.webmanifest',
+    recursos_shell = ['index.html', 'styles.css', 'interfaz.css', 'app.mjs', 'motor.mjs', 'datos.mjs', 'interfaz.mjs', 'manifest.webmanifest',
                       'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/logo.svg']
     version = hashlib.sha256(b''.join((salida / p).read_bytes() for p in recursos_shell)).hexdigest()[:16]
     trabajador = (salida / 'sw.js').read_text(encoding='utf-8').replace('__SCONTO_VERSION__', version)

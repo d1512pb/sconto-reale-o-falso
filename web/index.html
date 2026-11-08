@@ -12,6 +12,7 @@
   <link rel="icon" href="icons/logo.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="interfaz.css">
 </head>
 <body>
   <a class="skip" href="#contenido">Saltar al contenido</a>
@@ -25,7 +26,7 @@
   </header>
   <main id="contenido">
     <div id="actualizacion" class="update-bar" hidden><span>Hay una nueva versión de Sconto.</span><button id="actualizar-app">Actualizar app</button></div>
-    <div class="data-bar"><span id="estado-datos" role="status">Cargando precios…</span><button id="refrescar" class="text-button" aria-label="Actualizar datos">↻ Actualizar</button></div>
+    <div class="data-bar"><span id="estado-datos" role="status">Cargando precios…</span><button id="refrescar" class="text-button refresh" aria-label="Actualizar datos"><span class="refresh-icon" aria-hidden="true">↻</span> <span id="refrescar-texto">Actualizar</span></button></div>
     <div id="aviso" class="notice" role="status" hidden></div>
     <section id="error" class="empty" role="alert" hidden><h1>No pudimos abrir los datos</h1><p id="error-texto"></p><button id="reintentar" class="primary">Volver a intentar</button></section>
     <section id="inicio">
@@ -37,6 +38,7 @@
         <span aria-hidden="true" class="search-icon">⌕</span>
         <label class="sr-only" for="busqueda">Nombre o modelo del producto</label>
         <input id="busqueda" type="search" placeholder="Busca una laptop, audífonos o un modelo…" maxlength="200" autocomplete="off" enterkeyhint="search" disabled>
+        <button id="quitar-busqueda" class="clear-search" type="button" aria-label="Borrar búsqueda" hidden>×</button>
         <button class="primary" type="submit">Buscar <span aria-hidden="true">↗</span></button>
       </form>
       <div class="suggestions"><span>Prueba con</span><button data-query="Lenovo IdeaPad Slim 3">Lenovo IdeaPad Slim 3 ↗</button><button data-query="AirPods Pro 3">AirPods Pro 3 ↗</button></div>
@@ -46,10 +48,11 @@
         </div>
         <label class="store-filter">Tienda <select id="tienda"><option value="">Todas</option><option value="sears">Sears</option><option value="liverpool">Liverpool</option></select></label>
       </div>
-      <div class="section-heading"><h2 id="titulo-resultados">Tecnología para tu próxima compra</h2><span id="conteo" role="status"></span></div>
+      <div id="filtros-activos" class="active-filters" hidden><span><span class="filter-label">Viendo</span> <strong id="descripcion-filtros"></strong></span><button id="quitar-filtros" class="text-button">Quitar filtros ×</button></div>
+      <div id="resultados" class="section-heading" tabindex="-1"><h2 id="titulo-resultados">Tecnología para tu próxima compra</h2><span id="conteo" role="status"></span></div>
       <p class="muted results-note">Elige la variante exacta. Son precios publicados; envío y disponibilidad se confirman en la tienda.</p>
       <div id="productos" class="product-grid" aria-busy="true"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
-      <div id="sin-resultados" class="empty" hidden><span aria-hidden="true">⌕</span><h2>No encontramos ese producto</h2><p>Prueba con la marca y el modelo. Nuestro catálogo es limitado: no significa que el producto no exista.</p><button id="limpiar" class="secondary">Ver catálogo</button></div>
+      <div id="sin-resultados" class="empty" hidden><span aria-hidden="true">⌕</span><h2 id="sin-resultados-titulo">No encontramos coincidencias</h2><p id="sin-resultados-texto">Prueba con la marca y el modelo. Nuestro catálogo es limitado: no significa que el producto no exista.</p><button id="limpiar" class="secondary">Ver catálogo</button></div>
       <button id="ver-mas" class="secondary more" hidden>Ver más productos</button>
       <div class="principles"><div><span>01</span><strong>La misma variante</strong><p>RAM, capacidad y generación cambian la comparación.</p></div><div><span>02</span><strong>Precios con fecha</strong><p>Un registro antiguo nunca se presenta como una oferta vigente.</p></div><div><span>03</span><strong>Sin inventar respuestas</strong><p>Si falta evidencia, te decimos qué falta.</p></div></div>
     </section>
@@ -57,10 +60,11 @@
       <div class="detail-nav"><a id="volver" href="#/">← Volver a resultados</a><button id="compartir" class="text-button">Copiar enlace ↗</button></div>
       <div class="product-heading"><div id="ilustracion" aria-hidden="true"></div><div><p class="eyebrow" id="categoria-producto"></p><h1 id="nombre-producto" tabindex="-1"></h1><p id="atributos" class="muted"></p></div></div>
       <div id="resumen" class="summary" role="status"></div>
+      <nav id="atajos-detalle" class="detail-shortcuts" aria-label="Explorar este producto"><button class="primary" data-scroll="seccion-ofertas">Comparar tiendas <span aria-hidden="true">↓</span></button><button class="secondary" data-scroll="historia">Ver historial <span aria-hidden="true">↘</span></button></nav>
       <div class="detail-grid">
         <div class="main-column">
-          <section class="panel history-panel"><div class="section-heading"><h2>La historia del precio</h2><span class="label">Referencia de mercado</span></div><p class="muted">El mínimo observado entre tiendas cada día. No es el historial de Sears ni de un solo vendedor.</p><div id="estadisticas" class="stats"></div><div id="grafico" class="chart"></div><div class="legend"><span><i class="dot"></i> Día observado</span><span><i class="base"></i> Base histórica</span><span><i class="event"></i> Buen Fin</span></div><p id="cobertura" class="muted"></p><details><summary>Ver puntos del historial</summary><div class="table-scroll" id="tabla-historia"></div></details></section>
-          <section aria-labelledby="titulo-ofertas"><div class="section-heading offers-heading"><h2 id="titulo-ofertas">Dónde lo vimos</h2><label class="sr-only" for="tienda-ofertas">Filtrar ofertas por tienda</label><select id="tienda-ofertas"><option value="">Todas las tiendas</option><option value="sears">Sears</option><option value="liverpool">Liverpool</option></select></div><p class="muted">Primero, ofertas recientes con títulos compatibles. El precio publicado no incluye cargos desconocidos.</p><div id="ofertas" class="offers"></div><button id="mas-ofertas" class="secondary more" hidden>Ver más ofertas</button></section>
+          <section id="historia" class="panel history-panel" tabindex="-1"><div class="section-heading"><h2>La historia del precio</h2><span class="label">Referencia de mercado</span></div><p class="muted">El mínimo observado entre tiendas cada día. No es el historial de Sears ni de un solo vendedor.</p><div id="estadisticas" class="stats"></div><div id="grafico" class="chart"></div><div class="legend"><span><i class="dot"></i> Día observado</span><span><i class="base"></i> Base histórica</span><span><i class="event"></i> Buen Fin</span></div><p id="cobertura" class="muted"></p><details><summary>Ver puntos del historial</summary><div class="table-scroll" id="tabla-historia"></div></details></section>
+          <section id="seccion-ofertas" aria-labelledby="titulo-ofertas" tabindex="-1"><div class="section-heading offers-heading"><h2 id="titulo-ofertas">Dónde lo vimos</h2><label class="sr-only" for="tienda-ofertas">Filtrar ofertas por tienda</label><select id="tienda-ofertas"><option value="">Todas las tiendas</option><option value="sears">Sears</option><option value="liverpool">Liverpool</option></select></div><p class="muted">Primero, ofertas recientes con títulos compatibles. El precio publicado no incluye cargos desconocidos.</p><p id="conteo-ofertas" class="offer-count" role="status"></p><div id="ofertas" class="offers"></div><button id="mas-ofertas" class="secondary more" hidden>Ver más ofertas</button></section>
         </div>
         <aside class="side-column"><section class="panel guide"><p class="eyebrow">ANTES DE DECIDIR</p><h2>Compra con contexto.</h2><ul><li>Comprueba modelo, RAM y capacidad.</li><li>Revisa quién vende, especialmente en marketplaces.</li><li>Confirma inventario, envío y precio final.</li></ul><p>Los títulos compatibles aún necesitan confirmar el código del fabricante.</p></section><details class="panel method"><summary>Cómo leemos una oferta</summary><p><strong>Precio favorable:</strong> al menos 5% por debajo de la mediana de la base y dentro del 25% de precios más bajos.</p><p><strong>Precio alto:</strong> al menos 5% por encima de la mediana y dentro del 25% superior.</p><p><strong>Sin señal clara:</strong> los demás precios comparables.</p><p><strong>Evidencia insuficiente:</strong> falta identidad, historia o un dato reciente.</p><p>Exigimos cuatro fechas de base en al menos 21 días. Esta señal de precio no certifica calidad ni fraude.</p></details></aside>
       </div>

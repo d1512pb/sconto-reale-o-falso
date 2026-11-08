@@ -1,5 +1,5 @@
 const CACHE = 'sconto-shell-__SCONTO_VERSION__';
-const SHELL = ['index.html', 'styles.css', 'app.mjs', 'motor.mjs', 'datos.mjs', 'manifest.webmanifest',
+const SHELL = ['index.html', 'styles.css', 'interfaz.css', 'app.mjs', 'motor.mjs', 'datos.mjs', 'interfaz.mjs', 'manifest.webmanifest',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/logo.svg'];
 const urls = new Set(SHELL.map(p => new URL(p, self.registration.scope).href));
 

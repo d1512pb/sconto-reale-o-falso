@@ -133,6 +133,11 @@ Hay filtros de laptops, audífonos, Sears y Liverpool; cada ficha muestra vended
 historia, referencia de mercado y una señal explicada. Los anuncios sólo aparecen cuando fueron observados.
 No hay registro, perfiles, publicaciones ni seguimiento de búsquedas.
 
+La interfaz incluye transiciones breves, filtros activos fáciles de quitar y accesos a tiendas e historial.
+Al seleccionar Sears o Liverpool, tanto la tarjeta como el resumen usan las ofertas de esa plataforma.
+Puedes tocar la gráfica o recorrer sus días con el control deslizante y las flechas del teclado. No se rellenan
+fechas faltantes. Las animaciones respetan la preferencia de movimiento reducido del dispositivo.
+
 - **Android / Chrome:** menú ⋮ → Instalar aplicación (o Añadir a pantalla de inicio).
 - **iPhone / Safari:** Compartir → Añadir a pantalla de inicio.
 - El botón **Instalar app** incluye las instrucciones y ofrece el instalador del navegador cuando está disponible.

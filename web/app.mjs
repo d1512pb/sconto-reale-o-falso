@@ -1,5 +1,6 @@
 import {buscar, normalizar, fechaMexico, edadDias, ordenarOfertas, enlaceSeguro} from './motor.mjs';
 import {cargarDatos} from './datos.mjs';
+import {entrada, irA} from './interfaz.mjs';
 
 const $ = id => document.getElementById(id);
 const el = (tag, texto, clase) => {
@@ -15,9 +16,12 @@ const tonos = {precio_favorable: 'good', precio_alto: 'high', sin_senal_clara: '
 let datos, carga, cargando = false, ultimoIntento = 0, fechaMostrada = fechaMexico(), recargarTrasActualizacion = false;
 let categoria = 'foco', consulta = '', tienda = '', limite = 12, limiteOfertas = 8, anterior = '#/', promptInstalar, registro;
 let porProducto = new Map(), ofertasPorProducto = new Map();
+let productosVisibles = '', posicionResultados = 0, tarjetaAnterior = '', ultimaVista = '';
+const seleccionHistoria = new Map();
 
 function notificar(texto) {
   $('toast').textContent = texto; $('toast').hidden = false;
+  entrada($('toast'), 0);
   clearTimeout(notificar.timer);
   notificar.timer = setTimeout(() => { $('toast').hidden = true; }, 4000);
 }
@@ -35,10 +39,14 @@ function ilustracion(p) {
   return cont.firstElementChild;
 }
 function badge(oferta) {
-  return el('span', etiquetas[oferta?.indicador] || 'Evidencia insuficiente', 'badge ' + (tonos[oferta?.indicador] || 'missing'));
+  const b = el('span', undefined, 'badge ' + (tonos[oferta?.indicador] || 'missing'));
+  const icono = el('span', {precio_favorable:'↘', precio_alto:'↗', sin_senal_clara:'↔'}[oferta?.indicador] || '?', 'signal-icon');
+  icono.setAttribute('aria-hidden', 'true');
+  b.append(icono, el('span', etiquetas[oferta?.indicador] || 'Evidencia insuficiente'));
+  return b;
 }
 function ofertasProducto(id) { return ordenarOfertas(ofertasPorProducto.get(id) || [], fechaMexico()); }
-function opcionMenor(id) { return ofertasProducto(id).find(o => o.comparable); }
+function opcionMenor(id, filtro = '') { return ofertasProducto(id).find(o => o.comparable && (!filtro || normalizar(o.plataforma).toLowerCase() === filtro)); }
 function estadoConexion() {
   if (!datos) return;
   const edad = edadDias(datos.fecha_corte, fechaMexico()), vieja = edad === null || edad < 0 || edad > 1;
@@ -49,10 +57,12 @@ function estadoConexion() {
   if (!carga?.guardado) mensajes.push('No se pudo guardar la copia sin conexión en este navegador.');
   $('aviso').textContent = mensajes.join(' ');
   $('aviso').hidden = !mensajes.length;
+  $('estado-datos').dataset.estado = vieja ? 'antiguo' : !navigator.onLine || carga?.copia ? 'copia' : 'listo';
 }
-async function actualizar() {
+async function actualizar(manual = false) {
   if (cargando) return;
   cargando = true; ultimoIntento = Date.now(); $('refrescar').disabled = true;
+  $('refrescar').classList.add('is-loading'); $('refrescar-texto').textContent = 'Actualizando';
   try {
     carga = await cargarDatos(); datos = carga.datos;
     porProducto = new Map(datos.productos.map(p => [p.producto_canonico_id, p]));
@@ -63,12 +73,13 @@ async function actualizar() {
     }
     $('error').hidden = true; $('busqueda').disabled = false;
     estadoConexion(); ruta(false);
+    if (manual) notificar(carga.copia ? 'Sin actualización disponible. Conservamos la copia guardada.' : 'Datos comprobados · corte ' + datos.fecha_corte + '.');
   } catch (error) {
     if (!datos) {
       $('error-texto').textContent = error.message; $('error').hidden = false; $('inicio').hidden = true; $('detalle').hidden = true;
       $('estado-datos').textContent = 'Datos no disponibles';
     } else { notificar('Conservamos la copia anterior. ' + error.message); }
-  } finally { cargando = false; $('refrescar').disabled = false; }
+  } finally { cargando = false; $('refrescar').disabled = false; $('refrescar').classList.remove('is-loading'); $('refrescar-texto').textContent = 'Actualizar'; }
 }
 function hashBusqueda() {
   const q = new URLSearchParams();
@@ -82,29 +93,40 @@ function filtrarProductos() {
   let lista = consulta.trim() ? buscar(consulta, datos.productos, datos.busqueda) : [...datos.productos];
   lista = lista.filter(p => categoria === 'todos' || categoria === 'laptop' && laptop(p) || categoria === 'audifonos' && audifonos(p) || categoria === 'foco' && (laptop(p) || audifonos(p)) && !p.es_paquete);
   if (tienda) lista = lista.filter(p => (ofertasPorProducto.get(p.producto_canonico_id) || []).some(o => normalizar(o.plataforma).toLowerCase() === tienda));
-  if (!consulta.trim()) lista.sort((a, b) => Number(!!opcionMenor(b.producto_canonico_id)) - Number(!!opcionMenor(a.producto_canonico_id)) || Number(laptop(b)) - Number(laptop(a)) || a.nombre.localeCompare(b.nombre, 'es'));
+  if (!consulta.trim()) lista.sort((a, b) => Number(!!opcionMenor(b.producto_canonico_id, tienda)) - Number(!!opcionMenor(a.producto_canonico_id, tienda)) || Number(laptop(b)) - Number(laptop(a)) || a.nombre.localeCompare(b.nombre, 'es'));
   return lista;
 }
-function renderProductos() {
+function renderProductos(desde = 0) {
   $('busqueda').value = consulta; $('tienda').value = tienda;
   for (const b of $('categorias').querySelectorAll('button')) b.setAttribute('aria-pressed', String(b.dataset.category === categoria));
   const lista = filtrarProductos();
   $('titulo-resultados').textContent = consulta ? 'Resultados para “' + consulta + '”' : 'Tecnología para tu próxima compra';
   $('conteo').textContent = lista.length + (lista.length === 1 ? ' producto' : ' productos');
+  const activos = [consulta && '“' + consulta + '”', tienda && (tienda === 'sears' ? 'Sears' : 'Liverpool'), categoria === 'laptop' ? 'Laptops' : categoria === 'audifonos' ? 'Audífonos' : ''].filter(Boolean);
+  $('filtros-activos').hidden = !activos.length;
+  $('descripcion-filtros').textContent = activos.join(' · ');
+  $('quitar-busqueda').hidden = !consulta;
+  $('sin-resultados-titulo').textContent = consulta && consulta.length < 3 ? 'Escribe al menos 3 caracteres' : 'No encontramos coincidencias';
+  $('sin-resultados-texto').textContent = activos.length > 1 ? 'Prueba quitando algún filtro o usando sólo la marca y el modelo. Nuestro catálogo es limitado.' : 'Prueba con la marca y el modelo. Nuestro catálogo es limitado: no significa que el producto no exista.';
+  const clave = [consulta, categoria, tienda, limite, datos.fecha_corte].join('|');
+  const animar = productosVisibles !== clave; productosVisibles = clave;
   $('productos').replaceChildren(); $('productos').setAttribute('aria-busy', 'false');
   for (const p of lista.slice(0, limite)) {
-    const a = el('a', undefined, 'product-card'); a.href = '#/producto/' + encodeURIComponent(p.producto_canonico_id);
+    const a = el('a', undefined, 'product-card'); a.href = '#/producto/' + encodeURIComponent(p.producto_canonico_id) + (tienda ? '?tienda=' + tienda : '');
+    a.dataset.producto = p.producto_canonico_id;
     const art = el('div', undefined, 'product-art');
     art.append(el('span', categoriaNombre(p), 'art-label'), ilustracion(p), el('span', '↗', 'art-arrow'));
-    const body = el('div', undefined, 'card-body'), mejor = opcionMenor(p.producto_canonico_id);
+    const body = el('div', undefined, 'card-body'), mejor = opcionMenor(p.producto_canonico_id, tienda);
     const tiendas = new Set((ofertasPorProducto.get(p.producto_canonico_id) || []).map(o => o.plataforma));
     body.append(el('span', p.marca || categoriaNombre(p), 'card-brand'), el('h3', p.nombre),
       el('p', (tiendas.size ? tiendas.size + (tiendas.size === 1 ? ' tienda con registro' : ' tiendas con registro') : 'Sin ofertas por tienda') + (p.es_paquete ? ' · paquete' : ''), 'card-meta'));
     const pie = el('div', undefined, 'card-price'), precio = el('div');
-    precio.append(el('small', mejor ? 'Desde · precio reciente' : 'Sin precio comparable reciente'), el('strong', mejor ? money(mejor.precio) : 'Ver historia'));
+    precio.append(el('small', mejor ? 'Desde en ' + mejor.plataforma : tienda ? 'Sin precio comparable en ' + (tienda === 'sears' ? 'Sears' : 'Liverpool') : 'Sin precio comparable reciente'), el('strong', mejor ? money(mejor.precio) : 'Ver historia'));
     pie.append(precio, badge(mejor)); body.append(pie); a.append(art, body); $('productos').append(a);
   }
   $('sin-resultados').hidden = lista.length > 0; $('ver-mas').hidden = lista.length <= limite;
+  if (animar) entrada(Array.from($('productos').children).slice(desde));
+  if (!lista.length) entrada($('sin-resultados'));
 }
 function svg(tag, attrs, texto) {
   const n = document.createElementNS('http://www.w3.org/2000/svg', tag);
@@ -146,11 +168,36 @@ function grafico(p) {
     const t = min + (max - min) * i / 3;
     dibujo.append(svg('text', {x: x(t), y: H - 8, 'text-anchor': 'middle', fill: '#617068', 'font-size': 12}, corto(new Date(t).toISOString().slice(0, 10))));
   }
+  if (ref?.cobertura_base && ref?.base_cerrada) {
+    dibujo.append(svg('line', {x1: L, x2: W - R, y1: y(ref.mediana_base), y2: y(ref.mediana_base), stroke: '#8c985d', 'stroke-dasharray': '5 5', 'stroke-width': 1.5}));
+  }
   for (const p of puntos) {
     const punto = svg('circle', {cx: x(Date.parse(p.fecha_precio)), cy: y(p.precio_mediano), r: 3.1, fill: '#245d4d', opacity: .8});
     punto.append(svg('title', {}, p.fecha_precio + ': ' + money(p.precio_mediano))); dibujo.append(punto);
   }
-  $('grafico').append(dibujo);
+  const guia = svg('line', {y1: T, y2: H - B, stroke: '#245d4d', 'stroke-dasharray': '3 4', opacity: .45});
+  const activo = svg('circle', {r: 5.5, fill: '#245d4d', stroke: '#fffefb', 'stroke-width': 2});
+  dibujo.append(guia, activo);
+  const lectura = el('output', undefined, 'chart-reading'); lectura.setAttribute('for', 'dia-historial');
+  const fecha = el('span'), valor = el('strong'); lectura.append(fecha, valor);
+  const control = el('input'); control.type = 'range'; control.id = 'dia-historial'; control.min = 0; control.max = puntos.length - 1; control.step = 1;
+  control.setAttribute('aria-label', 'Día del historial'); control.disabled = puntos.length < 2;
+  const seleccionar = i => {
+    const p = puntos[i]; seleccionHistoria.set(s.producto_canonico_id, p.fecha_precio);
+    control.value = i; control.setAttribute('aria-valuetext', p.fecha_precio + ', ' + money(p.precio_mediano));
+    fecha.textContent = corto(p.fecha_precio) + ' ' + p.fecha_precio.slice(0, 4); valor.textContent = money(p.precio_mediano);
+    guia.setAttribute('x1', x(Date.parse(p.fecha_precio))); guia.setAttribute('x2', x(Date.parse(p.fecha_precio)));
+    activo.setAttribute('cx', x(Date.parse(p.fecha_precio))); activo.setAttribute('cy', y(p.precio_mediano));
+  };
+  control.addEventListener('input', () => seleccionar(Number(control.value)));
+  dibujo.addEventListener('pointerdown', e => {
+    const rect = dibujo.getBoundingClientRect(), pos = (e.clientX - rect.left) / rect.width * W;
+    const i = puntos.reduce((mejor, p, i) => Math.abs(x(Date.parse(p.fecha_precio)) - pos) < Math.abs(x(Date.parse(puntos[mejor].fecha_precio)) - pos) ? i : mejor, 0);
+    seleccionar(i);
+  });
+  const guardada = puntos.findIndex(d => d.fecha_precio === seleccionHistoria.get(p.producto_canonico_id));
+  seleccionar(guardada < 0 ? puntos.length - 1 : guardada);
+  $('grafico').append(dibujo, lectura, control, el('p', 'Toca la gráfica o desliza para explorar los días observados. La línea discontinua marca la mediana de la base cuando hay cobertura.', 'chart-help'));
   const tabla = el('table'), cabecera = el('tr'); cabecera.append(el('th', 'Fecha'), el('th', 'Mínimo observado'));
   const thead = el('thead'), tbody = el('tbody'); thead.append(cabecera);
   for (const p of [...puntos].reverse()) { const fila = el('tr'); fila.append(el('td', p.fecha_precio), el('td', money(p.precio_mediano))); tbody.append(fila); }
@@ -164,9 +211,11 @@ function explicacion(o) {
   const d = o.ahorro_referencia_pct, contexto = o.contexto_referencia === 'serie_vendedor' ? 'de este vendedor' : 'del mercado';
   return Math.abs(d).toFixed(1) + '% ' + (d >= 0 ? 'por debajo' : 'por encima') + ' de la mediana histórica ' + contexto + '.';
 }
-function renderOfertas(id) {
+function renderOfertas(id, animar = false) {
   const filtro = $('tienda-ofertas').value;
   const lista = ofertasProducto(id).filter(o => !filtro || normalizar(o.plataforma).toLowerCase() === filtro);
+  const recientes = lista.filter(o => o.comparable).length;
+  $('conteo-ofertas').textContent = lista.length + (lista.length === 1 ? ' oferta registrada' : ' ofertas registradas') + (filtro ? ' en ' + (filtro === 'sears' ? 'Sears' : 'Liverpool') : '') + ' · ' + recientes + (recientes === 1 ? ' reciente con título compatible' : ' recientes con título compatible');
   $('ofertas').replaceChildren();
   for (const [i, o] of lista.slice(0, limiteOfertas).entries()) {
     const art = el('article', undefined, 'offer' + (i === 0 && o.comparable ? ' first' : ''));
@@ -191,9 +240,26 @@ function renderOfertas(id) {
   }
   if (!lista.length) $('ofertas').append(el('p', 'No hay ofertas registradas para este producto en la tienda seleccionada.', 'notice'));
   $('mas-ofertas').hidden = lista.length <= limiteOfertas;
+  if (animar) entrada($('ofertas').children);
+}
+function renderResumen(id) {
+  const filtro = $('tienda-ofertas').value, nombreTienda = filtro === 'sears' ? 'Sears' : 'Liverpool';
+  const mejor = opcionMenor(id, filtro), box = $('resumen'); box.replaceChildren(); box.classList.toggle('warning', !mejor);
+  box.dataset.signal = tonos[mejor?.indicador] || 'missing';
+  const texto = el('div');
+  if (mejor) {
+    texto.append(badge(mejor), el('h2', mejor.indicador === 'precio_favorable' ? 'Un precio bajo frente a su historia.' : mejor.indicador === 'precio_alto' ? 'El precio reciente supera su referencia.' : mejor.indicador === 'sin_senal_clara' ? 'Una oferta sin señal concluyente.' : 'Tenemos precio; falta más historia.'),
+      el('p', explicacion(mejor) + ' Es el menor precio reciente con título compatible de nuestra muestra' + (filtro ? ' en ' + nombreTienda : '') + '.'),
+      el('p', 'Pendiente confirmar variante, inventario y envío. No es una verificación del precio final.', 'disclaimer'));
+    const precio = el('div', money(mejor.precio), 'summary-price'); precio.append(el('small', mejor.plataforma + ' · ' + mejor.fecha_precio)); box.append(texto, precio);
+  } else {
+    texto.append(badge(null), el('h2', 'Todavía falta evidencia comparable.'), el('p', 'Puedes consultar las ofertas registradas y el historial. No encontramos una oferta reciente con identidad suficiente' + (filtro ? ' en ' + nombreTienda : '') + ' para compararla.'));
+    box.append(texto);
+  }
 }
 function renderDetalle(id, foco) {
   const p = porProducto.get(id);
+  $('atajos-detalle').hidden = !p;
   if (!p) {
     $('nombre-producto').textContent = 'Producto no encontrado'; $('categoria-producto').textContent = 'Consulta';
     $('ilustracion').replaceChildren(); $('atributos').textContent = '';
@@ -203,47 +269,63 @@ function renderDetalle(id, foco) {
   document.querySelector('.detail-grid').hidden = false;
   $('nombre-producto').textContent = p.nombre; $('categoria-producto').textContent = categoriaNombre(p);
   $('ilustracion').replaceChildren(ilustracion(p)); $('atributos').textContent = 'Confirma la variante y el código del fabricante antes de comprar.' + (p.es_paquete ? ' Este registro corresponde a un paquete.' : '');
-  const mejor = opcionMenor(id), box = $('resumen'); box.replaceChildren(); box.classList.toggle('warning', !mejor);
-  const texto = el('div');
-  if (mejor) {
-    texto.append(badge(mejor), el('h2', mejor.indicador === 'precio_favorable' ? 'Un precio bajo frente a su historia.' : mejor.indicador === 'precio_alto' ? 'El precio reciente supera su referencia.' : mejor.indicador === 'sin_senal_clara' ? 'Una oferta sin señal concluyente.' : 'Tenemos precio; falta más historia.'),
-      el('p', explicacion(mejor) + ' Es el menor precio reciente con título compatible de nuestra muestra.'),
-      el('p', 'Pendiente confirmar variante, inventario y envío. No es una verificación del precio final.', 'disclaimer'));
-    const precio = el('div', money(mejor.precio), 'summary-price'); precio.append(el('small', mejor.plataforma + ' · ' + mejor.fecha_precio)); box.append(texto, precio);
-  } else {
-    texto.append(badge(null), el('h2', 'Todavía falta evidencia comparable.'), el('p', 'Puedes consultar las ofertas registradas y el historial. No encontramos una oferta reciente con identidad suficiente para compararla.'));
-    box.append(texto);
-  }
+  renderResumen(id);
   grafico(p); renderOfertas(id);
   if (foco) $('nombre-producto').focus({preventScroll: true});
 }
-function productoActual() { try { return decodeURIComponent(location.hash.split('/producto/')[1] || ''); } catch { return ''; } }
+function productoActual() { try { return decodeURIComponent((location.hash.split('/producto/')[1] || '').split('?')[0]); } catch { return ''; } }
 function ruta(foco = true) {
   if (!datos) return;
   const detalle = location.hash.startsWith('#/producto/');
   $('inicio').hidden = detalle; $('detalle').hidden = !detalle;
-  if (detalle) { $('volver').href = anterior; renderDetalle(productoActual(), foco); }
+  if (detalle) {
+    const filtro = new URLSearchParams(location.hash.split('?')[1] || '').get('tienda');
+    $('tienda-ofertas').value = ['sears', 'liverpool'].includes(filtro) ? filtro : '';
+    $('volver').href = anterior; renderDetalle(productoActual(), foco);
+  }
   else {
     const q = new URLSearchParams(location.hash.split('?')[1] || '');
     consulta = (q.get('q') || '').slice(0, 200); categoria = ['foco', 'todos', 'laptop', 'audifonos'].includes(q.get('categoria')) ? q.get('categoria') : 'foco'; tienda = ['sears', 'liverpool'].includes(q.get('tienda')) ? q.get('tienda') : '';
     anterior = location.hash || '#/'; renderProductos();
   }
   document.title = detalle && porProducto.has(productoActual()) ? porProducto.get(productoActual()).nombre + ' · Sconto' : 'Sconto · Antes de comprar';
-  if (foco) window.scrollTo({top: 0, behavior: 'instant'});
+  if (foco) {
+    const volver = !detalle && ultimaVista === 'detalle' && location.hash === anterior;
+    window.scrollTo({top: volver ? posicionResultados : 0, behavior: 'instant'});
+    if (volver) Array.from($('productos').children).find(a => a.dataset.producto === tarjetaAnterior)?.focus({preventScroll: true});
+    entrada(detalle ? [document.querySelector('.product-heading'), $('resumen'), $('atajos-detalle')] : $('resultados'));
+  }
+  ultimaVista = detalle ? 'detalle' : 'inicio';
 }
-function iniciarBusqueda(valor) { consulta = valor.trim().slice(0, 200); if (consulta) categoria = 'todos'; limite = 12; guardarBusqueda(); renderProductos(); }
-$('busqueda-form').addEventListener('submit', e => { e.preventDefault(); if (datos) iniciarBusqueda($('busqueda').value); });
+function iniciarBusqueda(valor, mostrar = false) {
+  clearTimeout(espera); consulta = valor.trim().slice(0, 200); if (consulta) categoria = 'todos'; limite = 12;
+  guardarBusqueda(); renderProductos();
+  if (mostrar) { $('busqueda').blur(); irA($('resultados')); }
+}
+$('busqueda-form').addEventListener('submit', e => { e.preventDefault(); if (datos) iniciarBusqueda($('busqueda').value, true); });
 let espera;
 $('busqueda').addEventListener('input', () => { clearTimeout(espera); espera = setTimeout(() => iniciarBusqueda($('busqueda').value), 220); });
-for (const b of document.querySelectorAll('[data-query]')) b.addEventListener('click', () => { if (datos) iniciarBusqueda(b.dataset.query); });
+for (const b of document.querySelectorAll('[data-query]')) b.addEventListener('click', () => { if (datos) iniciarBusqueda(b.dataset.query, true); });
 for (const b of $('categorias').querySelectorAll('button')) b.addEventListener('click', () => { if (!datos) return; categoria = b.dataset.category; limite = 12; guardarBusqueda(); renderProductos(); });
 $('tienda').addEventListener('change', () => { if (!datos) return; tienda = $('tienda').value; limite = 12; guardarBusqueda(); renderProductos(); });
 $('limpiar').addEventListener('click', () => { categoria = 'foco'; tienda = ''; iniciarBusqueda(''); });
-$('ver-mas').addEventListener('click', () => { limite += 12; renderProductos(); });
-$('tienda-ofertas').addEventListener('change', () => { limiteOfertas = 8; renderOfertas(productoActual()); });
+$('quitar-filtros').addEventListener('click', () => { categoria = 'foco'; tienda = ''; iniciarBusqueda(''); });
+$('quitar-busqueda').addEventListener('click', () => { iniciarBusqueda(''); $('busqueda').focus(); });
+$('productos').addEventListener('click', e => { const a = e.target.closest('a[data-producto]'); if (a) { posicionResultados = window.scrollY; tarjetaAnterior = a.dataset.producto; } });
+for (const a of document.querySelectorAll('.brand')) a.addEventListener('click', () => { posicionResultados = 0; tarjetaAnterior = ''; });
+$('ver-mas').addEventListener('click', () => {
+  const anterior = limite; limite += 12; renderProductos(anterior);
+  $('productos').children[anterior]?.focus({preventScroll: true});
+});
+$('tienda-ofertas').addEventListener('change', () => {
+  const filtro = $('tienda-ofertas').value, id = productoActual();
+  history.replaceState(null, '', '#/producto/' + encodeURIComponent(id) + (filtro ? '?tienda=' + filtro : ''));
+  limiteOfertas = 8; renderResumen(id); renderOfertas(id, true);
+});
 $('mas-ofertas').addEventListener('click', () => { limiteOfertas += 8; renderOfertas(productoActual()); });
-$('refrescar').addEventListener('click', actualizar); $('reintentar').addEventListener('click', actualizar);
-window.addEventListener('hashchange', () => { limiteOfertas = 8; $('tienda-ofertas').value = ''; ruta(); });
+$('refrescar').addEventListener('click', () => actualizar(true)); $('reintentar').addEventListener('click', () => actualizar(true));
+window.addEventListener('hashchange', () => { limiteOfertas = 8; ruta(); });
+for (const b of document.querySelectorAll('[data-scroll]')) b.addEventListener('click', () => irA($(b.dataset.scroll)));
 $('compartir').addEventListener('click', async () => {
   try { await navigator.clipboard.writeText(location.href); notificar('Enlace copiado.'); } catch { notificar('Puedes copiar la dirección de esta página desde el navegador.'); }
 });

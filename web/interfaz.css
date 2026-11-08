@@ -1,0 +1,139 @@
+:root {
+  --ease: cubic-bezier(.2, .7, .2, 1);
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  background: #f6f7f1ed;
+  backdrop-filter: blur(16px);
+}
+
+button, .product-card, select, .search-box {
+  transition: background-color 180ms, border-color 180ms, box-shadow 180ms, transform 180ms var(--ease);
+}
+button:active:not(:disabled) { transform: scale(.96); }
+.primary { box-shadow: 0 3px 8px #245d4d15; }
+.primary:hover { box-shadow: 0 5px 18px #245d4d24; }
+.search-box:focus-within { box-shadow: 0 0 0 5px #789d4412, 0 10px 28px #254e3610; }
+.clear-search {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: var(--muted);
+  background: #edf1e7;
+  font-size: 25px;
+}
+.clear-search:hover { background: #dfe9d2; }
+input[type=search]::-webkit-search-cancel-button { display: none; }
+.refresh { display: inline-flex; align-items: center; gap: 6px; }
+.refresh-icon { display: inline-block; font-size: 18px; line-height: 1; }
+.is-loading .refresh-icon { animation: spin 900ms linear infinite; }
+#estado-datos[data-estado=copia]::before { background: #b08a43; }
+#estado-datos[data-estado=antiguo]::before { background: #a87555; }
+.hero-note {
+  border: 1px solid #dce3d9;
+  border-radius: 26px 26px 6px 26px;
+  padding: 26px 32px;
+  background: radial-gradient(ellipse at top right, #dce9cb99, transparent 65%);
+}
+.hero-note .mini-arrow { display: inline-block; animation: arrow-enter 550ms var(--ease) both; }
+.hero h1 { animation: appear 450ms var(--ease) both; }
+.suggestions button { text-decoration: none; border-bottom: 1px solid #bac9bc; padding: 6px 0; }
+.suggestions button:hover { color: #122f26; border-bottom-color: var(--green); }
+.active-filters {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  margin: -12px 0 18px;
+  padding: 4px 12px;
+  background: #e9eee2;
+  border-radius: 10px;
+}
+.active-filters > span { min-width: 0; overflow-wrap: anywhere; }
+.filter-label { color: var(--muted); margin-right: 5px; }
+.active-filters button { flex-shrink: 0; font-size: 11px; }
+#conteo { background: #e9eee2; border-radius: 30px; padding: 2px 10px; }
+#resultados, #historia, #seccion-ofertas { scroll-margin-top: 114px; }
+.product-art {
+  background: radial-gradient(ellipse at 70% 40%, #dbe7d1, #edf0e7 75%);
+}
+.product-art svg { transition: transform 280ms var(--ease); }
+.art-arrow { transition: transform 200ms var(--ease); }
+.product-card:focus-visible { border-color: var(--green); }
+.badge { align-items: center; gap: 5px; font-size: 11px; }
+.signal-icon { font-size: 14px; font-weight: 750; line-height: 1; }
+.card-price small { color: #53634f; }
+.detail-shortcuts { display: flex; gap: 10px; margin: -8px 0 28px; }
+.detail-shortcuts .primary, .detail-shortcuts .secondary { font-size: 13px; }
+.detail-shortcuts .primary span { margin-left: 10px; }
+.detail-shortcuts .secondary span { margin-left: 8px; }
+.summary { position: relative; overflow: hidden; }
+.summary::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: #9aaa78; }
+.summary[data-signal=high] { background: #f7eee5; border-color: #e7d9c9; }
+.summary[data-signal=high]::before { background: #b27a58; }
+.summary[data-signal=good] { background: #e4efdf; }
+.summary[data-signal=good]::before { background: #4b8057; }
+.summary[data-signal=missing]::before { background: #b9b09a; }
+.summary-price { padding-left: 24px; border-left: 1px solid #b9c9ac70; }
+.chart svg { cursor: crosshair; }
+.chart-reading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  border-radius: 10px;
+  padding: 12px 14px;
+  background: #edf2e8;
+  font-size: 12px;
+  margin-top: 8px;
+}
+.chart-reading strong { font-size: 20px; font-variant-numeric: tabular-nums; }
+.chart input[type=range] { width: 100%; min-height: 44px; margin: 4px 0 0; accent-color: var(--green); cursor: ew-resize; }
+.chart-help { color: var(--muted); font-size: 11px; line-height: 1.6; margin: 0 0 18px; }
+.offer-count { font-size: 11px; color: var(--muted); margin: 8px 0 16px; }
+.offer.first { box-shadow: 0 4px 20px #254e3608; }
+.offer-bottom a { border-radius: 7px; padding: 9px 12px; background: #edf2e8; text-decoration: none; }
+.offer-bottom a:hover { background: #dfe9d2; }
+details[open] > :not(summary) { animation: appear 220ms var(--ease); }
+dialog[open] { animation: sheet-enter 240ms var(--ease); }
+dialog[open]::backdrop { animation: backdrop-enter 180ms ease-out; }
+.toast { bottom: max(24px, env(safe-area-inset-bottom)); text-align: center; }
+
+@media (hover: hover) {
+  .product-card:hover { box-shadow: 0 10px 30px #245d4d13; transform: translateY(-4px); }
+  .product-card:hover .product-art svg { transform: translateY(-3px) rotate(-2deg); }
+  .product-card:hover .art-arrow { transform: translate(3px, -3px); }
+}
+@media (hover: none) {
+  .product-card:hover { transform: none; }
+  .product-card:active { background: #edf3e9; transform: scale(.99); }
+}
+@media (max-width: 700px) {
+  #resultados, #historia, #seccion-ofertas { scroll-margin-top: calc(94px + env(safe-area-inset-top)); }
+  .header { padding-top: env(safe-area-inset-top); height: calc(78px + env(safe-area-inset-top)); }
+  .summary-price { border-left: 0; border-top: 1px solid #b9c9ac70; padding: 14px 0 0; }
+  .detail-shortcuts { margin-bottom: 24px; }
+  .detail-shortcuts button { flex: 1; padding-left: 10px; padding-right: 10px; }
+  .search-box { gap: 5px; }
+  .clear-search { width: 44px; height: 44px; background: transparent; }
+  .badge { font-size: 10px; }
+  .active-filters { font-size: 11px; align-items: start; padding-top: 8px; padding-bottom: 8px; }
+  .active-filters > span { align-self: center; }
+  .offer-bottom a { font-size: 11px; }
+  dialog { padding: 28px 24px; }
+}
+@keyframes appear { from { opacity: 0; translate: 0 8px; } to { opacity: 1; translate: 0 0; } }
+@keyframes arrow-enter { from { opacity: 0; translate: -8px -8px; } to { opacity: 1; translate: 0 0; } }
+@keyframes sheet-enter { from { opacity: 0; translate: 0 18px; scale: .98; } to { opacity: 1; translate: 0 0; scale: 1; } }
+@keyframes backdrop-enter { from { opacity: 0; } to { opacity: 1; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
