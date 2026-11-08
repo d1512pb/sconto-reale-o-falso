@@ -238,6 +238,7 @@ def exportar(tablas, analisis, salida, fuente, fecha_corte, extras_json=None):
 
 
 def ejecutar(paquete, seleccion, salida, arboles=300):
+    from sconto.app_datos import preparar_aplicacion
     contenido = Path(paquete).read_bytes()
     gold = cargar_paquete(io.BytesIO(contenido))
     with zipfile.ZipFile(io.BytesIO(contenido)) as archivo:
@@ -249,7 +250,9 @@ def ejecutar(paquete, seleccion, salida, arboles=300):
     tablas, analisis = preparar_tablas(gold, pd.read_csv(seleccion, dtype=str), corte, arboles=arboles)
     fuente = dict(archivo=Path(paquete).name, sha256=hashlib.sha256(contenido).hexdigest(),
                   construido_utc=origen['dataset_construido_utc'], filas_observaciones=len(gold['observaciones']))
-    manifiesto = exportar(tablas, analisis, Path(salida), fuente, corte)
+    compra, extras = preparar_aplicacion(tablas, corte)
+    tablas.update(compra)
+    manifiesto = exportar(tablas, analisis, Path(salida), fuente, corte, extras_json=extras)
     return gold, tablas, analisis, manifiesto
 
 

@@ -12,8 +12,8 @@ cobertura diaria, Isolation Forest temporal, búsqueda por nombre y reglas de pr
 
 Produce `entrega_sconto.zip`: dataset limpio completo en Parquet/CSV.gz, auditoría, diccionario y un segundo ZIP
 con SQLite, tablas de consulta, JSON de la app, índice de búsqueda y manifiestos. Ver [CONTRATO_APP.md](CONTRATO_APP.md).
-La interfaz instalable y la actualización diaria del nuevo contrato se integrarán en la siguiente fase.
-El job `analitica` existente sigue actualizando el [contrato web anterior](CONTRATO_WEB.md).
+La app instalable y la actualización diaria ya consumen este mismo contrato. La entrega académica permanece
+congelada; el job `analitica` genera una edición nueva con cada snapshot. Conserva el [contrato web anterior](CONTRATO_WEB.md).
 
 En Colab, ejecutar todas las celdas en CPU; al final se puede activar `DESCARGAR` o `GUARDAR_EN_DRIVE`.
 El bootstrap descarga entradas públicas congeladas y verifica cada hash. Para repetir la comprobación local
@@ -125,6 +125,42 @@ data/estado/<entorno>.csv    ok / fallo / bloqueado / sin_credenciales por fuent
 reports/                     cobertura por fuente, matches para revisar, resumen de recolección
 notebooks/                   02_Sconto_multifuente.ipynb (CRISP-DM, corre en Colab)
 ```
+
+## App instalable
+
+Abre [Sconto](https://d1512pb.github.io/sconto-reale-o-falso/) y busca por nombre o modelo.
+Hay filtros de laptops, audífonos, Sears y Liverpool; cada ficha muestra vendedores, precios fechados,
+historia, referencia de mercado y una señal explicada. Los anuncios sólo aparecen cuando fueron observados.
+No hay registro, perfiles, publicaciones ni seguimiento de búsquedas.
+
+- **Android / Chrome:** menú ⋮ → Instalar aplicación (o Añadir a pantalla de inicio).
+- **iPhone / Safari:** Compartir → Añadir a pantalla de inicio.
+- El botón **Instalar app** incluye las instrucciones y ofrece el instalador del navegador cuando está disponible.
+- Abre la app con internet una vez. Guarda el catálogo y los precios verificados para consultar sin conexión.
+  Si no puede actualizar, muestra un aviso. Los registros de más de un día dejan de tener indicador vigente,
+  incluso si se abre una copia guardada. La fecha se calcula en CDMX.
+- **Actualizar** consulta el último corte. **Actualizar app** aparece cuando hay una versión nueva de la interfaz.
+
+La carga inicial descarga aproximadamente 9 MB antes de compresión HTTP. No requiere servidor propio:
+`sconto.mart` genera las tablas y el índice del notebook; `sconto.publicar_web` verifica sus hashes y construye
+la app en `data/analitica/site`. `snapshot.json` apunta a un JSON con nombre y contenido verificados por SHA-256;
+una descarga incompleta no reemplaza la copia válida. El navegador conserva una sola copia del dataset.
+
+El workflow diario genera `sconto_web_actual.zip` y publica en Pages. Para actualizar desde el último dataset
+sin recolectar otra vez: **Actions → Recolección diaria de precios → Run workflow → solo_analitica**.
+La app no ejecuta scraping mientras la usas. La instalación real en Android/iPhone queda pendiente de probar
+en un teléfono; búsqueda, diseño adaptable, actualización y reapertura sin conexión se prueban en navegador.
+
+Para desarrollar localmente (después de generar el mart):
+
+```powershell
+.venv/Scripts/python.exe -m sconto.publicar_web
+.venv/Scripts/python.exe -m http.server 8847 --bind 127.0.0.1 --directory data/analitica/site
+```
+
+Abre `http://127.0.0.1:8847/`. Las pruebas de búsqueda, vigencia y caché requieren Node.js 22:
+`python -m pytest tests/test_app_movil.py tests/test_publicar_web.py tests/test_compra.py -q`.
+Ver [contrato de datos](CONTRATO_APP.md) y [reporte de implementación](reports/app_movil_2026-11-07.md).
 
 ## Instalación
 

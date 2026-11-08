@@ -34,7 +34,8 @@ def test_sitio_solo_publica_precios_del_catalogo_y_conserva_faltantes(tmp_path):
     if not (datos / 'manifest.json').exists():
         pytest.skip('Necesita la entrega del ETL')
     resumen = construir(datos, tmp_path, Path('web'))
-    feed = json.loads((tmp_path / 'datos.json').read_text(encoding='utf-8'))
+    snapshot = json.loads((tmp_path / 'snapshot.json').read_text(encoding='utf-8'))
+    feed = json.loads((tmp_path / snapshot['archivo']).read_text(encoding='utf-8'))
     ids = {serie['serie_id'] for serie in feed['series']}
     assert resumen['productos'] == 200
     assert all(p['serie_id'] in ids and p['precio_mediano'] > 0 for p in feed['precios_diarios'])
@@ -42,3 +43,8 @@ def test_sitio_solo_publica_precios_del_catalogo_y_conserva_faltantes(tmp_path):
     assert all(o['precio_anterior_anunciado'] is None or o['precio_anterior_anunciado'] > 0 for o in feed['ofertas'])
     assert not list(tmp_path.glob('*.sqlite'))
     assert (tmp_path / 'snapshot.json').exists()
+    assert feed['version'] == 'sconto-app-v1'
+    assert feed['busqueda']['version'] == 'sconto-busqueda-v1'
+    assert (tmp_path / 'manifest.webmanifest').exists()
+    assert '__SCONTO_VERSION__' not in (tmp_path / 'sw.js').read_text(encoding='utf-8')
+    assert (tmp_path / 'icons/icon-512.png').exists()

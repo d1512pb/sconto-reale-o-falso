@@ -1,12 +1,12 @@
 # Salida del notebook para la app · sconto-app-v1
 
-El notebook 03 produce `entrega_sconto.zip`: dataset limpio completo en Parquet y CSV.gz, auditoría, diccionario y `datos_app.zip`. El segundo ZIP contiene el catálogo de consulta de 200 productos, sus series y ofertas, resultados históricos de minería, SQLite, JSON y manifiesto. La app instalable se implementará en la siguiente fase.
+El notebook 03 produce `entrega_sconto.zip`: dataset limpio completo en Parquet y CSV.gz, auditoría, diccionario y `datos_app.zip`. El segundo ZIP contiene el catálogo de consulta de 200 productos, sus series y ofertas, resultados históricos de minería, SQLite, JSON y manifiesto. La [app instalable](https://d1512pb.github.io/sconto-reale-o-falso/) consume una proyección verificada de estas mismas tablas.
 
 ## Flujo de consulta
 
 1. Cargar `manifest.json` y comprobar hashes. Mostrar `fecha_corte`.
 2. Buscar nombre/modelo en `catalogo_consulta`; el índice TF-IDF exportado permite recuperar candidatos. Normalizar mayúsculas, acentos y espacios. No unir registros por similitud. Respetar conflictos de variante y pedir elección cuando el nombre sea ambiguo.
-3. Filtrar `ofertas_evaluadas` por el ID seleccionado. Mostrar plataforma, vendedor, precio publicado, fecha, condiciones y enlace. Las ofertas se ordenan por precio publicado; el orden no certifica total, disponibilidad ni condición equivalente.
+3. Filtrar `ofertas_evaluadas` por el ID seleccionado. Mostrar plataforma, vendedor, precio publicado, fecha, condiciones y enlace. Priorizar ofertas recientes con título compatible, luego las pendientes y antiguas; las contradictorias van al final. Dentro de cada grupo, ordenar por precio publicado. El orden no certifica total, disponibilidad ni condición equivalente.
 4. Resolver `referencia_serie_id` en `series`, `referencias_base` y `precios_diarios` para explicar y graficar. No rellenar días sin precio ni presentar el mínimo multitienda como historia de Sears.
 5. Recalcular edad con la fecha real de consulta en America/Mexico_City. Fuera de 0–1 días, ocultar el indicador favorable/alto, mostrar evidencia insuficiente y motivo de antigüedad. El precio queda como registro histórico. No reutilizar sin este control el indicador calculado al corte.
 
@@ -56,4 +56,6 @@ Isolation Forest se usa exclusivamente en QQP físico retrospectivo (entrenamien
 
 ## Actualización
 
-La recolección diaria existente continúa generando gold y el contrato web anterior. Para la futura app hay que integrar la generación de `sconto-app-v1` con esa tarea y probar instalación y caducidad en el teléfono. Este notebook congela la entrega académica por revisión Git y hashes; volver a generar una edición con nuevas entradas, sin sobrescribir sus archivos congelados. No se necesita cuenta de usuario, base de datos de perfiles ni publicaciones.
+La recolección diaria genera gold y `sconto.mart` usa `preparar_aplicacion` para obtener el mismo catálogo, las ofertas evaluadas y el índice del notebook. Conserva el contrato web anterior. `sconto.publicar_web` publica `snapshot.json` y `datos.<hash>.json`, la proyección de consulta que añade `busqueda`, `ventanas` y `precios_diarios` y omite el historial duplicado. La app verifica SHA-256 antes de reemplazar su caché. Los recursos de interfaz se versionan por su contenido en el service worker.
+
+La búsqueda en JavaScript reproduce el TF-IDF y los filtros de variantes de Python; se contrasta automáticamente contra el buscador del notebook. La interfaz recalcula la vigencia en CDMX al consultar y al cambiar de día. La instalación y las condiciones reales de almacenamiento en Android/iPhone siguen pendientes de prueba física. Este notebook congela la entrega académica por revisión Git y hashes; cada actualización diaria genera una edición nueva sin sobrescribirla. No se necesita cuenta de usuario, base de datos de perfiles ni publicaciones.
