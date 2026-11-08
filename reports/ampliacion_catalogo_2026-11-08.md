@@ -41,6 +41,10 @@ Prueba en navegador a 390 px: navegación entre celulares y tabletas, iPhone his
 
 La prueba opcional de la antigua interfaz Streamlit quedó atascada localmente y se detuvo; se excluye de la comprobación de esta PWA. No es evidencia de funcionamiento de esa interfaz antigua.
 
+La revisión pública detectó que la actualización podía guardar archivos de interfaz de la caché HTTP anterior. El trabajador ahora solicita recursos nuevos al instalarse y su propio contenido participa en la versión de la caché. Se añadieron pruebas de ambas regresiones: caché HTTP antigua y cambios exclusivos del trabajador.
+
 ## Publicación
 
-La publicación usa el último snapshot diario disponible y puede tener conteos de ofertas y puntos distintos de la entrada local congelada. Se verificará por separado después del despliegue.
+La publicación del corte **8 de noviembre** contiene **1,493 productos, 5,712 ofertas registradas y 135,076 puntos históricos**. El índice ocupa 8,874,749 bytes. Tiene 191 productos con último registro del 8 de noviembre, 1,289 del 16 de octubre y 13 de otras fechas. Se verificó el SHA-256 del índice público: `8c18b2896afdf582b57ffce5b0b59f7efdaea0b32d6b0e7cff5ec0c5525bb2a5`.
+
+El [despliegue del catálogo y buscador](https://github.com/d1512pb/sconto-reale-o-falso/actions/runs/42502462594) completó 47 pruebas y omitió una de Streamlit. En la app pública se comprobaron los filtros de tabletas/Sears, la descarga de una ficha y la separación entre su referencia multitienda y la oferta histórica de Sears. Las cifras públicas difieren de la copia local congelada porque incluyen un día adicional de recolección.

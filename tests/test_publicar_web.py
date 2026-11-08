@@ -57,3 +57,11 @@ def test_sitio_solo_publica_precios_del_catalogo_y_conserva_faltantes(tmp_path):
     assert (tmp_path / 'manifest.webmanifest').exists()
     assert '__SCONTO_VERSION__' not in (tmp_path / 'sw.js').read_text(encoding='utf-8')
     assert (tmp_path / 'icons/icon-512.png').exists()
+    version_previa = (tmp_path / 'sw.js').read_text(encoding='utf-8').splitlines()[0]
+    recursos = tmp_path / 'recursos_prueba'
+    shutil.copytree(Path('web'), recursos)
+    with (recursos / 'sw.js').open('a', encoding='utf-8') as archivo:
+        archivo.write('\n// Cambio exclusivo del trabajador de actualización.\n')
+    otra = tmp_path / 'otra_version'
+    construir(datos, otra, recursos)
+    assert (otra / 'sw.js').read_text(encoding='utf-8').splitlines()[0] != version_previa

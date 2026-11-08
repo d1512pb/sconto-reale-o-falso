@@ -4,7 +4,8 @@ const SHELL = ['index.html', 'styles.css', 'interfaz.css', 'app.mjs', 'motor.mjs
 const urls = new Set(SHELL.map(p => new URL(p, self.registration.scope).href));
 
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)));
+  const peticiones = SHELL.map(p => new Request(new URL(p, self.registration.scope), {cache: 'reload'}));
+  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(peticiones)));
 });
 self.addEventListener('message', event => {
   if (event.data === 'ACTIVAR') self.skipWaiting();
