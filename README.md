@@ -177,6 +177,7 @@ Para desarrollar localmente (después de generar el mart):
 Abre `http://127.0.0.1:8847/`. Las pruebas de búsqueda, vigencia y caché requieren Node.js 22:
 `python -m pytest tests/test_app_movil.py tests/test_publicar_web.py tests/test_compra.py tests/test_catalogo.py -q`.
 Ver [contrato de datos](CONTRATO_APP.md) y [reporte de implementación](reports/app_movil_2026-11-07.md).
+La [ampliación del catálogo](reports/ampliacion_catalogo_2026-11-08.md) documenta los conteos, la antigüedad y las pruebas de la versión publicada.
 
 ## Instalación
 
