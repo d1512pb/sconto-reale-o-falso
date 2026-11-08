@@ -1,4 +1,4 @@
-# Salida del notebook para la app · sconto-app-v1
+# Salida del notebook y proyección de la app
 
 El notebook 03 produce `entrega_sconto.zip`: dataset limpio completo en Parquet y CSV.gz, auditoría, diccionario y `datos_app.zip`. El segundo ZIP contiene el catálogo de consulta de 200 productos, sus series y ofertas, resultados históricos de minería, SQLite, JSON y manifiesto. La [app instalable](https://d1512pb.github.io/sconto-reale-o-falso/) consume una proyección verificada de estas mismas tablas.
 
@@ -56,6 +56,16 @@ Isolation Forest se usa exclusivamente en QQP físico retrospectivo (entrenamien
 
 ## Actualización
 
-La recolección diaria genera gold y `sconto.mart` usa `preparar_aplicacion` para obtener el mismo catálogo, las ofertas evaluadas y el índice del notebook. Conserva el contrato web anterior. `sconto.publicar_web` publica `snapshot.json` y `datos.<hash>.json`, la proyección de consulta que añade `busqueda`, `ventanas` y `precios_diarios` y omite el historial duplicado. La app verifica SHA-256 antes de reemplazar su caché. Los recursos de interfaz se versionan por su contenido en el service worker.
+La recolección diaria genera gold y `sconto.mart` usa `preparar_aplicacion` para obtener las ofertas evaluadas y el índice del notebook. Desde el 8 de noviembre, el ETL diario amplía la consulta a todos los productos nativos de Preciómetro con precios en línea ya recolectados (1,493 en el corte probado). No amplía la lista de 200 peticiones diarias ni mezcla las sucursales físicas de QQP. `--solo-seleccion` conserva el alcance anterior. La entrega académica congelada mantiene 200 productos y los archivos internos `app_feed.json` / `indice_busqueda.json` conservan su formato.
+
+La proyección para navegador ahora es **sconto-app-v2**:
+
+- `snapshot.json` identifica por SHA-256 el índice `datos.<hash>.json`.
+- El índice incluye catálogo, búsqueda, categorías, ventanas, procedencia y resúmenes de ofertas. `series`, `referencias` y `precios_diarios` quedan vacíos; `detalles` relaciona cada producto con su archivo y SHA-256.
+- `producto.<hash>.json` usa **sconto-producto-v1**: producto, corte, ofertas completas, serie de mínimos multitienda, referencias del evento actual y puntos diarios. Se descarga al abrir la ficha. Los historiales por vendedor permanecen completos en las tablas Parquet y SQLite del ETL.
+- El catálogo añade `categoria_app`, `categoria_app_nombre`, `en_seguimiento_diario` y `ultima_fecha_observada`. La categoría organiza la consulta; nunca determina una coincidencia de SKU.
+- Cada respuesta se verifica por hash; las fichas deben coincidir además con el producto y corte solicitado. Se conserva el último catálogo válido y hasta 40 fichas descargadas. Una ficha de otro corte no se usa para suplir datos faltantes. Sin conexión, los productos no guardados muestran un aviso y permiten volver al catálogo.
+
+La app también puede leer una copia anterior **sconto-app-v1**. Los recursos de interfaz se versionan por su contenido en el service worker. Las variantes explícitas de iPhone, Galaxy y iPad se contrastan tanto en Python como en JavaScript; títulos incompletos de las categorías incorporadas quedan pendientes, aunque coincidan en capacidad.
 
 La búsqueda en JavaScript reproduce el TF-IDF y los filtros de variantes de Python; se contrasta automáticamente contra el buscador del notebook. La interfaz recalcula la vigencia en CDMX al consultar y al cambiar de día. La instalación y las condiciones reales de almacenamiento en Android/iPhone siguen pendientes de prueba física. Este notebook congela la entrega académica por revisión Git y hashes; cada actualización diaria genera una edición nueva sin sobrescribirla. No se necesita cuenta de usuario, base de datos de perfiles ni publicaciones.

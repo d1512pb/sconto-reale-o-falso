@@ -9,6 +9,12 @@ export function atributos(texto) {
     if (m) resultado[clave] = clave === 'disco' ? String(Number(m[1]) * (m[2] === 'TB' ? 1024 : 1)) : clave === 'airpods' ? (m[1] ? 'PRO' : 'NORMAL') + m[2] : m[1].replaceAll(' ', '');
   }
   resultado.paquete = /\b(?:PAQUETE|COMBO|HERVIDOR|CAFETERA)\b/.test(texto);
+  const iphone = texto.match(/\bIPHONE\s*(\d{1,2}|SE)\s*(PRO\s*MAX|PRO|PLUS|MINI|AIR|E)?\b/);
+  const galaxy = texto.match(/\bGALAXY\s*(TAB\s*)?([AS]\d{1,3})\s*(ULTRA|PLUS|FE\+?|LITE|\+)?/);
+  const ipad = texto.match(/\bIPAD\s+(AIR|PRO|MINI)\b/);
+  if (iphone) resultado.iphone = iphone[1] + (iphone[2] || '').replaceAll(' ', '');
+  if (galaxy) resultado.galaxy = (galaxy[1] ? 'TAB' : '') + galaxy[2] + (galaxy[3] || '').replace('+', 'PLUS');
+  if (ipad) resultado.ipad_tipo = ipad[1];
   if (!resultado.disco) {
     const capacidades = [...texto.replace(new RegExp(ram, 'g'), '').matchAll(/\b(\d+)\s*(GB|TB)\b/g)].map(m => Number(m[1]) * (m[2] === 'TB' ? 1024 : 1)).filter(n => n >= 32);
     if (capacidades.length === 1) resultado.disco = String(capacidades[0]);
@@ -45,7 +51,7 @@ function parecido(a, b) {
   return 2 * iguales / (a.length + b.length || 1);
 }
 
-export function buscar(consulta, productos, indice, limite = 200) {
+export function buscar(consulta, productos, indice, limite = productos.length) {
   const texto = normalizar(consulta).slice(0, 200);
   if (texto.length < 3) return [];
   const vector = new Map(), palabras = texto.split(' ');

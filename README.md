@@ -129,7 +129,9 @@ notebooks/                   02_Sconto_multifuente.ipynb (CRISP-DM, corre en Col
 ## App instalable
 
 Abre [Sconto](https://d1512pb.github.io/sconto-reale-o-falso/) y busca por nombre o modelo.
-Hay filtros de laptops, audífonos, Sears y Liverpool; cada ficha muestra vendedores, precios fechados,
+El catálogo aprovecha los **1,493 productos** con datos en línea ya recolectados: 233 celulares, 146 tabletas,
+215 computadoras y laptops, 243 audífonos, 223 productos de audio, 275 pantallas, 110 cámaras y lentes,
+8 proyectores, 23 dispositivos de streaming y 17 de hogar inteligente. Hay filtros de categoría, Sears y Liverpool; cada ficha muestra vendedores, precios fechados,
 historia, referencia de mercado y una señal explicada. Los anuncios sólo aparecen cuando fueron observados.
 No hay registro, perfiles, publicaciones ni seguimiento de búsquedas.
 
@@ -141,15 +143,24 @@ fechas faltantes. Las animaciones respetan la preferencia de movimiento reducido
 - **Android / Chrome:** menú ⋮ → Instalar aplicación (o Añadir a pantalla de inicio).
 - **iPhone / Safari:** Compartir → Añadir a pantalla de inicio.
 - El botón **Instalar app** incluye las instrucciones y ofrece el instalador del navegador cuando está disponible.
-- Abre la app con internet una vez. Guarda el catálogo y los precios verificados para consultar sin conexión.
+- Abre la app con internet una vez. Guarda el catálogo y los resúmenes verificados para consultar sin conexión.
+  El historial y las ofertas completas se descargan al abrir cada producto; se conservan hasta 40 fichas.
+  Sin conexión sólo se pueden abrir las fichas guardadas que correspondan al mismo corte del catálogo.
   Si no puede actualizar, muestra un aviso. Los registros de más de un día dejan de tener indicador vigente,
   incluso si se abre una copia guardada. La fecha se calcula en CDMX.
 - **Actualizar** consulta el último corte. **Actualizar app** aparece cuando hay una versión nueva de la interfaz.
 
-La carga inicial descarga aproximadamente 9 MB antes de compresión HTTP. No requiere servidor propio:
+La carga inicial del catálogo ampliado ocupa 8.87 MB antes de compresión HTTP en la prueba local del corte
+7 de noviembre; cada ficha adicional ocupa una mediana de 13 KB. El tamaño cambia con el dataset. No requiere servidor propio:
 `sconto.mart` genera las tablas y el índice del notebook; `sconto.publicar_web` verifica sus hashes y construye
 la app en `data/analitica/site`. `snapshot.json` apunta a un JSON con nombre y contenido verificados por SHA-256;
-una descarga incompleta no reemplaza la copia válida. El navegador conserva una sola copia del dataset.
+una descarga incompleta no reemplaza la copia válida. Cada ficha también se valida por SHA-256, producto y corte.
+El navegador conserva una copia del catálogo y hasta 40 fichas descargadas.
+
+La lista de recolección diaria sigue siendo de **200 productos**. Ampliar la consulta no amplía las peticiones
+a tiendas: la mayoría de las incorporaciones tiene su último registro en octubre y se presenta como historia.
+El ETL diario incluye todos los productos nativos de Preciómetro con observaciones en línea; `--solo-seleccion`
+limita `sconto.mart` a la lista diaria. El notebook 03 y su entrega académica de 200 productos permanecen congelados.
 
 El workflow diario genera `sconto_web_actual.zip` y publica en Pages. Para actualizar desde el último dataset
 sin recolectar otra vez: **Actions → Recolección diaria de precios → Run workflow → solo_analitica**.
@@ -164,7 +175,7 @@ Para desarrollar localmente (después de generar el mart):
 ```
 
 Abre `http://127.0.0.1:8847/`. Las pruebas de búsqueda, vigencia y caché requieren Node.js 22:
-`python -m pytest tests/test_app_movil.py tests/test_publicar_web.py tests/test_compra.py -q`.
+`python -m pytest tests/test_app_movil.py tests/test_publicar_web.py tests/test_compra.py tests/test_catalogo.py -q`.
 Ver [contrato de datos](CONTRATO_APP.md) y [reporte de implementación](reports/app_movil_2026-11-07.md).
 
 ## Instalación

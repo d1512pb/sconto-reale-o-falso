@@ -139,7 +139,7 @@ jobs:
       - name: Producir tablas para web con el mismo ETL del Colab
         run: |
           python -m sconto.mart --paquete data/exportaciones/sconto_colab_actual.zip
-          python -m pytest tests/test_mineria_web.py tests/test_publicar_web.py tests/test_compra.py tests/test_app_movil.py -q
+          python -m pytest tests/test_mineria_web.py tests/test_publicar_web.py tests/test_compra.py tests/test_app_movil.py tests/test_catalogo.py -q
       - name: Publicar entrega analítica
         run: |
           python - <<'PY'

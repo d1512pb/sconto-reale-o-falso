@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#245d4d">
-  <meta name="description" content="Busca laptops y audífonos. Compara los precios observados en Sears, Liverpool y otras tiendas con su historia.">
+  <meta name="description" content="Busca celulares, tabletas, computadoras y más tecnología. Compara precios fechados e historial en Sears, Liverpool y otras tiendas.">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <title>Sconto · Antes de comprar</title>
@@ -37,20 +37,21 @@
       <form id="busqueda-form" role="search" class="search-box">
         <span aria-hidden="true" class="search-icon">⌕</span>
         <label class="sr-only" for="busqueda">Nombre o modelo del producto</label>
-        <input id="busqueda" type="search" placeholder="Busca una laptop, audífonos o un modelo…" maxlength="200" autocomplete="off" enterkeyhint="search" disabled>
+        <input id="busqueda" type="search" placeholder="Busca un celular, tablet, laptop o modelo…" maxlength="200" autocomplete="off" enterkeyhint="search" disabled>
         <button id="quitar-busqueda" class="clear-search" type="button" aria-label="Borrar búsqueda" hidden>×</button>
         <button class="primary" type="submit">Buscar <span aria-hidden="true">↗</span></button>
       </form>
       <div class="suggestions"><span>Prueba con</span><button data-query="Lenovo IdeaPad Slim 3">Lenovo IdeaPad Slim 3 ↗</button><button data-query="AirPods Pro 3">AirPods Pro 3 ↗</button></div>
       <div class="filters">
         <div id="categorias" class="chips" aria-label="Categorías">
-          <button data-category="foco" aria-pressed="true">Para tu compra</button><button data-category="laptop" aria-pressed="false">Laptops</button><button data-category="audifonos" aria-pressed="false">Audífonos</button><button data-category="todos" aria-pressed="false">Todo el catálogo</button>
+          <button data-category="todos" aria-pressed="true">Todo el catálogo</button><button data-category="laptop" aria-pressed="false">Computadoras</button><button data-category="celular" aria-pressed="false">Celulares</button><button data-category="tablet" aria-pressed="false">Tabletas</button><button data-category="audifonos" aria-pressed="false">Audífonos</button>
         </div>
+        <label class="store-filter">Categoría <select id="otras-categorias" aria-label="Más categorías"><option value="">Más categorías</option></select></label>
         <label class="store-filter">Tienda <select id="tienda"><option value="">Todas</option><option value="sears">Sears</option><option value="liverpool">Liverpool</option></select></label>
       </div>
       <div id="filtros-activos" class="active-filters" hidden><span><span class="filter-label">Viendo</span> <strong id="descripcion-filtros"></strong></span><button id="quitar-filtros" class="text-button">Quitar filtros ×</button></div>
       <div id="resultados" class="section-heading" tabindex="-1"><h2 id="titulo-resultados">Tecnología para tu próxima compra</h2><span id="conteo" role="status"></span></div>
-      <p class="muted results-note">Elige la variante exacta. Son precios publicados; envío y disponibilidad se confirman en la tienda.</p>
+      <p class="muted results-note">Explora precios recientes e históricos. Revisa la fecha y la variante exacta: un registro antiguo no es una oferta vigente.</p>
       <div id="productos" class="product-grid" aria-busy="true"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
       <div id="sin-resultados" class="empty" hidden><span aria-hidden="true">⌕</span><h2 id="sin-resultados-titulo">No encontramos coincidencias</h2><p id="sin-resultados-texto">Prueba con la marca y el modelo. Nuestro catálogo es limitado: no significa que el producto no exista.</p><button id="limpiar" class="secondary">Ver catálogo</button></div>
       <button id="ver-mas" class="secondary more" hidden>Ver más productos</button>
@@ -60,6 +61,7 @@
       <div class="detail-nav"><a id="volver" href="#/">← Volver a resultados</a><button id="compartir" class="text-button">Copiar enlace ↗</button></div>
       <div class="product-heading"><div id="ilustracion" aria-hidden="true"></div><div><p class="eyebrow" id="categoria-producto"></p><h1 id="nombre-producto" tabindex="-1"></h1><p id="atributos" class="muted"></p></div></div>
       <div id="resumen" class="summary" role="status"></div>
+      <div id="carga-detalle" class="notice" role="status" hidden><p id="mensaje-detalle"></p><button id="reintentar-detalle" class="secondary" hidden>Volver a cargar ficha</button></div>
       <nav id="atajos-detalle" class="detail-shortcuts" aria-label="Explorar este producto"><button class="primary" data-scroll="seccion-ofertas">Comparar tiendas <span aria-hidden="true">↓</span></button><button class="secondary" data-scroll="historia">Ver historial <span aria-hidden="true">↘</span></button></nav>
       <div class="detail-grid">
         <div class="main-column">
@@ -71,7 +73,7 @@
     </section>
   </main>
   <footer><div><a class="brand" href="#/">sconto<span>↘</span></a><p>Decisiones con evidencia.</p></div><div><a href="https://colab.research.google.com/github/d1512pb/sconto-reale-o-falso/blob/main/notebooks/03_Sconto_CRISP_DM_ETL_web.ipynb" target="_blank" rel="noopener noreferrer">Ver el análisis ↗</a><a href="https://github.com/d1512pb/sconto-reale-o-falso" target="_blank" rel="noopener noreferrer">Proyecto y fuentes ↗</a><span>ESCOM · IPN · Minería de Datos</span></div></footer>
-  <dialog id="instalacion"><button class="dialog-close text-button" data-close aria-label="Cerrar">×</button><p class="eyebrow">SCONTO EN TU CELULAR</p><h2>Una consulta, a la mano.</h2><p>La app se añade desde tu navegador, sin cuenta ni tienda de aplicaciones.</p><button id="instalar-nativo" class="primary" hidden>Instalar Sconto</button><h3>Android · Chrome</h3><p>Abre el menú ⋮ y elige <strong>Instalar aplicación</strong> o <strong>Añadir a pantalla de inicio</strong>.</p><h3>iPhone · Safari</h3><p>Abre <strong>Compartir → Añadir a pantalla de inicio</strong> y confirma.</p><p class="muted">Abre Sconto con conexión una primera vez. Después podrás consultar la copia guardada; siempre verás la fecha de los precios.</p></dialog>
+  <dialog id="instalacion"><button class="dialog-close text-button" data-close aria-label="Cerrar">×</button><p class="eyebrow">SCONTO EN TU CELULAR</p><h2>Una consulta, a la mano.</h2><p>La app se añade desde tu navegador, sin cuenta ni tienda de aplicaciones.</p><button id="instalar-nativo" class="primary" hidden>Instalar Sconto</button><h3>Android · Chrome</h3><p>Abre el menú ⋮ y elige <strong>Instalar aplicación</strong> o <strong>Añadir a pantalla de inicio</strong>.</p><h3>iPhone · Safari</h3><p>Abre <strong>Compartir → Añadir a pantalla de inicio</strong> y confirma.</p><p class="muted">Abre Sconto con conexión una primera vez. El catálogo se guarda para buscar sin conexión; también se conservan hasta 40 fichas que hayas abierto del mismo corte. Para abrir una ficha nueva necesitas internet.</p></dialog>
   <dialog id="informacion"><button class="dialog-close text-button" data-close aria-label="Cerrar">×</button><p class="eyebrow">PRECIOS CON EVIDENCIA</p><h2>Qué sabemos y qué falta.</h2><p>Sconto compara los precios observados con su historia. El catálogo es una lista fija de tecnología, no todas las tiendas ni todos los productos.</p><p>Preciómetro aporta mínimos multitienda y ofertas fechadas. QQP respalda el análisis histórico de sucursales físicas, que se mantiene separado de los precios en línea.</p><p>El indicador de compra usa reglas explicables. Isolation Forest analiza rareza en eventos pasados; no etiqueta estas ofertas como fraude.</p><p>Sin perfiles, publicaciones ni seguimiento de tus búsquedas. Sólo guardamos la app y una copia de precios en este navegador para consultar sin conexión.</p><p class="muted">Daniel Peredo Borgonio · Kevin Celis Torres · Igor Cappelli<br>Proyecto académico de ESCOM-IPN.</p></dialog>
   <div id="toast" class="toast" role="status" hidden></div>
   <noscript><p class="notice">Activa JavaScript para buscar en los datos. Puedes descargar el dataset desde el repositorio del proyecto.</p></noscript>

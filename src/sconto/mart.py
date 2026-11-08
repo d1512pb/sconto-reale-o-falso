@@ -52,7 +52,7 @@ def _fechas(datos):
     return datos
 
 
-def preparar_tablas(gold, seleccion, fecha_corte, arboles=300):
+def preparar_tablas(gold, seleccion, fecha_corte, arboles=300, ampliar_catalogo=False):
     corte = pd.Timestamp(fecha_corte).normalize()
     obs = gold['observaciones'].copy()
     capturas = pd.to_datetime(obs.fecha_captura)
@@ -69,14 +69,20 @@ def preparar_tablas(gold, seleccion, fecha_corte, arboles=300):
     productos = gold['productos'].copy()
     if productos.producto_canonico_id.duplicated().any():
         raise ValueError('Catálogo canónico no único')
-    orden = {identificador: indice + 1 for indice, identificador in enumerate(seleccion.producto_canonico_id)}
+    from sconto.catalogo import ampliar_seleccion, categoria_app, CATEGORIAS
+    ids = ampliar_seleccion(productos, obs, seleccion) if ampliar_catalogo else seleccion.producto_canonico_id.tolist()
+    orden = {identificador: indice + 1 for indice, identificador in enumerate(ids)}
     productos['nombre'] = productos.descripcion_externa.fillna('').replace('', pd.NA).fillna(productos.descripcion_qqp)
     productos['orden_web'] = productos.producto_canonico_id.map(orden)
     productos['en_catalogo_web'] = productos.orden_web.notna()
     productos['en_piloto'] = productos.orden_web.le(30)
+    productos['en_seguimiento_diario'] = productos.producto_canonico_id.isin(seleccion.producto_canonico_id)
+    productos['categoria_app'] = [categoria_app(n, f, c) for n, f, c in zip(productos.nombre, productos.familia, productos.categoria)]
+    productos['categoria_app_nombre'] = productos.categoria_app.map(CATEGORIAS)
     productos['identidad'] = np.where(productos.origen.eq('preciometro'), 'id_nativo_del_agregador', 'referencia_QQP')
     columnas_producto = ['producto_canonico_id', 'nombre', 'marca', 'modelo_normalizado', 'familia', 'categoria',
-                         'origen', 'confianza_match', 'identidad', 'en_catalogo_web', 'en_piloto', 'orden_web']
+                         'origen', 'confianza_match', 'identidad', 'en_catalogo_web', 'en_piloto', 'orden_web',
+                         'en_seguimiento_diario', 'categoria_app', 'categoria_app_nombre']
     productos = productos[columnas_producto].sort_values('producto_canonico_id')
     if len(orden) != int(productos.en_catalogo_web.sum()):
         raise ValueError('La lista diaria contiene productos ausentes o duplicados en el catálogo del snapshot')
@@ -237,7 +243,7 @@ def exportar(tablas, analisis, salida, fuente, fecha_corte, extras_json=None):
     return manifiesto
 
 
-def ejecutar(paquete, seleccion, salida, arboles=300):
+def ejecutar(paquete, seleccion, salida, arboles=300, ampliar_catalogo=True):
     from sconto.app_datos import preparar_aplicacion
     contenido = Path(paquete).read_bytes()
     gold = cargar_paquete(io.BytesIO(contenido))
@@ -247,7 +253,7 @@ def ejecutar(paquete, seleccion, salida, arboles=300):
     if captura.tzinfo is None:
         captura = captura.tz_localize('UTC')
     corte = captura.tz_convert(ZoneInfo('America/Mexico_City')).date().isoformat()
-    tablas, analisis = preparar_tablas(gold, pd.read_csv(seleccion, dtype=str), corte, arboles=arboles)
+    tablas, analisis = preparar_tablas(gold, pd.read_csv(seleccion, dtype=str), corte, arboles=arboles, ampliar_catalogo=ampliar_catalogo)
     fuente = dict(archivo=Path(paquete).name, sha256=hashlib.sha256(contenido).hexdigest(),
                   construido_utc=origen['dataset_construido_utc'], filas_observaciones=len(gold['observaciones']))
     compra, extras = preparar_aplicacion(tablas, corte)
@@ -261,8 +267,9 @@ def main(argv=None):
     parser.add_argument('--paquete', type=Path, required=True)
     parser.add_argument('--seleccion', type=Path, default=Path('config/preciometro_diarios.csv'))
     parser.add_argument('--salida', type=Path, default=Path('data/analitica'))
+    parser.add_argument('--solo-seleccion', action='store_true', help='Limitar la consulta a la lista diaria original')
     argumentos = parser.parse_args(argv)
-    _, _, analisis, manifiesto = ejecutar(argumentos.paquete, argumentos.seleccion, argumentos.salida)
+    _, _, analisis, manifiesto = ejecutar(argumentos.paquete, argumentos.seleccion, argumentos.salida, ampliar_catalogo=not argumentos.solo_seleccion)
     print(json.dumps(dict(tablas=manifiesto['tablas'], modelo=analisis['tarjeta']), ensure_ascii=False))
 
 

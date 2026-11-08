@@ -1,5 +1,5 @@
 import {buscar, normalizar, fechaMexico, edadDias, ordenarOfertas, enlaceSeguro} from './motor.mjs';
-import {cargarDatos} from './datos.mjs';
+import {cargarDatos, cargarDetalle} from './datos.mjs';
 import {entrada, irA} from './interfaz.mjs';
 
 const $ = id => document.getElementById(id);
@@ -14,10 +14,14 @@ const corto = fecha => new Date(fecha + 'T12:00:00Z').toLocaleDateString('es-MX'
 const etiquetas = {precio_favorable: 'Precio favorable', precio_alto: 'Precio alto', sin_senal_clara: 'Sin señal clara', evidencia_insuficiente: 'Evidencia insuficiente'};
 const tonos = {precio_favorable: 'good', precio_alto: 'high', sin_senal_clara: 'neutral', evidencia_insuficiente: 'missing'};
 let datos, carga, cargando = false, ultimoIntento = 0, fechaMostrada = fechaMexico(), recargarTrasActualizacion = false;
-let categoria = 'foco', consulta = '', tienda = '', limite = 12, limiteOfertas = 8, anterior = '#/', promptInstalar, registro;
+let categoria = 'todos', consulta = '', tienda = '', limite = 12, limiteOfertas = 8, anterior = '#/', promptInstalar, registro;
 let porProducto = new Map(), ofertasPorProducto = new Map();
 let productosVisibles = '', posicionResultados = 0, tarjetaAnterior = '', ultimaVista = '';
 const seleccionHistoria = new Map();
+const fichas = new Map();
+let solicitudRuta = 0;
+const categorias = {todos:'Todo el catálogo', foco:'Para tu compra', laptop:'Computadoras y laptops', celular:'Celulares', tablet:'Tabletas', audifonos:'Audífonos', audio:'Bocinas y audio', pantalla:'Pantallas', proyector:'Proyectores', camara:'Cámaras y lentes', streaming:'Streaming', hogar:'Hogar inteligente', otros:'Otra tecnología'};
+function categoriaProducto(p) { return p.categoria_app || (laptop(p) ? 'laptop' : audifonos(p) ? 'audifonos' : p.familia === 'asistente' ? 'hogar' : p.familia || 'otros'); }
 
 function notificar(texto) {
   $('toast').textContent = texto; $('toast').hidden = false;
@@ -27,10 +31,21 @@ function notificar(texto) {
 }
 function audifonos(p) { return /AUDIFONOS|AIRPODS|HEADSET|4GAMERS/.test(normalizar(p.nombre)); }
 function laptop(p) { return /LAPTOP|COMPUTADORA/.test(normalizar(p.nombre)) || p.familia === 'laptop'; }
-function categoriaNombre(p) { return laptop(p) ? 'Laptops' : audifonos(p) ? 'Audífonos' : 'Tecnología'; }
+function categoriaNombre(p) { return p.categoria_app_nombre || categorias[categoriaProducto(p)] || 'Tecnología'; }
 function ilustracion(p) {
   const cont = el('span');
-  const dibujo = laptop(p)
+  const tipo = categoriaProducto(p);
+  const dibujo = tipo === 'celular'
+    ? '<rect x="61" y="7" width="58" height="110" rx="10"/><path d="M68 22h44v75H68z" fill="currentColor" opacity=".08"/><path d="M82 15h16m-12 93h8"/>'
+    : tipo === 'tablet'
+    ? '<rect x="39" y="9" width="102" height="106" rx="8"/><path d="M47 22h86v77H47z" fill="currentColor" opacity=".08"/><circle cx="90" cy="107" r="2"/>'
+    : tipo === 'camara'
+    ? '<path d="M58 36l10-15h43l10 15h25v65H34V36z"/><circle cx="90" cy="65" r="25"/><circle cx="90" cy="65" r="15"/><path d="M125 47h10"/>'
+    : tipo === 'audio'
+    ? '<rect x="58" y="9" width="64" height="108" rx="9"/><circle cx="90" cy="38" r="13"/><circle cx="90" cy="83" r="23"/><circle cx="90" cy="83" r="9"/>'
+    : tipo === 'hogar'
+    ? '<path d="M25 62l65-47 65 47M42 51v61h96V51M74 112V78h32v34"/><path d="M77 48a22 22 0 0 1 26 0m-20 9a12 12 0 0 1 14 0"/>'
+    : laptop(p)
     ? '<rect x="28" y="18" width="124" height="76" rx="5"/><path d="M36 27h108v58H36z" fill="currentColor" opacity=".09"/><path d="M18 105h144l-10 9H28z"/><path d="M75 105h30"/>'
     : audifonos(p)
     ? '<path d="M43 69V55a47 47 0 0 1 94 0v14"/><path d="M51 58v-6a39 39 0 0 1 78 0v6"/><rect x="35" y="60" width="24" height="43" rx="10"/><rect x="121" y="60" width="24" height="43" rx="10"/><path d="M59 70v23m62-23v23"/>'
@@ -45,8 +60,8 @@ function badge(oferta) {
   b.append(icono, el('span', etiquetas[oferta?.indicador] || 'Evidencia insuficiente'));
   return b;
 }
-function ofertasProducto(id) { return ordenarOfertas(ofertasPorProducto.get(id) || [], fechaMexico()); }
-function opcionMenor(id, filtro = '') { return ofertasProducto(id).find(o => o.comparable && (!filtro || normalizar(o.plataforma).toLowerCase() === filtro)); }
+function ofertasProducto(id, hoy = fechaMexico()) { return ordenarOfertas(ofertasPorProducto.get(id) || [], hoy); }
+function opcionMenor(id, filtro = '', hoy = fechaMexico()) { return ofertasProducto(id, hoy).find(o => o.comparable && (!filtro || normalizar(o.plataforma).toLowerCase() === filtro)); }
 function estadoConexion() {
   if (!datos) return;
   const edad = edadDias(datos.fecha_corte, fechaMexico()), vieja = edad === null || edad < 0 || edad > 1;
@@ -64,7 +79,7 @@ async function actualizar(manual = false) {
   cargando = true; ultimoIntento = Date.now(); $('refrescar').disabled = true;
   $('refrescar').classList.add('is-loading'); $('refrescar-texto').textContent = 'Actualizando';
   try {
-    carga = await cargarDatos(); datos = carga.datos;
+    carga = await cargarDatos(); datos = carga.datos; fichas.clear();
     porProducto = new Map(datos.productos.map(p => [p.producto_canonico_id, p]));
     ofertasPorProducto = new Map();
     for (const o of datos.ofertas) {
@@ -72,7 +87,7 @@ async function actualizar(manual = false) {
       ofertasPorProducto.get(o.producto_canonico_id).push(o);
     }
     $('error').hidden = true; $('busqueda').disabled = false;
-    estadoConexion(); ruta(false);
+    renderCategorias(); estadoConexion(); await ruta(false);
     if (manual) notificar(carga.copia ? 'Sin actualización disponible. Conservamos la copia guardada.' : 'Datos comprobados · corte ' + datos.fecha_corte + '.');
   } catch (error) {
     if (!datos) {
@@ -84,25 +99,43 @@ async function actualizar(manual = false) {
 function hashBusqueda() {
   const q = new URLSearchParams();
   if (consulta) q.set('q', consulta);
-  if (categoria !== 'foco') q.set('categoria', categoria);
+  if (categoria !== 'todos') q.set('categoria', categoria);
   if (tienda) q.set('tienda', tienda);
   return '#/' + (q.size ? '?' + q.toString() : '');
 }
 function guardarBusqueda() { anterior = hashBusqueda(); history.replaceState(null, '', anterior); }
+function renderCategorias() {
+  const conteos = new Map();
+  for (const p of datos.productos) conteos.set(categoriaProducto(p), (conteos.get(categoriaProducto(p)) || 0) + 1);
+  for (const b of $('categorias').querySelectorAll('button')) {
+    const id = b.dataset.category, cuenta = id === 'todos' ? datos.productos.length : conteos.get(id) || 0;
+    b.replaceChildren(el('span', id === 'laptop' ? 'Computadoras' : categorias[id]), el('span', ' ' + cuenta, 'category-count'));
+  }
+  const otras = $('otras-categorias'); otras.replaceChildren();
+  const inicial = el('option', 'Más categorías'); inicial.value = ''; otras.append(inicial);
+  for (const [id, nombre] of Object.entries(categorias)) if (!['todos','laptop','celular','tablet','audifonos'].includes(id)) {
+    const cuenta = id === 'foco' ? datos.productos.filter(p => p.foco_compra && !p.es_paquete).length : conteos.get(id) || 0;
+    if (cuenta) { const opcion = el('option', nombre + ' · ' + cuenta); opcion.value = id; otras.append(opcion); }
+  }
+}
 function filtrarProductos() {
   let lista = consulta.trim() ? buscar(consulta, datos.productos, datos.busqueda) : [...datos.productos];
-  lista = lista.filter(p => categoria === 'todos' || categoria === 'laptop' && laptop(p) || categoria === 'audifonos' && audifonos(p) || categoria === 'foco' && (laptop(p) || audifonos(p)) && !p.es_paquete);
+  lista = lista.filter(p => categoria === 'todos' || categoriaProducto(p) === categoria || categoria === 'foco' && (laptop(p) || audifonos(p)) && !p.es_paquete);
   if (tienda) lista = lista.filter(p => (ofertasPorProducto.get(p.producto_canonico_id) || []).some(o => normalizar(o.plataforma).toLowerCase() === tienda));
-  if (!consulta.trim()) lista.sort((a, b) => Number(!!opcionMenor(b.producto_canonico_id, tienda)) - Number(!!opcionMenor(a.producto_canonico_id, tienda)) || Number(laptop(b)) - Number(laptop(a)) || a.nombre.localeCompare(b.nombre, 'es'));
+  if (!consulta.trim()) {
+    const hoy = fechaMexico(), recientes = new Set(lista.filter(p => opcionMenor(p.producto_canonico_id, tienda, hoy)).map(p => p.producto_canonico_id));
+    lista.sort((a, b) => Number(recientes.has(b.producto_canonico_id)) - Number(recientes.has(a.producto_canonico_id)) || (b.ultima_fecha_observada || '').localeCompare(a.ultima_fecha_observada || '') || Number(laptop(b)) - Number(laptop(a)) || a.nombre.localeCompare(b.nombre, 'es'));
+  }
   return lista;
 }
 function renderProductos(desde = 0) {
   $('busqueda').value = consulta; $('tienda').value = tienda;
+  $('otras-categorias').value = ['todos','laptop','celular','tablet','audifonos'].includes(categoria) ? '' : categoria;
   for (const b of $('categorias').querySelectorAll('button')) b.setAttribute('aria-pressed', String(b.dataset.category === categoria));
   const lista = filtrarProductos();
   $('titulo-resultados').textContent = consulta ? 'Resultados para “' + consulta + '”' : 'Tecnología para tu próxima compra';
   $('conteo').textContent = lista.length + (lista.length === 1 ? ' producto' : ' productos');
-  const activos = [consulta && '“' + consulta + '”', tienda && (tienda === 'sears' ? 'Sears' : 'Liverpool'), categoria === 'laptop' ? 'Laptops' : categoria === 'audifonos' ? 'Audífonos' : ''].filter(Boolean);
+  const activos = [consulta && '“' + consulta + '”', tienda && (tienda === 'sears' ? 'Sears' : 'Liverpool'), categoria !== 'todos' ? categorias[categoria] : ''].filter(Boolean);
   $('filtros-activos').hidden = !activos.length;
   $('descripcion-filtros').textContent = activos.join(' · ');
   $('quitar-busqueda').hidden = !consulta;
@@ -122,7 +155,9 @@ function renderProductos(desde = 0) {
       el('p', (tiendas.size ? tiendas.size + (tiendas.size === 1 ? ' tienda con registro' : ' tiendas con registro') : 'Sin ofertas por tienda') + (p.es_paquete ? ' · paquete' : ''), 'card-meta'));
     const pie = el('div', undefined, 'card-price'), precio = el('div');
     precio.append(el('small', mejor ? 'Desde en ' + mejor.plataforma : tienda ? 'Sin precio comparable en ' + (tienda === 'sears' ? 'Sears' : 'Liverpool') : 'Sin precio comparable reciente'), el('strong', mejor ? money(mejor.precio) : 'Ver historia'));
-    pie.append(precio, badge(mejor)); body.append(pie); a.append(art, body); $('productos').append(a);
+    pie.append(precio, badge(mejor)); body.append(pie);
+    if (p.ultima_fecha_observada) body.append(el('small', 'Último registro: ' + p.ultima_fecha_observada, 'card-date'));
+    a.append(art, body); $('productos').append(a);
   }
   $('sin-resultados').hidden = lista.length > 0; $('ver-mas').hidden = lista.length <= limite;
   if (animar) entrada(Array.from($('productos').children).slice(desde));
@@ -135,9 +170,10 @@ function svg(tag, attrs, texto) {
   return n;
 }
 function grafico(p) {
-  const s = datos.series.find(s => s.producto_canonico_id === p.producto_canonico_id && s.contexto === 'minimo_multitienda');
-  const ref = datos.referencias.find(r => r.serie_id === s?.serie_id && r.evento_id === datos.evento_actual);
-  const puntos = datos.precios_diarios.filter(r => r.serie_id === s?.serie_id).sort((a, b) => a.fecha_precio.localeCompare(b.fecha_precio));
+  const ficha = fichas.get(p.producto_canonico_id) || datos;
+  const s = ficha.series.find(s => s.producto_canonico_id === p.producto_canonico_id && s.contexto === 'minimo_multitienda');
+  const ref = ficha.referencias.find(r => r.serie_id === s?.serie_id && r.evento_id === datos.evento_actual);
+  const puntos = ficha.precios_diarios.filter(r => r.serie_id === s?.serie_id).sort((a, b) => a.fecha_precio.localeCompare(b.fecha_precio));
   $('estadisticas').replaceChildren();
   for (const [titulo, valor, nota] of [
     ['Mediana de la base', ref?.cobertura_base && ref?.base_cerrada ? money(ref.mediana_base) : 'Sin base', 'Referencia histórica'],
@@ -257,35 +293,52 @@ function renderResumen(id) {
     box.append(texto);
   }
 }
-function renderDetalle(id, foco) {
+function renderDetalle(id, foco, completo = true) {
   const p = porProducto.get(id);
-  $('atajos-detalle').hidden = !p;
+  $('atajos-detalle').hidden = !p || !completo;
   if (!p) {
     $('nombre-producto').textContent = 'Producto no encontrado'; $('categoria-producto').textContent = 'Consulta';
     $('ilustracion').replaceChildren(); $('atributos').textContent = '';
     $('resumen').replaceChildren(el('p', 'Este producto no está en el catálogo de esta copia. Vuelve a la búsqueda.'));
     document.querySelector('.detail-grid').hidden = true; return;
   }
-  document.querySelector('.detail-grid').hidden = false;
+  document.querySelector('.detail-grid').hidden = !completo;
   $('nombre-producto').textContent = p.nombre; $('categoria-producto').textContent = categoriaNombre(p);
   $('ilustracion').replaceChildren(ilustracion(p)); $('atributos').textContent = 'Confirma la variante y el código del fabricante antes de comprar.' + (p.es_paquete ? ' Este registro corresponde a un paquete.' : '');
   renderResumen(id);
+  if (!completo) return;
   grafico(p); renderOfertas(id);
   if (foco) $('nombre-producto').focus({preventScroll: true});
 }
 function productoActual() { try { return decodeURIComponent((location.hash.split('/producto/')[1] || '').split('?')[0]); } catch { return ''; } }
-function ruta(foco = true) {
+async function ruta(foco = true) {
   if (!datos) return;
+  const solicitud = ++solicitudRuta, catalogo = datos;
   const detalle = location.hash.startsWith('#/producto/');
   $('inicio').hidden = detalle; $('detalle').hidden = !detalle;
+  $('carga-detalle').hidden = true;
   if (detalle) {
     const filtro = new URLSearchParams(location.hash.split('?')[1] || '').get('tienda');
     $('tienda-ofertas').value = ['sears', 'liverpool'].includes(filtro) ? filtro : '';
-    $('volver').href = anterior; renderDetalle(productoActual(), foco);
+    const id = productoActual(); $('volver').href = anterior;
+    if (porProducto.has(id) && !fichas.has(id)) {
+      renderDetalle(id, foco, false);
+      $('carga-detalle').hidden = false; $('reintentar-detalle').hidden = true;
+      $('mensaje-detalle').textContent = 'Cargando historial y ofertas de este producto…';
+      try {
+        const ficha = await cargarDetalle(catalogo, id);
+        if (solicitud !== solicitudRuta || catalogo !== datos) return;
+        fichas.set(id, ficha); ofertasPorProducto.set(id, ficha.ofertas.filter(o => o.producto_canonico_id === id));
+      } catch (error) {
+        if (solicitud !== solicitudRuta) return;
+        $('mensaje-detalle').textContent = error.message; $('reintentar-detalle').hidden = false; return;
+      }
+    }
+    $('carga-detalle').hidden = true; renderDetalle(id, foco);
   }
   else {
     const q = new URLSearchParams(location.hash.split('?')[1] || '');
-    consulta = (q.get('q') || '').slice(0, 200); categoria = ['foco', 'todos', 'laptop', 'audifonos'].includes(q.get('categoria')) ? q.get('categoria') : 'foco'; tienda = ['sears', 'liverpool'].includes(q.get('tienda')) ? q.get('tienda') : '';
+    consulta = (q.get('q') || '').slice(0, 200); categoria = Object.hasOwn(categorias, q.get('categoria')) ? q.get('categoria') : 'todos'; tienda = ['sears', 'liverpool'].includes(q.get('tienda')) ? q.get('tienda') : '';
     anterior = location.hash || '#/'; renderProductos();
   }
   document.title = detalle && porProducto.has(productoActual()) ? porProducto.get(productoActual()).nombre + ' · Sconto' : 'Sconto · Antes de comprar';
@@ -308,8 +361,9 @@ $('busqueda').addEventListener('input', () => { clearTimeout(espera); espera = s
 for (const b of document.querySelectorAll('[data-query]')) b.addEventListener('click', () => { if (datos) iniciarBusqueda(b.dataset.query, true); });
 for (const b of $('categorias').querySelectorAll('button')) b.addEventListener('click', () => { if (!datos) return; categoria = b.dataset.category; limite = 12; guardarBusqueda(); renderProductos(); });
 $('tienda').addEventListener('change', () => { if (!datos) return; tienda = $('tienda').value; limite = 12; guardarBusqueda(); renderProductos(); });
-$('limpiar').addEventListener('click', () => { categoria = 'foco'; tienda = ''; iniciarBusqueda(''); });
-$('quitar-filtros').addEventListener('click', () => { categoria = 'foco'; tienda = ''; iniciarBusqueda(''); });
+$('otras-categorias').addEventListener('change', () => { if (!datos) return; categoria = $('otras-categorias').value || 'todos'; limite = 12; guardarBusqueda(); renderProductos(); });
+$('limpiar').addEventListener('click', () => { categoria = 'todos'; tienda = ''; iniciarBusqueda(''); });
+$('quitar-filtros').addEventListener('click', () => { categoria = 'todos'; tienda = ''; iniciarBusqueda(''); });
 $('quitar-busqueda').addEventListener('click', () => { iniciarBusqueda(''); $('busqueda').focus(); });
 $('productos').addEventListener('click', e => { const a = e.target.closest('a[data-producto]'); if (a) { posicionResultados = window.scrollY; tarjetaAnterior = a.dataset.producto; } });
 for (const a of document.querySelectorAll('.brand')) a.addEventListener('click', () => { posicionResultados = 0; tarjetaAnterior = ''; });
@@ -324,6 +378,7 @@ $('tienda-ofertas').addEventListener('change', () => {
 });
 $('mas-ofertas').addEventListener('click', () => { limiteOfertas += 8; renderOfertas(productoActual()); });
 $('refrescar').addEventListener('click', () => actualizar(true)); $('reintentar').addEventListener('click', () => actualizar(true));
+$('reintentar-detalle').addEventListener('click', () => ruta(false));
 window.addEventListener('hashchange', () => { limiteOfertas = 8; ruta(); });
 for (const b of document.querySelectorAll('[data-scroll]')) b.addEventListener('click', () => irA($(b.dataset.scroll)));
 $('compartir').addEventListener('click', async () => {

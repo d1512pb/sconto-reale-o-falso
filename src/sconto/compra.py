@@ -24,6 +24,9 @@ def atributos(texto):
         'cpu': r'\b(I[3579](?:-\d{4,5}[A-Z]*)?|RYZEN\s*[3579])\b',
         'airpods': r'\bAIRPODS\s*(PRO\s*)?([234])\b',
         'color': r'\b(AZUL|NEGRO|BLANCO|GRIS|PLATA|ROSA)\b',
+        'iphone': r'\bIPHONE\s*(\d{1,2}|SE)\s*(PRO\s*MAX|PRO|PLUS|MINI|AIR|E)?\b',
+        'galaxy': r'\bGALAXY\s*(TAB\s*)?([AS]\d{1,3})\s*(ULTRA|PLUS|FE\+?|LITE|\+)?',
+        'ipad_tipo': r'\bIPAD\s+(AIR|PRO|MINI)\b',
     }
     for clave, patron in patrones.items():
         hallazgo = re.search(patron, texto)
@@ -32,6 +35,10 @@ def atributos(texto):
                 resultado[clave] = str(int(hallazgo[1]) * (1024 if hallazgo[2] == 'TB' else 1))
             elif clave == 'airpods':
                 resultado[clave] = ('PRO' if hallazgo[1] else 'NORMAL') + hallazgo[2]
+            elif clave == 'iphone':
+                resultado[clave] = hallazgo[1] + (hallazgo[2] or '').replace(' ', '')
+            elif clave == 'galaxy':
+                resultado[clave] = ('TAB' if hallazgo[1] else '') + hallazgo[2] + (hallazgo[3] or '').replace('+', 'PLUS')
             else:
                 resultado[clave] = hallazgo[1].replace(' ', '')
     resultado['paquete'] = bool(re.search(r'\b(?:PAQUETE|COMBO|HERVIDOR|CAFETERA)\b', texto))
@@ -69,7 +76,9 @@ def identidad_oferta(nombre, titulo):
         palabras = set(normalizar(nombre).split()) & set(normalizar(titulo).split())
         familias = set(re.findall(r'\b(?:LENOVO|HP|DELL|ACER|ASUS|APPLE|IDEAPAD|SLIM|VIVOBOOK|PAVILION|INSPIRON|MACBOOK|CHROMEBOOK)\b', normalizar(nombre)))
         presentes = set(re.findall(r'[A-Z0-9]+', normalizar(titulo)))
-        if len(palabras) >= 3 and familias <= presentes:
+        # La regla de atributos parcial sólo se validó para computadoras y AirPods.
+        dominio = bool(re.search(r'\b(LAPTOP|PORTATIL|COMPUTADORA|IDEAPAD|MACBOOK|CHROMEBOOK|AIRPODS)\b', normalizar(nombre)))
+        if len(palabras) >= 3 and familias <= presentes and dominio:
             return 'compatible_texto', 'Atributos explícitos compatibles; confirmar SKU antes de comprar'
     return 'pendiente', 'Descripción insuficiente para confirmar variante'
 
@@ -154,6 +163,8 @@ def preparar_compra(tablas, fecha_consulta, evento_id='BF2026', umbral=5):
     productos['foco_compra'] = productos.nombre.str.contains(r'laptop|computadora|airpods|aud[ií]fonos|headset', case=False, regex=True)
     productos['es_paquete'] = productos.nombre.map(lambda x: atributos(x)['paquete'])
     productos['atributos_json'] = productos.nombre.map(lambda x: json.dumps(atributos(x), ensure_ascii=False))
+    ultimas = tablas['precios_diarios'].merge(tablas['series'][['serie_id', 'producto_canonico_id']], on='serie_id').groupby('producto_canonico_id').fecha_precio.max()
+    productos['ultima_fecha_observada'] = productos.producto_canonico_id.map(ultimas)
     buscador = Buscador(productos)
     series = tablas['series'].set_index('serie_id')
     referencias = tablas['referencias_base'].loc[tablas['referencias_base'].evento_id.eq(evento_id)].set_index('serie_id')
