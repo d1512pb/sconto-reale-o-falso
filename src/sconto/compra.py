@@ -25,7 +25,7 @@ def atributos(texto):
         'airpods': r'\bAIRPODS\s*(PRO\s*)?([234])\b',
         'color': r'\b(AZUL|NEGRO|BLANCO|GRIS|PLATA|ROSA)\b',
         'iphone': r'\bIPHONE\s*(\d{1,2}|SE)\s*(PRO\s*MAX|PRO|PLUS|MINI|AIR|E)?\b',
-        'galaxy': r'\bGALAXY\s*(TAB\s*)?([AS]\d{1,3})\s*(ULTRA|PLUS|FE\+?|LITE|\+)?',
+        'galaxy': r'\bGALAXY\s*(TAB\s*)?([ASM]\d{1,3})\s*(ULTRA|PLUS|FE\+?|LITE|\+)?',
         'ipad_tipo': r'\bIPAD\s+(AIR|PRO|MINI)\b',
     }
     for clave, patron in patrones.items():
@@ -98,7 +98,12 @@ class Buscador:
         puntajes = cosine_similarity(self.vectorizador.transform([texto]), self.matriz)[0]
         datos = self.productos.assign(similitud=puntajes)
         solicitados = atributos(texto)
-        datos = datos.loc[datos.nombre.map(lambda nombre: not contradicciones(solicitados, atributos(nombre)))]
+        def cumple_modelo(nombre):
+            candidato = atributos(nombre)
+            return not contradicciones(solicitados, candidato) and all(
+                clave not in solicitados or candidato.get(clave) == solicitados[clave]
+                for clave in ('iphone', 'galaxy', 'ipad_tipo'))
+        datos = datos.loc[datos.nombre.map(cumple_modelo)]
         palabras = {p for p in re.findall(r'[A-Z0-9]+', texto) if len(p) >= 3}
         def ancla(nombre):
             tokens = re.findall(r'[A-Z0-9]+', normalizar(nombre))
@@ -110,7 +115,7 @@ class Buscador:
     def indice(self):
         matriz = self.matriz.tocsr()
         return dict(version='sconto-busqueda-v1', normalizacion='Mayúsculas sin acentos, espacios compactados',
-                    algoritmo='TF-IDF char_wb 3..5, l2, coseno >=0.15; ancla léxica exacta >=3 caracteres o difflib >=0.85 con >=4; sin contradicciones',
+                    algoritmo='TF-IDF char_wb 3..5, l2, coseno >=0.15; ancla léxica exacta >=3 caracteres o difflib >=0.85 con >=4; sin contradicciones; modelo móvil explícito obligatorio',
                     ids=self.productos.producto_canonico_id.tolist(),
                     vocabulario={k: int(v) for k, v in self.vectorizador.vocabulary_.items()}, idf=self.vectorizador.idf_.tolist(),
                     matriz_csr=dict(data=matriz.data.tolist(), indices=matriz.indices.tolist(),

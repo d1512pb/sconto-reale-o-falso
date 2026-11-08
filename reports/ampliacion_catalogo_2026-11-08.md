@@ -28,7 +28,7 @@ Las categorías se derivan de la familia, categoría de origen y nombre. Se sepa
 
 - Filtros de celulares, tabletas y demás categorías, con conteos. Sears y Liverpool continúan filtrando por plataforma.
 - Última fecha visible en tarjetas; prioridad a ofertas recientes comparables y después a registros más recientes. Los datos antiguos no reciben indicador vigente.
-- Variantes explícitas de iPhone, Galaxy y iPad se contrastan en Python y JavaScript. Títulos incompletos de nuevas categorías quedan pendientes. La coincidencia sólo textual no verifica un SKU.
+- Variantes explícitas de iPhone, Galaxy y iPad se contrastan en Python y JavaScript. Una búsqueda de modelo móvil explícito exige ese modelo; por ejemplo, Galaxy Tab A9 no devuelve Galaxy Buds ni Book. Títulos incompletos de nuevas categorías quedan pendientes. La coincidencia sólo textual no verifica un SKU.
 - El índice inicial pesa 8,869,075 bytes antes de compresión HTTP; la versión anterior de 200 productos ocupaba aproximadamente 9.18 MB. Las fichas separadas tienen mediana de 13,051 bytes y máximo de 46,790; sólo se descargan al consultarlas.
 - Se verifican SHA-256, producto y corte. Se guarda un catálogo y hasta 40 fichas descargadas. Sin conexión sólo se abre el detalle guardado del mismo corte; el resto muestra aviso y reintento.
 - El ETL diario amplía automáticamente la proyección de consulta. `--solo-seleccion` conserva el alcance de la lista diaria. El notebook 03 y su entrega académica congelada no se modificaron.

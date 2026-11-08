@@ -10,7 +10,7 @@ export function atributos(texto) {
   }
   resultado.paquete = /\b(?:PAQUETE|COMBO|HERVIDOR|CAFETERA)\b/.test(texto);
   const iphone = texto.match(/\bIPHONE\s*(\d{1,2}|SE)\s*(PRO\s*MAX|PRO|PLUS|MINI|AIR|E)?\b/);
-  const galaxy = texto.match(/\bGALAXY\s*(TAB\s*)?([AS]\d{1,3})\s*(ULTRA|PLUS|FE\+?|LITE|\+)?/);
+  const galaxy = texto.match(/\bGALAXY\s*(TAB\s*)?([ASM]\d{1,3})\s*(ULTRA|PLUS|FE\+?|LITE|\+)?/);
   const ipad = texto.match(/\bIPAD\s+(AIR|PRO|MINI)\b/);
   if (iphone) resultado.iphone = iphone[1] + (iphone[2] || '').replaceAll(' ', '');
   if (galaxy) resultado.galaxy = (galaxy[1] ? 'TAB' : '') + galaxy[2] + (galaxy[3] || '').replace('+', 'PLUS');
@@ -73,7 +73,9 @@ export function buscar(consulta, productos, indice, limite = productos.length) {
   const porId = new Map(productos.map(p => [p.producto_canonico_id, p])), m = indice.matriz_csr, resultados = [];
   indice.ids.forEach((id, fila) => {
     const p = porId.get(id);
-    if (!p || conflicto(especificacion, atributos(p.nombre))) return;
+    if (!p) return;
+    const candidato = atributos(p.nombre);
+    if (conflicto(especificacion, candidato) || ['iphone', 'galaxy', 'ipad_tipo'].some(k => especificacion[k] && especificacion[k] !== candidato[k])) return;
     const nombre = normalizar(p.nombre).match(/[A-Z0-9]+/g) || [];
     if (!tokens.some(t => nombre.includes(t) || (t.length >= 4 && nombre.some(n => parecido(t, n) >= .85)))) return;
     let similitud = 0;
