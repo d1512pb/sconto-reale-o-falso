@@ -1,13 +1,13 @@
 {
-  "fecha_auditoria": "2026-11-08",
-  "construido_utc": "2026-11-09T02:37:57+00:00",
-  "filas": 684950,
+  "fecha_auditoria": "2026-11-09",
+  "construido_utc": "2026-11-09T23:20:16+00:00",
+  "filas": 685947,
   "tablas": {
-    "observaciones": 684950,
+    "observaciones": 685947,
     "exclusiones": 0,
     "productos": 1724,
     "eventos": 3,
-    "series_evento": 18731,
+    "series_evento": 18755,
     "sensibilidad": 36,
     "matriz_modelo": 298,
     "matriz_modelo_brecha": 0,
@@ -27,22 +27,22 @@
     },
     {
       "fuente": "preciometro",
-      "filas": 250286,
+      "filas": 250477,
       "ids_externos": 2795,
       "desde": "2026-07-18",
-      "hasta": "2026-11-08",
-      "dias_con_dato": 114,
-      "ultima_captura": "2026-11-08",
+      "hasta": "2026-11-09",
+      "dias_con_dato": 115,
+      "ultima_captura": "2026-11-09",
       "con_precio_anterior": 0
     },
     {
       "fuente": "preciometro_ofertas",
-      "filas": 25404,
-      "ids_externos": 9519,
+      "filas": 26210,
+      "ids_externos": 9520,
       "desde": "2026-10-16",
-      "hasta": "2026-11-08",
-      "dias_con_dato": 21,
-      "ultima_captura": "2026-11-08",
+      "hasta": "2026-11-09",
+      "dias_con_dato": 22,
+      "ultima_captura": "2026-11-09",
       "con_precio_anterior": 0
     },
     {
@@ -95,7 +95,8 @@
       "2026-10-27",
       "2026-10-28",
       "2026-10-29",
-      "2026-10-30"
+      "2026-10-30",
+      "2026-11-09"
     ]
   },
   "limites": [
