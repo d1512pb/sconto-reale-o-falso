@@ -1,6 +1,6 @@
 # Resumen de la recolección
 
-Generado 2026-11-09 desde `data/gold/` (construido 2026-11-09T23:20:16+00:00). Cifras calculadas,
+Generado 2026-11-09 desde `data/gold/` (construido 2026-11-10T04:09:00+00:00). Cifras calculadas,
 no escritas a mano. Resultados de **ejecución local** salvo que se indique otra cosa; las corridas de GitHub Actions
 quedan en `data/estado/github.csv` y las de Colab no se cuentan aquí.
 
@@ -12,7 +12,7 @@ quedan en `data/estado/github.csv` y las de Colab no se cuentan aquí.
 | preciometro | agregador | en_linea | 250,477 | 2,795 | 1,493 | 2026-07-18 | 2026-11-09 | 115 | 90 | 114 | 0 | 0 |
 | preciometro_ofertas | agregador | en_linea | 26,210 | 9,520 | 1,485 | 2026-10-16 | 2026-11-09 | 22 | 1 | 21 | 0 | 0 |
 | qqp_cdmx | archivo_oficial | tienda_fisica | 409,138 | 1,022 | 231 | 2018-01-02 | 2026-08-31 | 2,077 | 93 | 1,803 | 0 | 0 |
-| tiendas | scraping | en_linea | 12 | 1 | 1 | 2026-10-20 | 2026-11-08 | 12 | 12 | 12 | 12 | 0 |
+| tiendas | scraping | en_linea | 13 | 1 | 1 | 2026-10-20 | 2026-11-09 | 13 | 13 | 13 | 13 | 0 |
 | wayback | wayback | en_linea | 109 | 28 | 0 | 2024-09-06 | 2025-10-17 | 81 | 2 | 24 | 67 | 67 |
 
 Una fuente sólo se considera integrada si tiene filas en `observaciones`. Detalle y límites de cada una en
@@ -49,17 +49,17 @@ Mínimos del Avance 1 (≥4 fechas base en ≥21 días, ≥1 en el evento; alza:
 | amazon | local | bloqueado | 1 |
 | commoncrawl | local | bloqueado | 1 |
 | mercadolibre | github | sin_credenciales | 20 |
-| mercadolibre | local | sin_credenciales | 11 |
+| mercadolibre | local | sin_credenciales | 12 |
 | preciometro | github | ok | 20 |
 | preciometro | local | ok | 1 |
 | preciometro | local | parcial | 2 |
-| qqp_cdmx | local | fallo | 9 |
+| qqp_cdmx | local | fallo | 10 |
 | qqp_cdmx | local | ok | 1 |
-| qqp_nacional | local | fallo | 9 |
+| qqp_nacional | local | fallo | 10 |
 | qqp_nacional | local | ok | 1 |
-| servicio_local | local | ok | 8 |
+| servicio_local | local | ok | 9 |
 | servicio_local | local | parcial | 1 |
-| tiendas | local | ok | 11 |
+| tiendas | local | ok | 12 |
 | tiendas | local | parcial | 1 |
 | wayback | local | ok | 1 |
 
