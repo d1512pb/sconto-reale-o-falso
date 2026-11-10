@@ -1,6 +1,6 @@
 # Cobertura · Preciómetro
 
-Generado 2026-11-09 desde `data/gold/observaciones` (no hay cifras a mano).
+Generado 2026-11-10 desde `data/gold/observaciones` (no hay cifras a mano).
 
 **Qué es:** cada ficha pública trae (a) un gráfico con **un punto por día**: el precio **mínimo entre tiendas** ese
 día, con la tienda y el vendedor que lo ofrecían (ventana móvil de ~90 días); y (b) las **ofertas vigentes** por
@@ -9,15 +9,15 @@ El gráfico **no** es la serie de una sola tienda: se analiza como serie `MINIMO
 
 ## Historial (gráfico)
 
-- Fichas con historial: **2,795** · filas (ficha × día): **250,477**
-- Rango obtenido: **2026-07-18 → 2026-11-09** · días con dato: **115**
-- Puntos por ficha: mediana **90**, máximo **114**
-- Tienda que tuvo el mínimo (top 8): Amazon 129,525, Mercadolibre 33,534, El Palacio de Hierro 15,231, Walmart 14,753, Cyberpuerta 13,731, Sam's Club 6,392, El Palacio De Hierro 5,753, Sanborns 5,355
+- Fichas con historial: **2,795** · filas (ficha × día): **250,668**
+- Rango obtenido: **2026-07-18 → 2026-11-10** · días con dato: **116**
+- Puntos por ficha: mediana **90**, máximo **115**
+- Tienda que tuvo el mínimo (top 8): Amazon 129,601, Mercadolibre 33,562, El Palacio de Hierro 15,240, Walmart 14,774, Cyberpuerta 13,737, Sam's Club 6,397, El Palacio De Hierro 5,753, Sanborns 5,358
 
 ## Ofertas vigentes (desde el 2026-10-16)
 
-- Ofertas: **26,210** de **2,780** fichas;
-  con ASIN: 5,644; con catálogo MLM: 3,191
+- Ofertas: **27,011** de **2,780** fichas;
+  con ASIN: 5,793; con catálogo MLM: 3,288
 
 ## Emparejamiento con QQP
 
