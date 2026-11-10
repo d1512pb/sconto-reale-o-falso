@@ -26,3 +26,7 @@ Los recorridos en teléfono y la revisión humana corresponden a la versión ant
 El código completo está en android/, acompañado de la interfaz web, ETL, notebook, pruebas y documentación del repositorio. El workflow Verificar app Android compila sin la clave privada y conserva los reportes de pruebas y lint. El resultado de su ejecución se consulta en Actions; no se confunde con la comprobación local anterior.
 
 [Descarga y notas](https://github.com/d1512pb/sconto-reale-o-falso/releases/tag/android-v1.0.1) · [Guía para revisar el proyecto](../REVISION_PROYECTO.md).
+
+## Comprobación en GitHub Actions
+
+La [ejecución 42859491638](https://github.com/d1512pb/sconto-reale-o-falso/actions/runs/42859491638), sobre el commit 7e26b566c6c5dd2d49bf5b0d981c3096c406e43d, terminó correctamente: compilación release, tres pruebas de navegación y lint. El entorno se prepara explícitamente sin el paquete retirado tools. El APK firmado distribuido se construyó localmente; Actions comprueba la compilación sin recibir la clave privada.
