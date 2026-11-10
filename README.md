@@ -1,5 +1,7 @@
 # Sconto reale o falso · recolección multifuente de precios
 
+**Revisión académica:** [recorrido del proyecto](REVISION_PROYECTO.md) · [app web](https://d1512pb.github.io/sconto-reale-o-falso/) · [APK Android firmado](https://github.com/d1512pb/sconto-reale-o-falso/releases/tag/android-v1.0.1) · [código Android](android/README.md).
+
 ## Avance 2: notebook completo y datos para la app
 
 Abrir [03 · CRISP-DM y ETL en Colab](https://colab.research.google.com/drive/1bnrjKM-Wz0YPo8UuQKrEHBm4mtDrn3KP).
@@ -129,6 +131,9 @@ notebooks/                   02_Sconto_multifuente.ipynb (CRISP-DM, corre en Col
 ## App instalable
 
 Abre [Sconto](https://d1512pb.github.io/sconto-reale-o-falso/) y busca por nombre o modelo.
+También está disponible el [proyecto Android y su APK firmado para compartir](android/README.md). Se compila con
+`./android/build-apk.ps1`; el archivo firmado y su manifiesto quedan en `data/exportaciones/apk/`.
+El APK consulta los mismos datos publicados y abre las tiendas en el navegador o en su app asociada por Android.
 El catálogo aprovecha los **1,493 productos** con datos en línea ya recolectados: 233 celulares, 146 tabletas,
 215 computadoras y laptops, 243 audífonos, 223 productos de audio, 275 pantallas, 110 cámaras y lentes,
 8 proyectores, 23 dispositivos de streaming y 17 de hogar inteligente. Hay filtros de categoría, Sears y Liverpool; cada ficha muestra vendedores, precios fechados,
@@ -164,8 +169,7 @@ limita `sconto.mart` a la lista diaria. El notebook 03 y su entrega académica d
 
 El workflow diario genera `sconto_web_actual.zip` y publica en Pages. Para actualizar desde el último dataset
 sin recolectar otra vez: **Actions → Recolección diaria de precios → Run workflow → solo_analitica**.
-La app no ejecuta scraping mientras la usas. La instalación real en Android/iPhone queda pendiente de probar
-en un teléfono; búsqueda, diseño adaptable, actualización y reapertura sin conexión se prueban en navegador.
+La app no ejecuta scraping mientras la usas. La instalación y los recorridos principales se probaron en un teléfono Android el 9 de noviembre; ver [evidencia física](reports/prueba_android_2026-11-09.md). La instalación en iPhone y la reapertura completa sin conexión en Android siguen pendientes; la caché sin red sí se probó en navegador.
 
 Para desarrollar localmente (después de generar el mart):
 

@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Sconto</string>
+    <string name="error_conexion">No pudimos abrir la app. La primera visita necesita internet; después podrás consultar el catálogo y las fichas guardadas.</string>
+    <string name="reintentar">Volver a intentar</string>
+    <string name="sin_navegador">No hay un navegador disponible para abrir este enlace.</string>
+</resources>

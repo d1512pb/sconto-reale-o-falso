@@ -23,6 +23,18 @@ data/operacion/
 *.zip
 *.part
 
+# Compilación Android y firmas locales
+android/.gradle/
+android/**/build/
+android/local.properties
+android/*.jks
+android/*.keystore
+*.jks
+*.keystore
+*.p12
+*.apk
+*.aab
+
 # Registros locales de ejecución
 logs/*.log
 *.egg-info/
