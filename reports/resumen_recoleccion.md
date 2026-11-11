@@ -1,6 +1,6 @@
 # Resumen de la recolección
 
-Generado 2026-11-11 desde `data/gold/` (construido 2026-11-11T18:37:43+00:00). Cifras calculadas,
+Generado 2026-11-11 desde `data/gold/` (construido 2026-11-11T20:14:40+00:00). Cifras calculadas,
 no escritas a mano. Resultados de **ejecución local** salvo que se indique otra cosa; las corridas de GitHub Actions
 quedan en `data/estado/github.csv` y las de Colab no se cuentan aquí.
 
