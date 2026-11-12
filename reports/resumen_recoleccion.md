@@ -1,6 +1,6 @@
 # Resumen de la recolección
 
-Generado 2026-11-12 desde `data/gold/` (construido 2026-11-12T14:14:41+00:00). Cifras calculadas,
+Generado 2026-11-12 desde `data/gold/` (construido 2026-11-12T18:36:51+00:00). Cifras calculadas,
 no escritas a mano. Resultados de **ejecución local** salvo que se indique otra cosa; las corridas de GitHub Actions
 quedan en `data/estado/github.csv` y las de Colab no se cuentan aquí.
 
@@ -57,8 +57,8 @@ Mínimos del Avance 1 (≥4 fechas base en ≥21 días, ≥1 en el evento; alza:
 | qqp_cdmx | local | ok | 1 |
 | qqp_nacional | local | fallo | 13 |
 | qqp_nacional | local | ok | 1 |
-| servicio_local | local | ok | 11 |
-| servicio_local | local | parcial | 2 |
+| servicio_local | local | ok | 12 |
+| servicio_local | local | parcial | 1 |
 | tiendas | local | ok | 15 |
 | tiendas | local | parcial | 1 |
 | wayback | local | ok | 1 |
