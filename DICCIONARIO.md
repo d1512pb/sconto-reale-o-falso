@@ -9,25 +9,25 @@ Para las 11 tablas del ETL del Avance 2, consultar [CONTRATO_WEB.md](CONTRATO_WE
 
 Una fila por precio observado (formato largo). Todas las fuentes salvo QQP nacional. Clave única: (fuente, id_externo, fecha_precio, vendedor_o_cadena).
 
-Filas: 688,930
+Filas: 689,917
 
 | Campo | Descripción | Tipo | Rango observado | Fuente |
 |---|---|---|---|---|
-| `obs_id` | Identificador estable de la observación (hash). | str | 688,930 valores distintos | todas |
+| `obs_id` | Identificador estable de la observación (hash). | str | 689,917 valores distintos | todas |
 | `fuente` | Origen: qqp_cdmx, preciometro, preciometro_ofertas, mercadolibre, amazon, wayback, commoncrawl, promodescuentos. | str | amazon, preciometro, preciometro_ofertas, qqp_cdmx, tiendas, wayback | todas |
 | `metodo` | archivo_oficial \| api \| scraping \| wayback \| commoncrawl \| agregador \| comunidad. | str | agregador, archivo_oficial, scraping, wayback | todas |
 | `canal` | tienda_fisica (QQP) \| en_linea. Nunca se mezclan en una serie. | str | en_linea, tienda_fisica | todas |
 | `tipo_precio` | minimo_diario_multitienda (gráfico de Preciómetro: el más bajo entre tiendas ese día), oferta_vigente, precio_vigente, observado_sucursal, etc. | str | minimo_diario_multitienda, oferta_vigente, precio_registrado_qqp, publicado | todas |
-| `fecha_precio` | Día al que corresponde el precio (en Wayback/Common Crawl, fecha del snapshot). | str | 2,194 valores distintos | todas |
-| `fecha_captura` | Día en que se descargó. | str | 2026-10-16, 2026-10-20, 2026-10-21, 2026-10-22, 2026-10-23, 2026-10-24, 2026-10-25, 2026-10-26 … (25 distintos) | todas |
+| `fecha_precio` | Día al que corresponde el precio (en Wayback/Common Crawl, fecha del snapshot). | str | 2,195 valores distintos | todas |
+| `fecha_captura` | Día en que se descargó. | str | 2026-10-16, 2026-10-20, 2026-10-21, 2026-10-22, 2026-10-23, 2026-10-24, 2026-10-25, 2026-10-26 … (26 distintos) | todas |
 | `producto_canonico_id` | Producto canónico de config/productos_objetivo.csv; vacío si no se emparejó. | str | 1,724 valores distintos | derivado |
-| `id_externo` | Id en la fuente: producto_id QQP, id de ficha u oferta Preciómetro, ASIN, MLM. | str | 13,079 valores distintos | todas |
+| `id_externo` | Id en la fuente: producto_id QQP, id de ficha u oferta Preciómetro, ASIN, MLM. | str | 13,085 valores distintos | todas |
 | `tipo_id_externo` | qqp \| preciometro \| preciometro_oferta \| asin \| mlm \| mlm_item \| url. | str | asin, mlm, preciometro, preciometro_oferta, qqp, url | todas |
 | `marca` | Marca según la fuente. | str | 413 valores distintos | todas |
 | `modelo_normalizado` | Código o nombre de modelo en mayúsculas sin espacios ni guiones. | str | 980 valores distintos | derivado |
-| `descripcion_original` | Texto original del producto en la fuente. | str | 12,287 valores distintos | todas |
+| `descripcion_original` | Texto original del producto en la fuente. | str | 12,292 valores distintos | todas |
 | `plataforma` | Tienda o marketplace (Amazon, Mercadolibre, Elektra, …) en fuentes en línea. | str | Amazon, Bodega Aurrera, Chedraui, Costco, Cyberpuerta, El Palacio De Hierro, El Palacio de Hierro, Elektra … (21 distintos) | en línea |
-| `vendedor_o_cadena` | Vendedor (en línea) o cadena + sucursal (QQP). | str | 2,699 valores distintos | todas |
+| `vendedor_o_cadena` | Vendedor (en línea) o cadena + sucursal (QQP). | str | 2,701 valores distintos | todas |
 | `sucursal_id` | Sucursal QQP (hash de cadena, nombre, dirección y alcaldía, igual que el Avance 1). | str | 185 valores distintos | QQP |
 | `estado` | Entidad federativa (QQP). | str | CIUDAD DE MÉXICO, Ciudad de Mexico, Ciudad de México | QQP |
 | `alcaldia` | Municipio/alcaldía (QQP). | str | AZCAPOTZALCO, Azcapotzalco, BENITO JUÁREZ, Benito Juárez, COYOACÁN, CUAUHTÉMOC, Coyoacán, Cuauhtémoc … (24 distintos) | QQP |
@@ -36,31 +36,31 @@ Filas: 688,930
 | `pct_descuento_anunciado` | % de descuento SÓLO si la fuente lo muestra; entre −100 y 100. | float64 | 2.00 – 47.00 | en línea |
 | `moneda` | MXN. | str | MXN | todas |
 | `disponibilidad` | Disponible, agotado, etc., según la fuente. | str | Disponible, Disponible 1 día después de tu compra, Disponible 5 días después de tu compra, Disponible 7 días después de tu compra, Disponible {"isInternal":false,"isRobot":false,"showFaceout":true,"merchantId":"A1AYA2LE3BV7SY","availableBadges":"","loggedIn":false,"asin":"B0CPL6NDWH","showBadge":false,"availableFaceouts":"TK_BOUGHT"}, Disponible {"isInternal":false,"isRobot":false,"showFaceout":true,"merchantId":"AVDBXBAVVSXLQ","availableBadges":"","loggedIn":false,"asin":"B09WNK39JN","showBadge":false,"availableFaceouts":"TK_BOUGHT"}, Disponible {"isInternal":false,"isRobot":false,"showFaceout":true,"merchantId":"AVDBXBAVVSXLQ","availableBadges":"","loggedIn":false,"asin":"B0CPL6NDWH","showBadge":false,"availableFaceouts":"TK_BOUGHT"}, Disponible {"isInternal":false,"showInsightsHub":false,"isRobot":false,"showFaceout":true,"merchantId":"A10YF1TK1RC4IY","availableBadges":"","loggedIn":false,"asin":"B0CPL6NDWH","showBadge":false,"ingressFaceout":"","availableFaceouts":"TK_BOUGHT"} … (16 distintos) | en línea |
-| `condiciones` | JSON: MSI, cupón, envío, membresía (Prime), vendido/enviado por, marketplace. | str | 7,845 valores distintos | en línea |
-| `url` | URL del producto/oferta/archivo oficial. | str | 12,105 valores distintos | todas |
-| `ruta_raw` | Ruta del crudo (relativa a la raíz del repo; los voluminosos viven en la PC local). | str | 416,537 valores distintos | todas |
-| `hash_raw` | SHA-256 del crudo sin comprimir. | str | 7,410 valores distintos | todas |
-| `serie_id` | Serie = plataforma × id externo × vendedor/sucursal × canal (QQP: el serie_id del Avance 1). | str | 39,738 valores distintos | derivado |
+| `condiciones` | JSON: MSI, cupón, envío, membresía (Prime), vendido/enviado por, marketplace. | str | 7,958 valores distintos | en línea |
+| `url` | URL del producto/oferta/archivo oficial. | str | 12,111 valores distintos | todas |
+| `ruta_raw` | Ruta del crudo (relativa a la raíz del repo; los voluminosos viven en la PC local). | str | 416,729 valores distintos | todas |
+| `hash_raw` | SHA-256 del crudo sin comprimir. | str | 7,602 valores distintos | todas |
+| `serie_id` | Serie = plataforma × id externo × vendedor/sucursal × canal (QQP: el serie_id del Avance 1). | str | 39,756 valores distintos | derivado |
 | `preciometro_producto_id` |  | str | 2,780 valores distintos |  |
-| `asin` |  | str | 2,423 valores distintos |  |
-| `mlm_producto` |  | str | 1,122 valores distintos |  |
+| `asin` |  | str | 2,424 valores distintos |  |
+| `mlm_producto` |  | str | 1,123 valores distintos |  |
 | `mlm_item` |  | object | vacío |  |
-| `n_capturas` | Cuántas capturas trajeron esa misma clave (el historial de 90 días se repite cada día). | int64 | 1.00 – 26.00 | derivado |
-| `precio_revisado_por_fuente` | True si capturas distintas dieron precios distintos para la misma clave. | bool | True 456 / False 688,474 | derivado |
+| `n_capturas` | Cuántas capturas trajeron esa misma clave (el historial de 90 días se repite cada día). | int64 | 1.00 – 27.00 | derivado |
+| `precio_revisado_por_fuente` | True si capturas distintas dieron precios distintos para la misma clave. | bool | True 482 / False 689,435 | derivado |
 | `plataforma_serie` | Plataforma con la que se agrupa la serie (Wayback de Amazon se agrupa con amazon). | str | amazon, liverpool, mercadolibre, preciometro, preciometro_ofertas, qqp_cdmx | derivado |
-| `vendedor_serie` | Vendedor de la serie (MINIMO_MULTITIENDA para el gráfico de Preciómetro; sucursal en QQP). | str | 1,647 valores distintos | derivado |
-| `revisar_captura` | True si el precio está fuera de 1.5×IQR de su serie: posible error, NO se borra. | bool | True 46,792 / False 642,138 | derivado |
+| `vendedor_serie` | Vendedor de la serie (MINIMO_MULTITIENDA para el gráfico de Preciómetro; sucursal en QQP). | str | 1,651 valores distintos | derivado |
+| `revisar_captura` | True si el precio está fuera de 1.5×IQR de su serie: posible error, NO se borra. | bool | True 46,780 / False 643,137 | derivado |
 
 ## series_evento
 
 Una fila por serie × evento (BF2024, BF2025, BF2026). Medianas sobre fechas observadas, sin imputar.
 
-Filas: 18,797
+Filas: 18,815
 
 | Campo | Descripción | Tipo | Rango observado | Fuente |
 |---|---|---|---|---|
-| `serie_evento_id` | Hash de serie_id + evento_id. | str | 18,797 valores distintos | derivado |
-| `serie_id` |  | str | 17,750 valores distintos |  |
+| `serie_evento_id` | Hash de serie_id + evento_id. | str | 18,815 valores distintos | derivado |
+| `serie_id` |  | str | 17,768 valores distintos |  |
 | `evento_id` | BF2024 \| BF2025 \| BF2026. | str | BF2024, BF2025, BF2026 | config/eventos.yaml |
 | `fuente` |  | str | amazon, preciometro, preciometro_ofertas, qqp_cdmx, tiendas, wayback |  |
 | `plataforma_serie` |  | str | amazon, liverpool, mercadolibre, preciometro, preciometro_ofertas, qqp_cdmx |  |
@@ -68,12 +68,12 @@ Filas: 18,797
 | `canal` |  | str | en_linea, tienda_fisica |  |
 | `tipo_precio` |  | str | minimo_diario_multitienda, oferta_vigente, precio_registrado_qqp, publicado |  |
 | `producto_canonico_id` |  | str | 1,716 valores distintos |  |
-| `id_externo` |  | str | 12,291 valores distintos |  |
+| `id_externo` |  | str | 12,297 valores distintos |  |
 | `tipo_id_externo` |  | str | asin, mlm, preciometro, preciometro_oferta, qqp, url |  |
-| `vendedor_serie` |  | str | 1,530 valores distintos |  |
+| `vendedor_serie` |  | str | 1,534 valores distintos |  |
 | `marca` |  | str | 367 valores distintos |  |
 | `modelo_normalizado` |  | str | 237 valores distintos |  |
-| `descripcion_original` |  | str | 11,243 valores distintos |  |
+| `descripcion_original` |  | str | 11,248 valores distintos |  |
 | `estado` |  | str | Ciudad de Mexico |  |
 | `alcaldia` |  | str | Azcapotzalco, Benito Juárez, Coyoacán, Cuauhtémoc, Gustavo a. Madero, Iztacalco, Iztapalapa, Miguel Hidalgo … (12 distintos) |  |
 | `metodos` |  | str | agregador, archivo_oficial, scraping, wayback |  |
@@ -88,25 +88,25 @@ Filas: 18,797
 | `inicio_previo` |  | datetime64[us] | 2024-11-01 – 2026-11-12 |  |
 | `fin_previo` |  | datetime64[us] | 2024-11-01 – 2026-11-12 |  |
 | `n_evento` | Fechas durante el evento. | int64 | 0.00 – 5.00 | derivado |
-| `mediana_evento` |  | float64 | 440.00 – 55,553.00 |  |
-| `minimo_evento` |  | float64 | 390.00 – 55,553.00 |  |
-| `inicio_evento` |  | datetime64[us] | 2024-11-15 – 2025-11-17 |  |
-| `fin_evento` |  | datetime64[us] | 2024-11-15 – 2025-11-17 |  |
+| `mediana_evento` |  | float64 | 139.00 – 85,535.00 |  |
+| `minimo_evento` |  | float64 | 139.00 – 85,535.00 |  |
+| `inicio_evento` |  | datetime64[us] | 2024-11-15 – 2026-11-13 |  |
+| `fin_evento` |  | datetime64[us] | 2024-11-15 – 2026-11-13 |  |
 | `n_posterior` | Fechas en los 14 días posteriores (diagnóstico). | int64 | 0.00 – 2.00 | derivado |
 | `mediana_posterior` |  | float64 | 459.00 – 66,664.00 |  |
 | `minimo_posterior` |  | float64 | 445.00 – 66,664.00 |  |
 | `inicio_posterior` |  | datetime64[us] | 2024-11-19 – 2025-12-01 |  |
 | `fin_posterior` |  | datetime64[us] | 2024-11-19 – 2025-12-01 |  |
 | `amplitud_base_dias` | Días entre la primera y la última fecha base. | float64 | 0.00 – 45.00 | derivado |
-| `cobertura_ahorro` | ≥4 fechas base en ≥21 días y ≥1 en el evento (Avance 1). | bool | True 842 / False 17,955 | derivado |
-| `vendedor_confirmado` | Vendedor o sucursal presente; si falta, no se calcula ahorro de una supuesta tienda fija. | bool | True 18,795 / False 2 | derivado |
-| `cobertura_alza` | cobertura_ahorro y ≥2 fechas en el previo. | bool | True 298 / False 18,499 | derivado |
-| `ahorro_historico_pct` | 100 × (1 − mediana evento / mediana base). Sólo con cobertura_ahorro. | float64 | -84.59 – 63.18 | derivado |
-| `alza_previa_pct` | 100 × (mediana previa / mediana base − 1). Sólo con cobertura_alza. | float64 | -50.24 – 74.62 | derivado |
-| `bajada_desde_previo_pct` | 100 × (1 − mediana evento / mediana previa). Sólo con cobertura_alza. | float64 | -57.90 – 45.12 | derivado |
-| `variabilidad_base_pct` | 100 × (P75 − P25) / mediana base. | float64 | 0.00 – 62.32 | derivado |
-| `n_anuncio_evento` | Observaciones del evento con % o precio tachado mostrado. | int64 | 0.00 – 0.00 | derivado |
-| `descuento_anunciado_pct` | Mediana en el evento del % mostrado o, si sólo hay tachado, 100 × (1 − precio/tachado). | float64 | vacío | derivado |
+| `cobertura_ahorro` | ≥4 fechas base en ≥21 días y ≥1 en el evento (Avance 1). | bool | True 1,029 / False 17,786 | derivado |
+| `vendedor_confirmado` | Vendedor o sucursal presente; si falta, no se calcula ahorro de una supuesta tienda fija. | bool | True 18,813 / False 2 | derivado |
+| `cobertura_alza` | cobertura_ahorro y ≥2 fechas en el previo. | bool | True 485 / False 18,330 | derivado |
+| `ahorro_historico_pct` | 100 × (1 − mediana evento / mediana base). Sólo con cobertura_ahorro. | float64 | -176.20 – 64.13 | derivado |
+| `alza_previa_pct` | 100 × (mediana previa / mediana base − 1). Sólo con cobertura_alza. | float64 | -64.13 – 74.62 | derivado |
+| `bajada_desde_previo_pct` | 100 × (1 − mediana evento / mediana previa). Sólo con cobertura_alza. | float64 | -163.98 – 45.64 | derivado |
+| `variabilidad_base_pct` | 100 × (P75 − P25) / mediana base. | float64 | 0.00 – 62.71 | derivado |
+| `n_anuncio_evento` | Observaciones del evento con % o precio tachado mostrado. | int64 | 0.00 – 1.00 | derivado |
+| `descuento_anunciado_pct` | Mediana en el evento del % mostrado o, si sólo hay tachado, 100 × (1 − precio/tachado). | float64 | 41.80 – 41.80 | derivado |
 | `brecha_pp` | descuento_anunciado_pct − ahorro_historico_pct (puntos porcentuales). | float64 | vacío | derivado |
 | `regla_descuento_inflado_5pp` | Etiqueta DERIVADA por regla: brecha_pp > 5. No es verdad verificada. | object | vacío | derivado |
 | `regla_descuento_inflado_10pp` | Etiqueta derivada: brecha_pp > 10. | object | vacío | derivado |
@@ -186,14 +186,14 @@ Filas: 36
 
 Entrada a Isolation Forest: ahorro_historico_pct, alza_previa_pct, variabilidad_base_pct de las series con cobertura_alza. Índice serie_evento_id (no es variable).
 
-Filas: 298
+Filas: 485
 
 | Campo | Descripción | Tipo | Rango observado | Fuente |
 |---|---|---|---|---|
-| `serie_evento_id` |  | str | 298 valores distintos |  |
-| `ahorro_historico_pct` |  | float64 | -62.52 – 52.12 |  |
-| `alza_previa_pct` |  | float64 | -50.24 – 74.62 |  |
-| `variabilidad_base_pct` |  | float64 | 0.00 – 57.55 |  |
+| `serie_evento_id` |  | str | 485 valores distintos |  |
+| `ahorro_historico_pct` |  | float64 | -176.20 – 64.13 |  |
+| `alza_previa_pct` |  | float64 | -64.13 – 74.62 |  |
+| `variabilidad_base_pct` |  | float64 | 0.00 – 62.71 |  |
 
 ## matriz_modelo_brecha
 
@@ -213,53 +213,53 @@ Filas: 0
 
 Descripciones, vendedores, fechas y conteos de las filas de matriz_modelo.
 
-Filas: 298
+Filas: 485
 
 | Campo | Descripción | Tipo | Rango observado | Fuente |
 |---|---|---|---|---|
-| `serie_evento_id` |  | str | 298 valores distintos |  |
-| `serie_id` |  | str | 284 valores distintos |  |
-| `evento_id` |  | str | BF2024, BF2025 |  |
-| `fuente` |  | str | qqp_cdmx |  |
-| `plataforma_serie` |  | str | qqp_cdmx |  |
-| `metodo` |  | str | archivo_oficial |  |
-| `canal` |  | str | tienda_fisica |  |
-| `tipo_precio` |  | str | precio_registrado_qqp |  |
-| `producto_canonico_id` |  | str | 114 valores distintos |  |
-| `id_externo` |  | str | 114 valores distintos |  |
-| `tipo_id_externo` |  | str | qqp |  |
-| `vendedor_serie` |  | str | 2141f523b7dc6a529f6d, 26f22493b4e1edbde1e2, 2d8280258fb3705ef758, 35ff02203bc48e34ffaf, 362461c5dfac13b190cd, 4390c937ed27b9033fc6, 4b7c1fbfdb95915db919, 4ed89168c676b107e62a … (26 distintos) |  |
-| `marca` |  | str | Alexa, Amazon, Canon, Fujifilm. Fine Pix, Ghia, Go Pro, Google, Hisense … (21 distintos) |  |
+| `serie_evento_id` |  | str | 485 valores distintos |  |
+| `serie_id` |  | str | 471 valores distintos |  |
+| `evento_id` |  | str | BF2024, BF2025, BF2026 |  |
+| `fuente` |  | str | preciometro, qqp_cdmx |  |
+| `plataforma_serie` |  | str | preciometro, qqp_cdmx |  |
+| `metodo` |  | str | agregador, archivo_oficial |  |
+| `canal` |  | str | en_linea, tienda_fisica |  |
+| `tipo_precio` |  | str | minimo_diario_multitienda, precio_registrado_qqp |  |
+| `producto_canonico_id` |  | str | 301 valores distintos |  |
+| `id_externo` |  | str | 301 valores distintos |  |
+| `tipo_id_externo` |  | str | preciometro, qqp |  |
+| `vendedor_serie` |  | str | 2141f523b7dc6a529f6d, 26f22493b4e1edbde1e2, 2d8280258fb3705ef758, 35ff02203bc48e34ffaf, 362461c5dfac13b190cd, 4390c937ed27b9033fc6, 4b7c1fbfdb95915db919, 4ed89168c676b107e62a … (27 distintos) |  |
+| `marca` |  | str | 43 valores distintos |  |
 | `modelo_normalizado` |  | str | 112 valores distintos |  |
-| `descripcion_original` |  | str | 114 valores distintos |  |
+| `descripcion_original` |  | str | 301 valores distintos |  |
 | `estado` |  | str | Ciudad de Mexico |  |
 | `alcaldia` |  | str | Azcapotzalco, Benito Juárez, Coyoacán, Cuauhtémoc, Gustavo a. Madero, Iztapalapa, Miguel Hidalgo, Tlalpan … (9 distintos) |  |
-| `metodos` |  | str | archivo_oficial |  |
-| `n_base` |  | int64 | 4.00 – 7.00 |  |
-| `mediana_base` |  | float64 | 895.00 – 39,999.00 |  |
-| `minimo_base` |  | float64 | 695.00 – 39,999.00 |  |
-| `inicio_base` |  | datetime64[us] | 2024-09-17 – 2025-10-07 |  |
-| `fin_base` |  | datetime64[us] | 2024-10-11 – 2025-10-29 |  |
-| `n_previo` |  | int64 | 2.00 – 3.00 |  |
-| `mediana_previo` |  | float64 | 592.50 – 39,999.00 |  |
-| `minimo_previo` |  | float64 | 390.00 – 39,999.00 |  |
-| `inicio_previo` |  | datetime64[us] | 2024-11-01 – 2025-11-05 |  |
-| `fin_previo` |  | datetime64[us] | 2024-11-08 – 2025-11-12 |  |
+| `metodos` |  | str | agregador, archivo_oficial |  |
+| `n_base` |  | int64 | 4.00 – 46.00 |  |
+| `mediana_base` |  | float64 | 314.00 – 95,039.00 |  |
+| `minimo_base` |  | float64 | 139.00 – 90,287.00 |  |
+| `inicio_base` |  | datetime64[us] | 2024-09-17 – 2026-09-30 |  |
+| `fin_base` |  | datetime64[us] | 2024-10-11 – 2026-10-29 |  |
+| `n_previo` |  | int64 | 2.00 – 14.00 |  |
+| `mediana_previo` |  | float64 | 139.00 – 90,287.00 |  |
+| `minimo_previo` |  | float64 | 139.00 – 90,287.00 |  |
+| `inicio_previo` |  | datetime64[us] | 2024-11-01 – 2026-10-30 |  |
+| `fin_previo` |  | datetime64[us] | 2024-11-08 – 2026-11-12 |  |
 | `n_evento` |  | int64 | 1.00 – 5.00 |  |
-| `mediana_evento` |  | float64 | 570.00 – 39,999.00 |  |
-| `minimo_evento` |  | float64 | 390.00 – 39,999.00 |  |
-| `inicio_evento` |  | datetime64[us] | 2024-11-15 – 2025-11-17 |  |
-| `fin_evento` |  | datetime64[us] | 2024-11-15 – 2025-11-17 |  |
+| `mediana_evento` |  | float64 | 139.00 – 85,535.00 |  |
+| `minimo_evento` |  | float64 | 139.00 – 85,535.00 |  |
+| `inicio_evento` |  | datetime64[us] | 2024-11-15 – 2026-11-13 |  |
+| `fin_evento` |  | datetime64[us] | 2024-11-15 – 2026-11-13 |  |
 | `n_posterior` |  | int64 | 0.00 – 2.00 |  |
 | `mediana_posterior` |  | float64 | 599.00 – 39,999.00 |  |
 | `minimo_posterior` |  | float64 | 445.00 – 39,999.00 |  |
 | `inicio_posterior` |  | datetime64[us] | 2024-11-19 – 2025-11-25 |  |
 | `fin_posterior` |  | datetime64[us] | 2024-11-19 – 2025-11-27 |  |
-| `amplitud_base_dias` |  | float64 | 21.00 – 42.00 |  |
-| `cobertura_ahorro` |  | bool | True 298 / False 0 |  |
-| `vendedor_confirmado` |  | bool | True 298 / False 0 |  |
-| `cobertura_alza` |  | bool | True 298 / False 0 |  |
-| `bajada_desde_previo_pct` |  | float64 | -57.90 – 45.12 |  |
+| `amplitud_base_dias` |  | float64 | 21.00 – 45.00 |  |
+| `cobertura_ahorro` |  | bool | True 485 / False 0 |  |
+| `vendedor_confirmado` |  | bool | True 485 / False 0 |  |
+| `cobertura_alza` |  | bool | True 485 / False 0 |  |
+| `bajada_desde_previo_pct` |  | float64 | -163.98 – 45.64 |  |
 | `n_anuncio_evento` |  | int64 | 0.00 – 0.00 |  |
 | `descuento_anunciado_pct` |  | float64 | vacío |  |
 | `regla_descuento_inflado_5pp` |  | object | vacío |  |

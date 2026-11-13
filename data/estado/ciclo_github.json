@@ -1,19 +1,19 @@
 {
-  "fecha": "2026-11-12",
+  "fecha": "2026-11-13",
   "entorno": "github",
-  "construido_utc": "2026-11-13T02:36:03+00:00",
-  "filas": 688930,
-  "paquete": "exportaciones/sconto_colab_2026-11-12.zip",
+  "construido_utc": "2026-11-13T15:51:53+00:00",
+  "filas": 689917,
+  "paquete": "exportaciones/sconto_colab_2026-11-13.zip",
   "fuentes": {
     "qqp_cdmx": 409138,
-    "preciometro": 251057,
-    "preciometro_ofertas": 28609,
+    "preciometro": 251249,
+    "preciometro_ofertas": 29403,
     "wayback": 109,
-    "tiendas": 16,
+    "tiendas": 17,
     "amazon": 1
   },
   "salud": {
-    "fecha": "2026-11-12",
+    "fecha": "2026-11-13",
     "entorno": "github",
     "ok": true,
     "fuentes_sin_cobertura_completa": []

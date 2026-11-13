@@ -1,12 +1,12 @@
 {
-  "construido_utc": "2026-11-13T02:35:44+00:00",
+  "construido_utc": "2026-11-13T15:51:36+00:00",
   "tablas": {
     "observaciones": {
-      "filas": 688930,
+      "filas": 689917,
       "columnas": 37,
       "parquet": "observaciones.parquet",
       "csv": "observaciones.csv.gz",
-      "sha256_parquet": "97f9d667f05ffe945d93b8309e78be0d91201d756617cc3ef38e644aaa553b01"
+      "sha256_parquet": "61ee8843e545dae0421d756ab0ea5104105b9c5a8355d36700996b62a79fdd1d"
     },
     "exclusiones": {
       "filas": 0,
@@ -30,25 +30,25 @@
       "sha256_parquet": "38d3455f9fc71ffd1a0180c0987d706e25aa7f7c6d59acfe477eb5d632871067"
     },
     "series_evento": {
-      "filas": 18797,
+      "filas": 18815,
       "columnas": 52,
       "parquet": "series_evento.parquet",
       "csv": "series_evento.csv",
-      "sha256_parquet": "fe66515fe31e099d017d79740e7ab89e57bb03762d61e1d5593dec42fb172712"
+      "sha256_parquet": "6fa916ce5cc2ed812ad7a8c956c8a0ad22b0bdb4dc8672ce8f4835a6caeb9045"
     },
     "sensibilidad": {
       "filas": 36,
       "columnas": 6,
       "parquet": "sensibilidad.parquet",
       "csv": "sensibilidad.csv",
-      "sha256_parquet": "04070646a071e590154a4bf9dc7c88ca8633b14cf4253a8546d2bb5149776a7b"
+      "sha256_parquet": "1640baf1327934d04c3bb44a9934984da240f429700653d53895188047f76780"
     },
     "matriz_modelo": {
-      "filas": 298,
+      "filas": 485,
       "columnas": 3,
       "parquet": "matriz_modelo.parquet",
       "csv": "matriz_modelo.csv",
-      "sha256_parquet": "1586ec3d506c405a7ff16ac87956731ea6aaf300ca689d8ceb210ef16788faa4"
+      "sha256_parquet": "1256c1598e133bbb0e50a047f394ed6ff2f5a3a38709d24be30c7596b7af6315"
     },
     "matriz_modelo_brecha": {
       "filas": 0,
@@ -58,25 +58,25 @@
       "sha256_parquet": "f0065827a704b22559cade7a1d84cc6cdc5740268d205a55e6a0ef7271c6ad54"
     },
     "metadatos_modelo": {
-      "filas": 298,
+      "filas": 485,
       "columnas": 47,
       "parquet": "metadatos_modelo.parquet",
       "csv": "metadatos_modelo.csv",
-      "sha256_parquet": "b9bd39d067fd65cc6488699ff343a649251934859f612c8aca15e7c08de17521"
+      "sha256_parquet": "97e297e13362731fff6a1b143fa1e33e85dd4651b3999b71e615a1ec1991a6e9"
     }
   },
   "fuentes": {
     "qqp_cdmx": 409138,
-    "preciometro": 251057,
-    "preciometro_ofertas": 28609,
+    "preciometro": 251249,
+    "preciometro_ofertas": 29403,
     "wayback": 109,
-    "tiendas": 16,
+    "tiendas": 17,
     "amazon": 1
   },
   "contabilizacion": {
-    "filas_bronze": 1108367,
+    "filas_bronze": 1126886,
     "filas_excluidas": 0,
-    "capturas_representadas": 1108367
+    "capturas_representadas": 1126886
   },
   "series_evento": [
     {
@@ -139,14 +139,14 @@
       "evento_id": "BF2026",
       "plataforma_serie": "preciometro",
       "series": 2795,
-      "cobertura_ahorro": 0,
-      "cobertura_alza": 0,
+      "cobertura_ahorro": 187,
+      "cobertura_alza": 187,
       "con_brecha": 0
     },
     {
       "evento_id": "BF2026",
       "plataforma_serie": "preciometro_ofertas",
-      "series": 10074,
+      "series": 10092,
       "cobertura_ahorro": 0,
       "cobertura_alza": 0,
       "con_brecha": 0
