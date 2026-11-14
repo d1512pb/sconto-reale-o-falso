@@ -1,12 +1,12 @@
 {
-  "construido_utc": "2026-11-13T20:32:09+00:00",
+  "construido_utc": "2026-11-14T15:57:21+00:00",
   "tablas": {
     "observaciones": {
-      "filas": 689917,
+      "filas": 690891,
       "columnas": 37,
       "parquet": "observaciones.parquet",
       "csv": "observaciones.csv.gz",
-      "sha256_parquet": "61ee8843e545dae0421d756ab0ea5104105b9c5a8355d36700996b62a79fdd1d"
+      "sha256_parquet": "df0aac6dcb4a85b429a4a03c94fcf8b329f38a3aa3c61daab037559c4972f707"
     },
     "exclusiones": {
       "filas": 0,
@@ -30,11 +30,11 @@
       "sha256_parquet": "38d3455f9fc71ffd1a0180c0987d706e25aa7f7c6d59acfe477eb5d632871067"
     },
     "series_evento": {
-      "filas": 18815,
+      "filas": 18846,
       "columnas": 52,
       "parquet": "series_evento.parquet",
       "csv": "series_evento.csv",
-      "sha256_parquet": "6fa916ce5cc2ed812ad7a8c956c8a0ad22b0bdb4dc8672ce8f4835a6caeb9045"
+      "sha256_parquet": "e387d01da9ed3987d5a172a71f0f18bfb47fece4f833d633fce71a841dd15996"
     },
     "sensibilidad": {
       "filas": 36,
@@ -48,7 +48,7 @@
       "columnas": 3,
       "parquet": "matriz_modelo.parquet",
       "csv": "matriz_modelo.csv",
-      "sha256_parquet": "1256c1598e133bbb0e50a047f394ed6ff2f5a3a38709d24be30c7596b7af6315"
+      "sha256_parquet": "4b13f252836794752698882f723e162556094eebcc125aa983890ecb19f106df"
     },
     "matriz_modelo_brecha": {
       "filas": 0,
@@ -62,21 +62,21 @@
       "columnas": 47,
       "parquet": "metadatos_modelo.parquet",
       "csv": "metadatos_modelo.csv",
-      "sha256_parquet": "97e297e13362731fff6a1b143fa1e33e85dd4651b3999b71e615a1ec1991a6e9"
+      "sha256_parquet": "fd16dc90234719da81f2bb5435131312bbe2461fc0bf1d4d23289e9c77fa6efc"
     }
   },
   "fuentes": {
     "qqp_cdmx": 409138,
-    "preciometro": 251249,
-    "preciometro_ofertas": 29403,
+    "preciometro": 251438,
+    "preciometro_ofertas": 30187,
     "wayback": 109,
-    "tiendas": 17,
+    "tiendas": 18,
     "amazon": 1
   },
   "contabilizacion": {
-    "filas_bronze": 1126886,
+    "filas_bronze": 1145401,
     "filas_excluidas": 0,
-    "capturas_representadas": 1126886
+    "capturas_representadas": 1145401
   },
   "series_evento": [
     {
@@ -146,7 +146,7 @@
     {
       "evento_id": "BF2026",
       "plataforma_serie": "preciometro_ofertas",
-      "series": 10092,
+      "series": 10123,
       "cobertura_ahorro": 0,
       "cobertura_alza": 0,
       "con_brecha": 0

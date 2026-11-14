@@ -1,6 +1,6 @@
 # Resumen de la recolección
 
-Generado 2026-11-13 desde `data/gold/` (construido 2026-11-13T20:32:09+00:00). Cifras calculadas,
+Generado 2026-11-14 desde `data/gold/` (construido 2026-11-14T15:57:21+00:00). Cifras calculadas,
 no escritas a mano. Resultados de **ejecución local** salvo que se indique otra cosa; las corridas de GitHub Actions
 quedan en `data/estado/github.csv` y las de Colab no se cuentan aquí.
 
@@ -9,10 +9,10 @@ quedan en `data/estado/github.csv` y las de Colab no se cuentan aquí.
 | fuente | metodo | canal | filas | ids_externos | productos_canonicos | desde | hasta | dias_con_dato | puntos_por_id_mediana | puntos_por_id_max | con_precio_tachado | con_pct_mostrado |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | amazon | scraping | en_linea | 1 | 1 | 0 | 2026-10-16 | 2026-10-16 | 1 | 1 | 1 | 0 | 0 |
-| preciometro | agregador | en_linea | 251,249 | 2,795 | 1,493 | 2026-07-18 | 2026-11-13 | 119 | 90 | 118 | 0 | 0 |
-| preciometro_ofertas | agregador | en_linea | 29,403 | 9,531 | 1,485 | 2026-10-16 | 2026-11-13 | 26 | 1 | 25 | 0 | 0 |
+| preciometro | agregador | en_linea | 251,438 | 2,795 | 1,493 | 2026-07-18 | 2026-11-14 | 120 | 90 | 119 | 0 | 0 |
+| preciometro_ofertas | agregador | en_linea | 30,187 | 9,535 | 1,485 | 2026-10-16 | 2026-11-14 | 27 | 1 | 26 | 0 | 0 |
 | qqp_cdmx | archivo_oficial | tienda_fisica | 409,138 | 1,022 | 231 | 2018-01-02 | 2026-08-31 | 2,077 | 93 | 1,803 | 0 | 0 |
-| tiendas | scraping | en_linea | 17 | 1 | 1 | 2026-10-20 | 2026-11-13 | 17 | 17 | 17 | 17 | 0 |
+| tiendas | scraping | en_linea | 18 | 1 | 1 | 2026-10-20 | 2026-11-14 | 18 | 18 | 18 | 18 | 0 |
 | wayback | wayback | en_linea | 109 | 28 | 0 | 2024-09-06 | 2025-10-17 | 81 | 2 | 24 | 67 | 67 |
 
 Una fuente sólo se considera integrada si tiene filas en `observaciones`. Detalle y límites de cada una en
@@ -30,7 +30,7 @@ Una fuente sólo se considera integrada si tiene filas en `observaciones`. Detal
 | BF2026 | amazon | 1 | 0 | 0 | 0 | 0 |
 | BF2026 | liverpool | 1 | 0 | 0 | 1 | 0 |
 | BF2026 | preciometro | 2,795 | 187 | 187 | 0 | 0 |
-| BF2026 | preciometro_ofertas | 10,092 | 0 | 0 | 0 | 0 |
+| BF2026 | preciometro_ofertas | 10,123 | 0 | 0 | 0 | 0 |
 
 Mínimos del Avance 1 (≥4 fechas base en ≥21 días, ≥1 en el evento; alza: ≥2 en el previo). Sensibilidad con
 2–5 fechas en `data/gold/sensibilidad`. El BF2026 aún no ocurre: sus series de evento se llenan del 13 al 17 nov.
@@ -38,9 +38,9 @@ Mínimos del Avance 1 (≥4 fechas base en ≥21 días, ≥1 en el evento; alza:
 ## Qué cubre cada hueco del Avance 1
 
 - **1. Precio anunciado / tachado**: amazon 1 filas (2026-10-16 → 2026-10-16, tachado 0); wayback 109 filas (2024-09-06 → 2025-10-17, tachado 67)
-- **2. Más fuentes y eventos (BF2024–BF2026)**: amazon 1 filas (2026-10-16 → 2026-10-16, tachado 0); preciometro 251,249 filas (2026-07-18 → 2026-11-13, tachado 0); preciometro_ofertas 29,403 filas (2026-10-16 → 2026-11-13, tachado 0); qqp_cdmx 409,138 filas (2018-01-02 → 2026-08-31, tachado 0); wayback 109 filas (2024-09-06 → 2025-10-17, tachado 67)
-- **3. Amazon / Mercado Libre, por día y en el tiempo**: amazon 1 filas (2026-10-16 → 2026-10-16, tachado 0); preciometro 251,249 filas (2026-07-18 → 2026-11-13, tachado 0); preciometro_ofertas 29,403 filas (2026-10-16 → 2026-11-13, tachado 0)
-- **4. Días faltantes de QQP**: amazon 1 filas (2026-10-16 → 2026-10-16, tachado 0); preciometro 251,249 filas (2026-07-18 → 2026-11-13, tachado 0); preciometro_ofertas 29,403 filas (2026-10-16 → 2026-11-13, tachado 0)
+- **2. Más fuentes y eventos (BF2024–BF2026)**: amazon 1 filas (2026-10-16 → 2026-10-16, tachado 0); preciometro 251,438 filas (2026-07-18 → 2026-11-14, tachado 0); preciometro_ofertas 30,187 filas (2026-10-16 → 2026-11-14, tachado 0); qqp_cdmx 409,138 filas (2018-01-02 → 2026-08-31, tachado 0); wayback 109 filas (2024-09-06 → 2025-10-17, tachado 67)
+- **3. Amazon / Mercado Libre, por día y en el tiempo**: amazon 1 filas (2026-10-16 → 2026-10-16, tachado 0); preciometro 251,438 filas (2026-07-18 → 2026-11-14, tachado 0); preciometro_ofertas 30,187 filas (2026-10-16 → 2026-11-14, tachado 0)
+- **4. Días faltantes de QQP**: amazon 1 filas (2026-10-16 → 2026-10-16, tachado 0); preciometro 251,438 filas (2026-07-18 → 2026-11-14, tachado 0); preciometro_ofertas 30,187 filas (2026-10-16 → 2026-11-14, tachado 0)
 
 ## Estado de las corridas
 
@@ -48,18 +48,18 @@ Mínimos del Avance 1 (≥4 fechas base en ≥21 días, ≥1 en el evento; alza:
 |---|---|---|---|
 | amazon | local | bloqueado | 1 |
 | commoncrawl | local | bloqueado | 1 |
-| mercadolibre | github | sin_credenciales | 24 |
+| mercadolibre | github | sin_credenciales | 25 |
 | mercadolibre | local | sin_credenciales | 14 |
-| preciometro | github | ok | 24 |
+| preciometro | github | ok | 25 |
 | preciometro | local | ok | 1 |
 | preciometro | local | parcial | 2 |
-| qqp_cdmx | local | fallo | 14 |
+| qqp_cdmx | local | fallo | 15 |
 | qqp_cdmx | local | ok | 1 |
-| qqp_nacional | local | fallo | 14 |
+| qqp_nacional | local | fallo | 15 |
 | qqp_nacional | local | ok | 1 |
 | servicio_local | local | ok | 12 |
-| servicio_local | local | parcial | 2 |
-| tiendas | local | ok | 16 |
+| servicio_local | local | parcial | 3 |
+| tiendas | local | ok | 17 |
 | tiendas | local | parcial | 1 |
 | wayback | local | ok | 1 |
 
