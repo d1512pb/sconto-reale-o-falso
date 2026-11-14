@@ -5,6 +5,8 @@
 fuentes:
   preciometro:
     modulo: sconto.fuentes.preciometro_lote
+    pausada_desde: '2026-11-14'
+    motivo: La sección 7.3 exige autorización escrita. Conservar el histórico observado.
     entornos: [github]
     respaldo: local             # la PC sólo la corre si GitHub no logró 'ok' ese día (--solo-si-falta)
     pasadas_temporada: 1        # su historial es diario; no gana nada con dos pasadas
@@ -21,6 +23,8 @@ fuentes:
     pasadas_temporada: 1
   tiendas:
     modulo: sconto.fuentes.tiendas
+    pausada_desde: '2026-11-14'
+    motivo: Las condiciones de Sears y Liverpool requieren autorización para el piloto automatizado.
     entornos: [local]
     pasadas_temporada: 1
 
