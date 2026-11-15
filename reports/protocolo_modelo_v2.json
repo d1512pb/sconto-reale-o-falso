@@ -1,0 +1,89 @@
+{
+  "version": "esperar-buen-fin-v2.0",
+  "alcance": "QQP CDMX, tienda física, MXN",
+  "clase_positiva": "mediana del evento estrictamente menor que mediana de 14 días previos",
+  "variables": [
+    "alza_previa_pct",
+    "cambio_previo_pct",
+    "iqr_base_pct",
+    "iqr_previo_pct",
+    "n_base",
+    "n_previo",
+    "amplitud_base_dias",
+    "dias_desde_precio"
+  ],
+  "semilla": 42,
+  "sklearn_version": "1.9.1",
+  "umbral_probabilidad": 0.5,
+  "entrenamiento": "BF2024",
+  "prueba": "BF2025",
+  "caracter": "reconstrucción retrospectiva",
+  "producto_compartido": 31,
+  "productos_solo_prueba": 22,
+  "series_compartidas": 14,
+  "n_entrenamiento": 205,
+  "n_prueba": 93,
+  "n_bf2026_features": 0,
+  "n_bf2026_resultados": 0,
+  "estado": "experimental",
+  "fecha_emision_prospectiva": null,
+  "protocolo_cv": "CV de hasta 4 particiones por producto dentro de BF2024 (una fecha anual de predicción).",
+  "seleccion": "Mejor balanced accuracy fuera de partición BF2024, Brier rompe empates; 0.5 fijo.",
+  "interpretacion_datos": "Fecha del precio QQP como fecha de observación. Archivo recuperado en 2026; la disponibilidad pública de cada fila al corte histórico es desconocida.",
+  "previo_explorado": "BF2025 y parte de BF2026 se exploraron en entregas anteriores.",
+  "modelo_elegido_en_2024": "arbol_2",
+  "particiones_bf2024": 4,
+  "cortes_raiz_arboles_en_validacion": {
+    "arbol_2": [
+      {
+        "particion": 1,
+        "variable": "iqr_previo_pct",
+        "umbral": 2.502419590950012
+      },
+      {
+        "particion": 2,
+        "variable": "iqr_previo_pct",
+        "umbral": 2.502419590950012
+      },
+      {
+        "particion": 3,
+        "variable": "cambio_previo_pct",
+        "umbral": -0.03334444761276245
+      },
+      {
+        "particion": 4,
+        "variable": "cambio_previo_pct",
+        "umbral": -0.03334444761276245
+      }
+    ],
+    "arbol_3": [
+      {
+        "particion": 1,
+        "variable": "iqr_previo_pct",
+        "umbral": 2.502419590950012
+      },
+      {
+        "particion": 2,
+        "variable": "iqr_previo_pct",
+        "umbral": 2.502419590950012
+      },
+      {
+        "particion": 3,
+        "variable": "cambio_previo_pct",
+        "umbral": -0.03334444761276245
+      },
+      {
+        "particion": 4,
+        "variable": "cambio_previo_pct",
+        "umbral": -0.03334444761276245
+      }
+    ]
+  },
+  "ic95_diferencia_balanced_accuracy_con_mayoritaria": [
+    0.14654272218927392,
+    0.36191620101185523
+  ],
+  "criterio_publicacion": "Revisión de dominio y estabilidad, con IC95 de mejora sobre referencia completamente positivo.",
+  "motivo": "Mejora retrospectiva requiere revisión independiente y validación prospectiva en QQP CDMX.",
+  "fecha_corte": "2026-11-14"
+}

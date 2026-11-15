@@ -7,23 +7,32 @@ import logging
 import os
 
 import pandas as pd
+import yaml
 from dotenv import load_dotenv
 
 from sconto.almacen import _Candado, ahora_utc, combinar_estados, hoy
-from sconto.rutas import DATA, ESTADO_FUENTES, LOGS, asegurar_directorios
+from sconto.rutas import CONFIG, DATA, ESTADO_FUENTES, LOGS, asegurar_directorios
 
 
 def salud(entorno, fecha=None):
+    from sconto.run_diario import en_pausa
+
     fecha = fecha or hoy()
     combinar_estados()
     estados = pd.read_csv(ESTADO_FUENTES, dtype=str) if ESTADO_FUENTES.exists() else pd.DataFrame()
     requeridas = ['preciometro'] if entorno == 'github' else ['preciometro', 'tiendas']
+    configuracion = CONFIG / 'fuentes.yaml'
+    cfg = yaml.safe_load(configuracion.read_text(encoding='utf-8'))['fuentes'] if configuracion.is_file() else {}
+    pausadas = [fuente for fuente in requeridas if en_pausa(cfg.get(fuente, {}), fecha)]
     faltantes = []
     for fuente in requeridas:
+        if fuente in pausadas:
+            continue
         filas = estados.loc[estados.fuente.eq(fuente) & estados.fecha.eq(fecha)] if len(estados) else estados
         if filas.empty or not filas.estado.eq('ok').any():
             faltantes.append(fuente)
-    return dict(fecha=fecha, entorno=entorno, ok=not faltantes, fuentes_sin_cobertura_completa=faltantes)
+    return dict(fecha=fecha, entorno=entorno, ok=not faltantes, fuentes_sin_cobertura_completa=faltantes,
+                fuentes_pausadas=pausadas)
 
 
 def preparar(entorno):

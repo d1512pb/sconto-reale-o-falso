@@ -1,0 +1,24 @@
+{
+  "archivo_codigo_sha256": "0df417950ea6e18cf473256cd48dd409a5730d4ce011c32b3536128aa48f6a6b",
+  "fuentes": {
+    "sconto_colab_2026-11-14.zip": {
+      "filas": 690891,
+      "sha256": "9fc3bf271f54037ee7180e297de61fe551715b1ec22ea7d57af82dea76ea5e79"
+    },
+    "qqp_nacional/2024.parquet": {
+      "filas": 358769,
+      "sha256": "83619e81de1d1a31936c3c135156598fb725c668ed2315aaae907d0a0764ddc1"
+    },
+    "qqp_nacional/2025.parquet": {
+      "filas": 236308,
+      "sha256": "85c4d4e4f413a887b84511af116750d3163f85633e9489a2584cb1b273a6fa55"
+    },
+    "qqp_nacional/2026.parquet": {
+      "filas": 129219,
+      "sha256": "13e04fbb8fa3b62ba5904988d1d035f3fb3727be8858625cc80f66f148c43bef"
+    }
+  },
+  "pandas_version": "3.0.6",
+  "sklearn_version": "1.9.1",
+  "fecha_corte": "2026-11-14"
+}

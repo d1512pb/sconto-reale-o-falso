@@ -1,0 +1,17 @@
+{
+  "version": "precio-v1",
+  "estado": "provisional",
+  "umbral_ahorro_pct": 5,
+  "origen": "Regla de diseño del proyecto aplicada antes del estudio",
+  "min_fechas_base": 4,
+  "min_fechas_evento": 1,
+  "min_fechas_previo": 2,
+  "amplitud_base_dias": 21,
+  "referencia": "mediana de medianas diarias",
+  "favorable": "ahorro >= umbral y precio <= P25",
+  "alto": "ahorro <= -umbral y precio >= P75",
+  "cobertura": "serie comparable con historia suficiente, observación vigente e identidad comprobada",
+  "muestra_sensibilidad": "QQP físico CDMX 2024/2025; QQP nacional descriptivo por separado",
+  "objetivo": "Describir precios observados y simular el costo de una política fija de compra o espera",
+  "limite": "El cambio observado aún no valida el criterio de utilidad para compras online."
+}

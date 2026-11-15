@@ -36,4 +36,5 @@ def test_busqueda_javascript_equivale_a_notebook():
 
 @pytest.mark.skipif(not shutil.which('node'), reason='Node necesario para pruebas de funcionamiento sin red')
 def test_vigencia_enlaces_y_copia_verificada():
-    subprocess.run(['node','--test','tests/app_motor.test.mjs','tests/app_datos.test.mjs','tests/app_sw.test.mjs'],check=True)
+    subprocess.run(['node', '--test', 'tests/app_motor.test.mjs', 'tests/app_datos.test.mjs',
+                    'tests/app_sw.test.mjs', 'tests/app_api.test.mjs'], check=True)

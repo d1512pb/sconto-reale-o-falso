@@ -1,5 +1,6 @@
 import {buscar, normalizar, fechaMexico, edadDias, ordenarOfertas, enlaceSeguro} from './motor.mjs';
 import {cargarDatos, cargarDetalle} from './datos.mjs';
+import {baseAPI, buscarSucursales, consultarProducto, registroHistorico, vistaOferta} from './api.mjs';
 import {entrada, irA} from './interfaz.mjs';
 
 const $ = id => document.getElementById(id);
@@ -13,6 +14,13 @@ const money = (valor, moneda = 'MXN') => new Intl.NumberFormat('es-MX', {style: 
 const corto = fecha => new Date(fecha + 'T12:00:00Z').toLocaleDateString('es-MX', {day: 'numeric', month: 'short', timeZone: 'UTC'});
 const etiquetas = {precio_favorable: 'Precio favorable', precio_alto: 'Precio alto', sin_senal_clara: 'Sin señal clara', evidencia_insuficiente: 'Evidencia insuficiente'};
 const tonos = {precio_favorable: 'good', precio_alto: 'high', sin_senal_clara: 'neutral', evidencia_insuficiente: 'missing'};
+const api = baseAPI(document.querySelector('meta[name="sconto-api"]')?.content);
+const productosFisicos = new Map();
+let consultaFisica = '', evidencia;
+const razones = {canal_fisico:'Referencia de establecimiento físico', fuente_sin_verificacion_directa:'Fuente sin verificación directa',
+  fecha_insuficiente:'Hora real del precio sin confirmar', dato_vencido:'Venció la comprobación', identidad_incompleta:'Falta verificar SKU, vendedor o condición',
+  disponibilidad_sin_confirmar:'Disponibilidad sin verificar', sin_stock_confirmado:'Sin disponibilidad confirmada',
+  total_no_comparable:'Falta total comparable con cargos', historia_insuficiente:'Faltan días comparables en la referencia'};
 let datos, carga, cargando = false, ultimoIntento = 0, fechaMostrada = fechaMexico(), recargarTrasActualizacion = false;
 let categoria = 'todos', consulta = '', tienda = '', limite = 12, limiteOfertas = 8, anterior = '#/', promptInstalar, registro;
 let porProducto = new Map(), ofertasPorProducto = new Map();
@@ -60,15 +68,16 @@ function badge(oferta) {
   b.append(icono, el('span', etiquetas[oferta?.indicador] || 'Evidencia insuficiente'));
   return b;
 }
-function ofertasProducto(id, hoy = fechaMexico()) { return ordenarOfertas(ofertasPorProducto.get(id) || [], hoy); }
-function opcionMenor(id, filtro = '', hoy = fechaMexico()) { return ofertasProducto(id, hoy).find(o => o.comparable && (!filtro || normalizar(o.plataforma).toLowerCase() === filtro)); }
+function ofertasProducto(id, hoy = fechaMexico()) { return ordenarOfertas(ofertasPorProducto.get(id) || [], hoy).map(o => registroHistorico(o, hoy)); }
+function coincideTienda(o, filtro) { return !filtro || normalizar(o.plataforma).toLowerCase() === filtro; }
+function registroEnTienda(id, filtro = '', hoy = fechaMexico()) { return ofertasProducto(id, hoy).find(o => coincideTienda(o, filtro)); }
 function estadoConexion() {
   if (!datos) return;
   const edad = edadDias(datos.fecha_corte, fechaMexico()), vieja = edad === null || edad < 0 || edad > 1;
   $('estado-datos').textContent = 'Corte ' + corto(datos.fecha_corte) + ' ' + datos.fecha_corte.slice(0, 4) + ' · ' + datos.productos.length + ' productos';
   const mensajes = [];
   if (!navigator.onLine || carga?.copia) mensajes.push('Usas la última copia guardada. No se pudo confirmar una actualización.');
-  if (vieja) mensajes.push('Los precios de este corte ya no se consideran recientes. Mostramos su historia sin indicadores de oferta vigente.');
+  if (vieja) mensajes.push('El catálogo muestra registros históricos fechados. La vigencia se calcula por comprobación de cada oferta.');
   if (!carga?.guardado) mensajes.push('No se pudo guardar la copia sin conexión en este navegador.');
   $('aviso').textContent = mensajes.join(' ');
   $('aviso').hidden = !mensajes.length;
@@ -79,7 +88,7 @@ async function actualizar(manual = false) {
   cargando = true; ultimoIntento = Date.now(); $('refrescar').disabled = true;
   $('refrescar').classList.add('is-loading'); $('refrescar-texto').textContent = 'Actualizando';
   try {
-    carga = await cargarDatos(); datos = carga.datos; fichas.clear();
+    carga = await cargarDatos(); datos = carga.datos; fichas.clear(); evidencia = undefined;
     porProducto = new Map(datos.productos.map(p => [p.producto_canonico_id, p]));
     ofertasPorProducto = new Map();
     for (const o of datos.ofertas) {
@@ -123,13 +132,18 @@ function filtrarProductos() {
   lista = lista.filter(p => categoria === 'todos' || categoriaProducto(p) === categoria || categoria === 'foco' && (laptop(p) || audifonos(p)) && !p.es_paquete);
   if (tienda) lista = lista.filter(p => (ofertasPorProducto.get(p.producto_canonico_id) || []).some(o => normalizar(o.plataforma).toLowerCase() === tienda));
   if (!consulta.trim()) {
-    const hoy = fechaMexico(), recientes = new Set(lista.filter(p => opcionMenor(p.producto_canonico_id, tienda, hoy)).map(p => p.producto_canonico_id));
+    const hoy = fechaMexico(), recientes = new Set(lista.filter(p => registroEnTienda(p.producto_canonico_id, tienda, hoy)?.dias === 0).map(p => p.producto_canonico_id));
     lista.sort((a, b) => Number(recientes.has(b.producto_canonico_id)) - Number(recientes.has(a.producto_canonico_id)) || (b.ultima_fecha_observada || '').localeCompare(a.ultima_fecha_observada || '') || Number(laptop(b)) - Number(laptop(a)) || a.nombre.localeCompare(b.nombre, 'es'));
   }
   return lista;
 }
 function renderProductos(desde = 0) {
   $('busqueda').value = consulta; $('tienda').value = tienda;
+  $('busqueda-fisica').hidden = !api || consulta.length < 3;
+  if (consultaFisica !== consulta) {
+    $('resultados-fisicos').replaceChildren();
+    $('estado-busqueda-fisica').textContent = '';
+  }
   $('otras-categorias').value = ['todos','laptop','celular','tablet','audifonos'].includes(categoria) ? '' : categoria;
   for (const b of $('categorias').querySelectorAll('button')) b.setAttribute('aria-pressed', String(b.dataset.category === categoria));
   const lista = filtrarProductos();
@@ -149,13 +163,13 @@ function renderProductos(desde = 0) {
     a.dataset.producto = p.producto_canonico_id;
     const art = el('div', undefined, 'product-art');
     art.append(el('span', categoriaNombre(p), 'art-label'), ilustracion(p), el('span', '↗', 'art-arrow'));
-    const body = el('div', undefined, 'card-body'), mejor = opcionMenor(p.producto_canonico_id, tienda);
+    const body = el('div', undefined, 'card-body'), registro = registroEnTienda(p.producto_canonico_id, tienda);
     const tiendas = new Set((ofertasPorProducto.get(p.producto_canonico_id) || []).map(o => o.plataforma));
     body.append(el('span', p.marca || categoriaNombre(p), 'card-brand'), el('h3', p.nombre),
       el('p', (tiendas.size ? tiendas.size + (tiendas.size === 1 ? ' tienda con registro' : ' tiendas con registro') : 'Sin ofertas por tienda') + (p.es_paquete ? ' · paquete' : ''), 'card-meta'));
     const pie = el('div', undefined, 'card-price'), precio = el('div');
-    precio.append(el('small', mejor ? 'Desde en ' + mejor.plataforma : tienda ? 'Sin precio comparable en ' + (tienda === 'sears' ? 'Sears' : 'Liverpool') : 'Sin precio comparable reciente'), el('strong', mejor ? money(mejor.precio) : 'Ver historia'));
-    pie.append(precio, badge(mejor)); body.append(pie);
+    precio.append(el('small', registro ? 'Registro · ' + registro.plataforma + ' · ' + registro.fecha_precio : 'Precio pendiente'), el('strong', registro ? money(registro.precio) : 'Ver historia'));
+    pie.append(precio); body.append(pie);
     if (p.ultima_fecha_observada) body.append(el('small', 'Último registro: ' + p.ultima_fecha_observada, 'card-date'));
     a.append(art, body); $('productos').append(a);
   }
@@ -240,18 +254,14 @@ function grafico(p) {
   tabla.append(thead, tbody); $('tabla-historia').append(tabla);
 }
 function explicacion(o) {
-  if (!o.vigente) return 'Dato histórico del ' + o.fecha_precio + '. No se considera una oferta reciente.';
   if (o.identidad_oferta === 'conflicto') return 'La descripción tiene una variante distinta. No la usamos para comparar este producto.';
   if (o.identidad_oferta !== 'compatible_texto') return 'Faltan datos para confirmar que sea la misma variante.';
-  if (o.ahorro_referencia_pct == null) return 'Título compatible, pero falta historia suficiente para evaluar este precio.';
-  const d = o.ahorro_referencia_pct, contexto = o.contexto_referencia === 'serie_vendedor' ? 'de este vendedor' : 'del mercado';
-  return Math.abs(d).toFixed(1) + '% ' + (d >= 0 ? 'por debajo' : 'por encima') + ' de la mediana histórica ' + contexto + '.';
+  return 'El nombre coincide con el catálogo. SKU, fecha de actualización de la tienda y costo final requieren comprobación.';
 }
 function renderOfertas(id, animar = false) {
   const filtro = $('tienda-ofertas').value;
   const lista = ofertasProducto(id).filter(o => !filtro || normalizar(o.plataforma).toLowerCase() === filtro);
-  const recientes = lista.filter(o => o.comparable).length;
-  $('conteo-ofertas').textContent = lista.length + (lista.length === 1 ? ' oferta registrada' : ' ofertas registradas') + (filtro ? ' en ' + (filtro === 'sears' ? 'Sears' : 'Liverpool') : '') + ' · ' + recientes + (recientes === 1 ? ' reciente con título compatible' : ' recientes con título compatible');
+  $('conteo-ofertas').textContent = lista.length + (lista.length === 1 ? ' registro online' : ' registros online') + (filtro ? ' en ' + (filtro === 'sears' ? 'Sears' : 'Liverpool') : '');
   $('ofertas').replaceChildren();
   for (const [i, o] of lista.slice(0, limiteOfertas).entries()) {
     const art = el('article', undefined, 'offer' + (i === 0 && o.comparable ? ' first' : ''));
@@ -260,7 +270,7 @@ function renderOfertas(id, animar = false) {
       el('p', 'Vende ' + (o.vendedor_o_cadena || 'vendedor no identificado') + (o.tipo_vendedor === 'tercero' ? ' · tercero' : ''), 'offer-seller'), badge(o));
     precio.append(el('small', o.moneda + ' · precio publicado')); top.append(vendedor, precio);
     const bottom = el('div', undefined, 'offer-bottom');
-    bottom.append(el('span', 'Observado ' + o.fecha_precio + (o.vigente ? ' · reciente' : ' · antiguo')));
+    bottom.append(el('span', 'Registro del ' + o.fecha_precio + ' · ' + o.antiguedad));
     const href = enlaceSeguro(o.url);
     if (href) { const a = el('a', 'Ver en tienda ↗'); a.href = href; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.setAttribute('aria-label', 'Ver oferta en ' + o.plataforma + ', vendedor ' + o.vendedor_o_cadena); bottom.append(a); }
     const detalle = el('details'); detalle.append(el('summary', 'Ver descripción y condiciones pendientes'), el('p', o.titulo_oferta || ''), el('p', o.motivo_identidad || 'Identidad pendiente'), el('p', o.condiciones_pendientes));
@@ -271,7 +281,6 @@ function renderOfertas(id, animar = false) {
       if (Number.isFinite(o.pct_descuento_anunciado)) anuncio.append(' · ' + o.pct_descuento_anunciado + '% anunciado');
       art.append(anuncio);
     } else if (Number.isFinite(o.pct_descuento_anunciado)) art.append(el('p', o.pct_descuento_anunciado + '% anunciado', 'muted'));
-    if (Number.isFinite(o.brecha_pp)) art.append(el('p', 'Brecha entre anuncio y ahorro histórico: ' + o.brecha_pp.toFixed(1) + ' puntos porcentuales. Es una comparación, no prueba de engaño.', 'muted'));
     art.append(el('p', explicacion(o), 'offer-explanation'), bottom, detalle); $('ofertas').append(art);
   }
   if (!lista.length) $('ofertas').append(el('p', 'No hay ofertas registradas para este producto en la tienda seleccionada.', 'notice'));
@@ -280,18 +289,79 @@ function renderOfertas(id, animar = false) {
 }
 function renderResumen(id) {
   const filtro = $('tienda-ofertas').value, nombreTienda = filtro === 'sears' ? 'Sears' : 'Liverpool';
-  const mejor = opcionMenor(id, filtro), box = $('resumen'); box.replaceChildren(); box.classList.toggle('warning', !mejor);
-  box.dataset.signal = tonos[mejor?.indicador] || 'missing';
+  const ofertas = evidencia?.id === id && evidencia.estado === 'disponible' ? evidencia.ofertas.map(o => vistaOferta(o)) : [];
+  const mejor = ofertas.find(o => o.estado !== 'evidencia_insuficiente' && o.total !== null && coincideTienda(o, filtro));
+  const box = $('resumen'); box.replaceChildren(); box.classList.toggle('warning', !mejor);
+  box.dataset.signal = tonos[mejor?.estado] || 'missing';
   const texto = el('div');
   if (mejor) {
-    texto.append(badge(mejor), el('h2', mejor.indicador === 'precio_favorable' ? 'Un precio bajo frente a su historia.' : mejor.indicador === 'precio_alto' ? 'El precio reciente supera su referencia.' : mejor.indicador === 'sin_senal_clara' ? 'Una oferta sin señal concluyente.' : 'Tenemos precio; falta más historia.'),
-      el('p', explicacion(mejor) + ' Es el menor precio reciente con título compatible de nuestra muestra' + (filtro ? ' en ' + nombreTienda : '') + '.'),
-      el('p', 'Pendiente confirmar variante, inventario y envío. No es una verificación del precio final.', 'disclaimer'));
-    const precio = el('div', money(mejor.precio), 'summary-price'); precio.append(el('small', mejor.plataforma + ' · ' + mejor.fecha_precio)); box.append(texto, precio);
+    texto.append(badge({indicador:mejor.estado}), el('h2', 'Oferta con costo confirmado'),
+      el('p', mejor.plataforma + ' · ' + mejor.fecha));
+    const precio = el('div', money(mejor.total), 'summary-price'); precio.append(el('small', 'Costo total confirmado')); box.append(texto, precio);
   } else {
-    texto.append(badge(null), el('h2', 'Todavía falta evidencia comparable.'), el('p', 'Puedes consultar las ofertas registradas y el historial. No encontramos una oferta reciente con identidad suficiente' + (filtro ? ' en ' + nombreTienda : '') + ' para compararla.'));
+    texto.append(badge(null), el('h2', 'Falta evidencia comparable' + (filtro ? ' en ' + nombreTienda : '')),
+      el('p', 'Consulta las comprobaciones disponibles y los registros del catálogo.'));
     box.append(texto);
   }
+}
+
+function renderEvidencia(id) {
+  const fisico = id.startsWith('PROFECO-BF26-');
+  const contenedor = $('evidencia-api'), resultados = $('resultados-api');
+  contenedor.hidden = !api || evidencia?.id !== id;
+  if (contenedor.hidden) return;
+  resultados.replaceChildren();
+  $('titulo-evidencia-api').textContent = fisico ? 'Precios diarios de sucursales físicas · PROFECO' : 'Comprobaciones de ofertas online';
+  const estado = $('estado-api');
+  if (evidencia.estado !== 'disponible') {
+    estado.textContent = evidencia.estado === 'consultando' ? 'Consultando…' :
+      (evidencia.estado === 'sin_conexion' ? 'Sin conexión.' : 'El servicio de consulta no respondió.') +
+      (fisico ? ' Vuelve a intentar para consultar las sucursales.' : ' Puedes seguir usando los registros del catálogo.');
+    return;
+  }
+  if (fisico) {
+    estado.textContent = evidencia.historia.length ? 'Fecha de levantamiento en sucursal. La hora del precio es desconocida.' : 'Sin registros físicos en el servicio.';
+    for (const fila of evidencia.historia) {
+      const art = el('article', undefined, 'offer');
+      art.append(el('strong', fila.vendedor || 'Sucursal física'), el('p', fila.fecha_precio + ' · ' + money(fila.precio)));
+      resultados.append(art);
+    }
+    return;
+  }
+  const filtro = $('tienda-ofertas').value;
+  const ofertas = evidencia.ofertas.filter(o => coincideTienda(o, filtro));
+  estado.textContent = ofertas.length ? '' : 'Sin comprobaciones online para esta selección.';
+  for (const oferta of ofertas) {
+    const o = vistaOferta(oferta), art = el('article', undefined, 'offer');
+    art.append(el('strong', o.plataforma || 'Tienda'), badge({indicador:o.estado}),
+      el('p', 'Vendedor ' + (o.vendedor || 'sin confirmar') + ' · SKU ' + (o.variante || 'sin confirmar') + ' · ' + (o.condicion || 'condición sin confirmar')),
+      el('p', 'Precio publicado ' + money(o.precio) + ' · Total ' + (o.total === null ? 'sin confirmar' : money(o.total))));
+    art.append(el('p', o.disponibilidad === 'en_stock' ? 'Disponibilidad confirmada al cotejar' : o.disponibilidad ? 'Sin disponibilidad confirmada' : 'Disponibilidad sin verificar'));
+    art.append(el('p', 'Dato ' + o.fecha + (o.vigente ? '' : ' · vigencia sin confirmar')));
+    if (o.consultado) art.append(el('p', 'Consulta ' + o.consultado));
+    if (o.actualizado) art.append(el('p', 'Actualización declarada por la fuente ' + o.actualizado));
+    if (o.ahorro !== null && Number.isFinite(o.referencia?.mediana)) {
+      art.append(el('p', Math.abs(o.ahorro).toFixed(1) + '% ' + (o.ahorro < 0 ? 'por encima' : 'por debajo') + ' de la mediana de ' + money(o.referencia.mediana)));
+    }
+    const motivos = o.motivos.map(m => razones[m]).filter(Boolean);
+    if (motivos.length) art.append(el('p', motivos.join(' · '), 'muted'));
+    if (o.enlace) {
+      const enlace = el('a', 'Ver anuncio original ↗');
+      enlace.href = o.enlace; enlace.target = '_blank'; enlace.rel = 'noopener noreferrer'; art.append(enlace);
+    }
+    resultados.append(art);
+  }
+}
+
+function renderFichaFisica(id, foco) {
+  const p = productosFisicos.get(id);
+  $('nombre-producto').textContent = p?.nombre || 'Referencia PROFECO ' + id.split('-').at(-1);
+  $('categoria-producto').textContent = 'Tienda física';
+  $('ilustracion').replaceChildren(); $('atributos').textContent = '';
+  $('resumen').replaceChildren(badge(null), el('p', 'La consulta física informa precios de sucursal por fecha. La recomendación online requiere la ficha vigente del anuncio.'));
+  $('resumen').classList.add('warning'); $('resumen').dataset.signal = 'missing';
+  $('atajos-detalle').hidden = true; document.querySelector('.detail-grid').hidden = true;
+  if (foco) $('nombre-producto').focus({preventScroll:true});
 }
 function renderDetalle(id, foco, completo = true) {
   const p = porProducto.get(id);
@@ -321,6 +391,22 @@ async function ruta(foco = true) {
     const filtro = new URLSearchParams(location.hash.split('?')[1] || '').get('tienda');
     $('tienda-ofertas').value = ['sears', 'liverpool'].includes(filtro) ? filtro : '';
     const id = productoActual(); $('volver').href = anterior;
+    const fisico = Boolean(api && /^PROFECO-BF26-\d+$/.test(id));
+    if (api && (fisico || porProducto.has(id)) && (evidencia?.id !== id || evidencia.estado !== 'disponible')) {
+      evidencia = {id, estado:'consultando'};
+      consultarProducto(api, id, {enLinea:navigator.onLine}).then(resultado => {
+        if (solicitud !== solicitudRuta) return;
+        evidencia = {id, ...resultado};
+        renderEvidencia(id);
+        if (!fisico) renderResumen(id);
+      });
+    }
+    renderEvidencia(id);
+    if (fisico) {
+      renderFichaFisica(id, foco); document.title = $('nombre-producto').textContent + ' · Sconto';
+      if (foco) window.scrollTo({top:0, behavior:'instant'});
+      ultimaVista = 'detalle'; return;
+    }
     if (porProducto.has(id) && !fichas.has(id)) {
       renderDetalle(id, foco, false);
       $('carga-detalle').hidden = false; $('reintentar-detalle').hidden = true;
@@ -355,6 +441,24 @@ function iniciarBusqueda(valor, mostrar = false) {
   guardarBusqueda(); renderProductos();
   if (mostrar) { $('busqueda').blur(); irA($('resultados')); }
 }
+$('buscar-fisico').addEventListener('click', async () => {
+  const termino = consulta;
+  const estado = $('estado-busqueda-fisica'), lista = $('resultados-fisicos');
+  $('buscar-fisico').disabled = true;
+  estado.textContent = 'Consultando referencias físicas…';
+  lista.replaceChildren();
+  const productos = await buscarSucursales(api, termino, {enLinea:navigator.onLine});
+  $('buscar-fisico').disabled = false;
+  if (termino !== consulta) return;
+  consultaFisica = termino;
+  estado.textContent = productos === null ? 'La consulta física no está disponible.' :
+    productos.length ? 'Referencias físicas, por sucursal' : 'No hay referencias físicas para esta búsqueda.';
+  productos?.forEach(p => {
+    productosFisicos.set(p.producto_id, p);
+    const fila = el('li'), enlace = el('a', p.nombre);
+    enlace.href = '#/producto/' + encodeURIComponent(p.producto_id); fila.append(enlace); lista.append(fila);
+  });
+});
 $('busqueda-form').addEventListener('submit', e => { e.preventDefault(); if (datos) iniciarBusqueda($('busqueda').value, true); });
 let espera;
 $('busqueda').addEventListener('input', () => { clearTimeout(espera); espera = setTimeout(() => iniciarBusqueda($('busqueda').value), 220); });
@@ -374,7 +478,7 @@ $('ver-mas').addEventListener('click', () => {
 $('tienda-ofertas').addEventListener('change', () => {
   const filtro = $('tienda-ofertas').value, id = productoActual();
   history.replaceState(null, '', '#/producto/' + encodeURIComponent(id) + (filtro ? '?tienda=' + filtro : ''));
-  limiteOfertas = 8; renderResumen(id); renderOfertas(id, true);
+  limiteOfertas = 8; renderResumen(id); renderOfertas(id, true); renderEvidencia(id);
 });
 $('mas-ofertas').addEventListener('click', () => { limiteOfertas += 8; renderOfertas(productoActual()); });
 $('refrescar').addEventListener('click', () => actualizar(true)); $('reintentar').addEventListener('click', () => actualizar(true));
@@ -411,13 +515,28 @@ if ('serviceWorker' in navigator) {
     });
   }).catch(() => { /* La instalación no impide consultar desde el navegador. */ });
 }
-for (const evento of ['online', 'offline']) window.addEventListener(evento, () => { estadoConexion(); if (navigator.onLine && Date.now() - ultimoIntento > 60000) actualizar(); });
+for (const evento of ['online', 'offline']) window.addEventListener(evento, () => {
+  estadoConexion(); evidencia = undefined;
+  if (navigator.onLine && Date.now() - ultimoIntento > 60000) actualizar();
+  else ruta(false);
+});
+function renovarVigencia() {
+  if (!datos || !location.hash.startsWith('#/producto/')) return;
+  const id = productoActual();
+  if (evidencia?.id === id && evidencia.estado === 'disponible' && porProducto.has(id)) {
+    renderEvidencia(id); renderResumen(id);
+  }
+}
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) return;
   if (fechaMostrada !== fechaMexico()) { fechaMostrada = fechaMexico(); estadoConexion(); ruta(false); }
   if (Date.now() - ultimoIntento > 600000 && navigator.onLine) actualizar();
+  renovarVigencia();
 });
-setInterval(() => { if (datos && fechaMostrada !== fechaMexico()) { fechaMostrada = fechaMexico(); estadoConexion(); ruta(false); } }, 60000);
+setInterval(() => {
+  if (datos && fechaMostrada !== fechaMexico()) { fechaMostrada = fechaMexico(); estadoConexion(); ruta(false); }
+  else renovarVigencia();
+}, 60000);
 let redimension;
 window.addEventListener('resize', () => {
   clearTimeout(redimension);

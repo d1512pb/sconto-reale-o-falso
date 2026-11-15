@@ -1,0 +1,13 @@
+**
+!Dockerfile
+!requirements-api.txt
+!src/
+!src/sconto/
+!src/sconto/__init__.py
+!src/sconto/api_v2.py
+!src/sconto/decisiones_v2.py
+!src/sconto/intraday.py
+!src/sconto/rutas.py
+!src/sconto/respaldo_v2.py
+!scripts/
+!scripts/iniciar_api_fly.sh

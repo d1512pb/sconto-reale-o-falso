@@ -4,9 +4,12 @@ from __future__ import annotations
 import argparse
 from collections import defaultdict
 import hashlib
+from html import escape
 import json
+import os
 from pathlib import Path
 import shutil
+from urllib.parse import urlsplit
 
 import pandas as pd
 
@@ -15,8 +18,23 @@ from sconto.mart import registros
 from sconto.web import leer, verificar
 
 
-def construir(datos, salida, recursos):
+def _origen_api(valor):
+    if not valor:
+        return ''
+    if valor == '/':
+        return valor
+    origen = urlsplit(valor)
+    local = origen.hostname in {'localhost', '127.0.0.1', '::1'}
+    if ((origen.scheme != 'https' and not (local and origen.scheme == 'http')) or not origen.hostname
+            or origen.username is not None or origen.password is not None or origen.path not in {'', '/'}
+            or origen.query or origen.fragment or any(c.isspace() for c in valor) or '\\' in valor):
+        raise ValueError('SCONTO_WEB_API requiere un origen HTTPS o / para el mismo origen')
+    return f'{origen.scheme}://{origen.netloc}'
+
+
+def construir(datos, salida, recursos, api=None):
     datos, salida, recursos = Path(datos), Path(salida), Path(recursos)
+    origen_api = _origen_api(api if api is not None else os.environ.get('SCONTO_WEB_API'))
     manifest = verificar(datos)
     from sconto.app_datos import preparar_aplicacion
 
@@ -81,7 +99,14 @@ def construir(datos, salida, recursos):
             destino = salida / archivo.relative_to(recursos)
             destino.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(archivo, destino)
-    recursos_shell = ['index.html', 'styles.css', 'interfaz.css', 'app.mjs', 'motor.mjs', 'datos.mjs', 'interfaz.mjs', 'manifest.webmanifest',
+    if origen_api:
+        pagina = salida / 'index.html'
+        marca = '<meta name="sconto-api" content="">'
+        contenido_pagina = pagina.read_text(encoding='utf-8')
+        if marca not in contenido_pagina:
+            raise ValueError('La portada no tiene la configuración de Sconto API')
+        pagina.write_text(contenido_pagina.replace(marca, f'<meta name="sconto-api" content="{escape(origen_api, quote=True)}">', 1), encoding='utf-8')
+    recursos_shell = ['index.html', 'styles.css', 'interfaz.css', 'app.mjs', 'motor.mjs', 'datos.mjs', 'api.mjs', 'interfaz.mjs', 'manifest.webmanifest',
                       'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/logo.svg']
     version = hashlib.sha256(b''.join((salida / p).read_bytes() for p in recursos_shell + ['sw.js'])).hexdigest()[:16]
     trabajador = (salida / 'sw.js').read_text(encoding='utf-8').replace('__SCONTO_VERSION__', version)
@@ -95,5 +120,6 @@ if __name__ == '__main__':
     p.add_argument('--datos', type=Path, default=Path('data/analitica'))
     p.add_argument('--salida', type=Path, default=Path('data/analitica/site'))
     p.add_argument('--recursos', type=Path, default=Path('web'))
+    p.add_argument('--api', help='Origen público del API, o / para el mismo origen')
     a = p.parse_args()
-    print(json.dumps(construir(a.datos, a.salida, a.recursos)))
+    print(json.dumps(construir(a.datos, a.salida, a.recursos, a.api)))

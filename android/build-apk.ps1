@@ -1,7 +1,8 @@
 param(
     [string]$SdkPath = (Join-Path $env:LOCALAPPDATA 'Android/Sdk'),
     [ValidateSet('release', 'debug')][string]$Variant = 'release',
-    [string]$SigningDirectory = (Join-Path $PSScriptRoot '../data/operacion/firma-android')
+    [string]$SigningDirectory = (Join-Path $PSScriptRoot '../data/operacion/firma-android'),
+    [string]$OutputDirectory = (Join-Path $PSScriptRoot '../data/exportaciones/apk')
 )
 $ErrorActionPreference = 'Stop'
 $androidRoot = $PSScriptRoot
@@ -16,7 +17,7 @@ $taskVariant = if ($Variant -eq 'release') { 'Release' } else { 'Debug' }
 & (Join-Path $androidRoot 'gradlew.bat') -p $androidRoot ":app:assemble$taskVariant" ":app:testDebugUnitTest" ":app:lint$taskVariant" --console=plain --max-workers=2
 if ($LASTEXITCODE -ne 0) { throw 'La compilación o sus verificaciones fallaron. No se exportó el APK.' }
 
-$outputDir = Join-Path $projectRoot 'data/exportaciones/apk'
+$outputDir = $OutputDirectory
 New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
 $metadata = Get-Content -LiteralPath (Join-Path $androidRoot "app/build/outputs/apk/$Variant/output-metadata.json") -Raw | ConvertFrom-Json
 $version = $metadata.elements[0].versionName

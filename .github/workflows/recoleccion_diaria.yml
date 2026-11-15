@@ -152,6 +152,8 @@ jobs:
           PY
           gh release upload datos data/analitica/sconto_web_run_*.zip data/analitica/sconto_web_actual.zip --clobber
       - name: Construir consulta pública
+        env:
+          SCONTO_WEB_API: ${{ vars.SCONTO_WEB_API }}
         run: python -m sconto.publicar_web
       - uses: actions/upload-pages-artifact@v3
         with:

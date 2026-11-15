@@ -1,0 +1,6 @@
+fuente,tipo_precio,metodo,filas,series,series_con_vendedor,series_con_8_dias_consecutivos,ventanas_de_7_dias_completas,primer_precio,ultimo_precio
+amazon,oferta_vigente,scraping,1,1,1,0,0,2026-10-16,2026-10-16
+preciometro,minimo_diario_multitienda,agregador,251438,2795,0,0,0,2026-07-18,2026-11-14
+preciometro_ofertas,oferta_vigente,agregador,30187,10123,10123,943,11051,2026-10-16,2026-11-14
+tiendas,publicado,scraping,18,1,0,0,0,2026-10-20,2026-11-14
+wayback,oferta_vigente,wayback,109,56,55,0,0,2024-09-06,2025-10-17

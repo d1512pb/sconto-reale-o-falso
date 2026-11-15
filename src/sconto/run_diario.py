@@ -48,6 +48,11 @@ def ya_intentada(fuente: str, fecha: str, entorno: str) -> bool:
                  (estados.entorno == entorno) & estados.estado.isin(['ok', 'bloqueado', 'sin_credenciales'])).any())
 
 
+def en_pausa(opciones, fecha):
+    desde = opciones.get('pausada_desde')
+    return desde is not None and fecha >= desde
+
+
 def seleccionar_productos(productos: pd.DataFrame, fuente: str, maximo: int | None) -> pd.DataFrame:
     columnas = {'preciometro': ['preciometro_ids'], 'mercadolibre': ['mlm_ids', 'mlm_item_ids'],
                 'amazon': ['asins']}.get(fuente, [])
@@ -87,6 +92,9 @@ def main(argv=None):
             continue
         if not c.get('habilitada', True):
             resumen[nombre] = {'estado': 'deshabilitada', 'motivo': c.get('motivo', '')}
+            continue
+        if en_pausa(c, fecha):
+            resumen[nombre] = {'estado': 'pausada', 'motivo': c['motivo']}
             continue
         if not a.fuentes and a.entorno not in c['entornos']:
             continue

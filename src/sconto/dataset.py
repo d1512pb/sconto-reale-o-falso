@@ -249,13 +249,13 @@ def _guardar(nombre: str, df: pd.DataFrame, manifiesto: dict, csv_gz=False):
                                         sha256_parquet=hashlib.sha256(p.read_bytes()).hexdigest())
 
 
-def construir() -> dict:
+def construir(fecha_referencia=None) -> dict:
     combinar_estados()
     productos = pd.read_csv(CONFIG / 'productos_objetivo.csv', dtype=str, keep_default_na=False)
     productos['prioridad'] = pd.to_numeric(productos.prioridad)
     eventos = cargar_eventos()
     originales = cargar_observaciones()
-    obs, excl = validar(originales)
+    obs, excl = validar(originales, fecha_referencia=fecha_referencia)
     obs = consolidar(obs)
     obs = mapear_productos(obs, productos)
     obs = asignar_series(obs)
