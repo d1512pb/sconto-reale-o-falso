@@ -1,9 +1,9 @@
 {
-  "fecha": "2026-11-14",
+  "fecha": "2026-11-15",
   "entorno": "github",
-  "construido_utc": "2026-11-14T18:46:51+00:00",
+  "construido_utc": "2026-11-15T16:43:41+00:00",
   "filas": 690891,
-  "paquete": "exportaciones/sconto_colab_2026-11-14.zip",
+  "paquete": "exportaciones/sconto_colab_2026-11-15.zip",
   "fuentes": {
     "qqp_cdmx": 409138,
     "preciometro": 251438,
@@ -13,9 +13,12 @@
     "amazon": 1
   },
   "salud": {
-    "fecha": "2026-11-14",
+    "fecha": "2026-11-15",
     "entorno": "github",
     "ok": true,
-    "fuentes_sin_cobertura_completa": []
+    "fuentes_sin_cobertura_completa": [],
+    "fuentes_pausadas": [
+      "preciometro"
+    ]
   }
 }

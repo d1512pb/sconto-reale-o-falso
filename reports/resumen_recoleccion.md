@@ -1,6 +1,6 @@
 # Resumen de la recolección
 
-Generado 2026-11-14 desde `data/gold/` (construido 2026-11-14T18:46:29+00:00). Cifras calculadas,
+Generado 2026-11-15 desde `data/gold/` (construido 2026-11-15T16:43:22+00:00). Cifras calculadas,
 no escritas a mano. Resultados de **ejecución local** salvo que se indique otra cosa; las corridas de GitHub Actions
 quedan en `data/estado/github.csv` y las de Colab no se cuentan aquí.
 
@@ -48,15 +48,16 @@ Mínimos del Avance 1 (≥4 fechas base en ≥21 días, ≥1 en el evento; alza:
 |---|---|---|---|
 | amazon | local | bloqueado | 1 |
 | commoncrawl | local | bloqueado | 1 |
-| mercadolibre | github | sin_credenciales | 25 |
-| mercadolibre | local | sin_credenciales | 14 |
+| mercadolibre | github | sin_credenciales | 26 |
+| mercadolibre | local | sin_credenciales | 15 |
 | preciometro | github | ok | 25 |
 | preciometro | local | ok | 1 |
 | preciometro | local | parcial | 2 |
-| qqp_cdmx | local | fallo | 15 |
+| qqp_cdmx | local | fallo | 16 |
 | qqp_cdmx | local | ok | 1 |
-| qqp_nacional | local | fallo | 15 |
+| qqp_nacional | local | fallo | 16 |
 | qqp_nacional | local | ok | 1 |
+| servicio_local | local | fallo | 1 |
 | servicio_local | local | ok | 13 |
 | servicio_local | local | parcial | 2 |
 | tiendas | local | ok | 17 |
