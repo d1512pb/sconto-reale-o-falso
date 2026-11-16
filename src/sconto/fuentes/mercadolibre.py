@@ -161,12 +161,19 @@ def filas_item(d: dict, precio: dict | None, ruta_raw: str, hash_raw: str, fecha
     p = precio or {}
     actual = p.get('amount') or d.get('price')
     anterior = p.get('regular_amount') or d.get('original_price')
+    disponibilidad = d.get('status')
+    if disponibilidad == 'active':
+        cantidad = d.get('available_quantity')
+        # Una publicación activa puede omitir el stock. No deducir inventario.
+        disponibilidad = None
+        if type(cantidad) is int and cantidad >= 0:
+            disponibilidad = 'disponible' if cantidad else 'sin_stock'
     return dict(fuente=FUENTE, metodo='api', canal='en_linea', tipo_precio='precio_vigente', fecha_precio=fecha,
                 fecha_captura=fecha, id_externo=d.get('id'), tipo_id_externo='mlm_item', plataforma='Mercadolibre',
                 vendedor_o_cadena=str(d.get('seller_id') or ''), descripcion_original=d.get('title'),
                 precio=float(actual) if actual else None,
                 precio_anterior_anunciado=float(anterior) if anterior else None, moneda=d.get('currency_id', 'MXN'),
-                disponibilidad='disponible' if d.get('status') == 'active' and d.get('available_quantity', 1) else d.get('status'),
+                disponibilidad=disponibilidad,
                 condiciones=condiciones_json(condicion=d.get('condition'), envio_gratis=(d.get('shipping') or {}).get('free_shipping'),
                                              tienda_oficial=d.get('official_store_id'), catalogo=d.get('catalog_product_id') or producto),
                 url=d.get('permalink'), ruta_raw=ruta_raw, hash_raw=hash_raw)

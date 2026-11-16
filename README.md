@@ -2,6 +2,16 @@
 
 **Revisión académica:** [recorrido del proyecto](REVISION_PROYECTO.md) · [app web](https://d1512pb.github.io/sconto-reale-o-falso/) · [APK Android firmado](https://github.com/d1512pb/sconto-reale-o-falso/releases/tag/android-v1.0.1) · [código Android](android/README.md).
 
+## Sconto v2 · Buen Fin 2026
+
+- [Notebook 04](notebooks/04_Sconto_CRISP_DM_v2.ipynb) y [conciliación del corte del 14 de noviembre](reports/conciliacion_corte_v2_2026-11-14.md).
+- [Notebook 05 operativo](notebooks/05_Sconto_Operativo_v2.ipynb) y [evidencia de paridad con la API](reports/paridad_operativa_v2.md). El cuaderno 04 conserva el corte histórico.
+- [Servicio de consulta, respaldo y despliegue](reports/servicio_api_v2.md) y [reglas de compra provisionales](reports/decisiones_compra_v2.md).
+- [Avance de mercado](reports/informe_mercado.md). La consulta especial de PROFECO aporta precios diarios en sucursales físicas y se estudia por separado de las ofertas web.
+- [Condiciones de evaluación de 2026](reports/preparacion_evaluacion_bf2026.md) y [acceso a ofertas e historia online](reports/acceso_online_historia_v2_2026-11-15.md).
+
+Desde el 14 de noviembre de 2026 el colector programado pausa las consultas automáticas de Sears, Liverpool y Preciómetro hasta contar con la autorización correspondiente. Las entregas anteriores conservan sus datos históricos. El piloto local de PROFECO continúa con su propia bitácora.
+
 ## Avance 2: notebook completo y datos para la app
 
 Abrir [03 · CRISP-DM y ETL en Colab](https://colab.research.google.com/drive/1bnrjKM-Wz0YPo8UuQKrEHBm4mtDrn3KP).

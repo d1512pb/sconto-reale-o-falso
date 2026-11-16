@@ -1,0 +1,9 @@
+id,hipotesis,definicion,explicacion_alternativa
+H1,Alza previa y rebaja durante el evento,Mediana previa > mediana base y mediana del evento < mediana previa en la misma serie.,La cobertura y el calendario de precios pueden explicar parte del cambio.
+H2,Precio tachado superior a lo habitual,Precio tachado frente a la mediana base de la misma variante y vendedor.,El tachado puede representar un precio de lista.
+H3,Mayor descuento anunciado sin menor precio pagable,Comparar dos capturas con porcentaje anunciado y costo total conocido.,Un cambio de términos puede alterar la comparación.
+H4,Promoción condicionada,"Cotejar cupón, medio de pago, tope, mínimo y fechas en los términos.",Los campos del agregador pueden estar incompletos.
+H5,Envío o cargo absorbe el ahorro,Cotejar costo total y precio histórico comparable para la misma entrega.,El envío puede variar según el domicilio.
+H6,Cambió la variante o el vendedor,"Verificar SKU, atributos, condición y vendedor efectivo en ambas fuentes.",Los títulos pueden omitir atributos.
+H7,"Oferta fugaz, agotada o desactualizada",Comparar comprobaciones intradía del mismo anuncio con inventario conocido.,Un hueco de captura deja la vigencia sin confirmar.
+H8,Descuento verificable y útil,"Precio total verificable, disponible y por debajo de una referencia comparable.",La utilidad del ahorro depende del comprador.

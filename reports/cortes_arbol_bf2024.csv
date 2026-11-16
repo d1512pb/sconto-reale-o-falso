@@ -1,0 +1,150 @@
+modelo,particion,series_entrenamiento,productos_entrenamiento,cortes
+arbol_2,1,153,67,"|--- iqr_previo_pct <= 2.50
+|   |--- dias_desde_precio <= 0.50
+|   |   |--- class: 0
+|   |--- dias_desde_precio >  0.50
+|   |   |--- class: 0
+|--- iqr_previo_pct >  2.50
+|   |--- cambio_previo_pct <= 14.97
+|   |   |--- class: 1
+|   |--- cambio_previo_pct >  14.97
+|   |   |--- class: 1
+"
+arbol_2,2,154,69,"|--- iqr_previo_pct <= 2.50
+|   |--- dias_desde_precio <= 0.50
+|   |   |--- class: 0
+|   |--- dias_desde_precio >  0.50
+|   |   |--- class: 0
+|--- iqr_previo_pct >  2.50
+|   |--- cambio_previo_pct <= 29.63
+|   |   |--- class: 1
+|   |--- cambio_previo_pct >  29.63
+|   |   |--- class: 0
+"
+arbol_2,3,152,68,"|--- cambio_previo_pct <= -0.03
+|   |--- iqr_base_pct <= 1.67
+|   |   |--- class: 1
+|   |--- iqr_base_pct >  1.67
+|   |   |--- class: 1
+|--- cambio_previo_pct >  -0.03
+|   |--- cambio_previo_pct <= 4.23
+|   |   |--- class: 0
+|   |--- cambio_previo_pct >  4.23
+|   |   |--- class: 1
+"
+arbol_2,4,156,72,"|--- cambio_previo_pct <= -0.03
+|   |--- alza_previa_pct <= -18.53
+|   |   |--- class: 1
+|   |--- alza_previa_pct >  -18.53
+|   |   |--- class: 1
+|--- cambio_previo_pct >  -0.03
+|   |--- cambio_previo_pct <= 8.08
+|   |   |--- class: 0
+|   |--- cambio_previo_pct >  8.08
+|   |   |--- class: 1
+"
+arbol_3,1,153,67,"|--- iqr_previo_pct <= 2.50
+|   |--- dias_desde_precio <= 0.50
+|   |   |--- alza_previa_pct <= -14.06
+|   |   |   |--- class: 0
+|   |   |--- alza_previa_pct >  -14.06
+|   |   |   |--- class: 0
+|   |--- dias_desde_precio >  0.50
+|   |   |--- iqr_base_pct <= 1.56
+|   |   |   |--- class: 0
+|   |   |--- iqr_base_pct >  1.56
+|   |   |   |--- class: 1
+|--- iqr_previo_pct >  2.50
+|   |--- cambio_previo_pct <= 14.97
+|   |   |--- cambio_previo_pct <= -33.71
+|   |   |   |--- class: 1
+|   |   |--- cambio_previo_pct >  -33.71
+|   |   |   |--- class: 1
+|   |--- cambio_previo_pct >  14.97
+|   |   |--- class: 1
+"
+arbol_3,2,154,69,"|--- iqr_previo_pct <= 2.50
+|   |--- dias_desde_precio <= 0.50
+|   |   |--- iqr_base_pct <= 0.00
+|   |   |   |--- class: 0
+|   |   |--- iqr_base_pct >  0.00
+|   |   |   |--- class: 0
+|   |--- dias_desde_precio >  0.50
+|   |   |--- iqr_base_pct <= 1.24
+|   |   |   |--- class: 0
+|   |   |--- iqr_base_pct >  1.24
+|   |   |   |--- class: 0
+|--- iqr_previo_pct >  2.50
+|   |--- cambio_previo_pct <= 29.63
+|   |   |--- cambio_previo_pct <= -33.71
+|   |   |   |--- class: 1
+|   |   |--- cambio_previo_pct >  -33.71
+|   |   |   |--- class: 1
+|   |--- cambio_previo_pct >  29.63
+|   |   |--- class: 0
+"
+arbol_3,3,152,68,"|--- cambio_previo_pct <= -0.03
+|   |--- iqr_base_pct <= 1.67
+|   |   |--- class: 1
+|   |--- iqr_base_pct >  1.67
+|   |   |--- alza_previa_pct <= -10.33
+|   |   |   |--- class: 1
+|   |   |--- alza_previa_pct >  -10.33
+|   |   |   |--- class: 1
+|--- cambio_previo_pct >  -0.03
+|   |--- iqr_previo_pct <= 2.07
+|   |   |--- dias_desde_precio <= 0.50
+|   |   |   |--- class: 0
+|   |   |--- dias_desde_precio >  0.50
+|   |   |   |--- class: 0
+|   |--- iqr_previo_pct >  2.07
+|   |   |--- class: 1
+"
+arbol_3,4,156,72,"|--- cambio_previo_pct <= -0.03
+|   |--- alza_previa_pct <= -18.53
+|   |   |--- class: 1
+|   |--- alza_previa_pct >  -18.53
+|   |   |--- cambio_previo_pct <= -10.41
+|   |   |   |--- class: 1
+|   |   |--- cambio_previo_pct >  -10.41
+|   |   |   |--- class: 1
+|--- cambio_previo_pct >  -0.03
+|   |--- iqr_previo_pct <= 3.86
+|   |   |--- dias_desde_precio <= 0.50
+|   |   |   |--- class: 0
+|   |   |--- dias_desde_precio >  0.50
+|   |   |   |--- class: 0
+|   |--- iqr_previo_pct >  3.86
+|   |   |--- class: 1
+"
+arbol_2,entrenamiento_completo,205,92,"|--- cambio_previo_pct <= -0.03
+|   |--- iqr_previo_pct <= 20.27
+|   |   |--- class: 1
+|   |--- iqr_previo_pct >  20.27
+|   |   |--- class: 1
+|--- cambio_previo_pct >  -0.03
+|   |--- cambio_previo_pct <= 5.13
+|   |   |--- class: 0
+|   |--- cambio_previo_pct >  5.13
+|   |   |--- class: 1
+"
+arbol_3,entrenamiento_completo,205,92,"|--- cambio_previo_pct <= -0.03
+|   |--- iqr_previo_pct <= 20.27
+|   |   |--- cambio_previo_pct <= -10.00
+|   |   |   |--- class: 1
+|   |   |--- cambio_previo_pct >  -10.00
+|   |   |   |--- class: 1
+|   |--- iqr_previo_pct >  20.27
+|   |   |--- class: 1
+|--- cambio_previo_pct >  -0.03
+|   |--- iqr_previo_pct <= 2.50
+|   |   |--- dias_desde_precio <= 0.50
+|   |   |   |--- class: 0
+|   |   |--- dias_desde_precio >  0.50
+|   |   |   |--- class: 0
+|   |--- iqr_previo_pct >  2.50
+|   |   |--- alza_previa_pct <= -7.06
+|   |   |   |--- class: 0
+|   |   |--- alza_previa_pct >  -7.06
+|   |   |   |--- class: 1
+"

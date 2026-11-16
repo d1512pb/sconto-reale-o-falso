@@ -40,6 +40,17 @@ def test_fila_item_sin_tachado_queda_vacio():
     assert f['precio_anterior_anunciado'] is None and f['precio'] == 100.0
 
 
+def test_stock_requiere_cantidad_publicada_y_anuncio_activo():
+    item = {'id': 'MLM1', 'title': 'x', 'price': 100, 'status': 'active'}
+    for campos, esperado in [({}, None), ({'available_quantity': None}, None),
+                              ({'available_quantity': True}, None), ({'available_quantity': -1}, None),
+                              ({'available_quantity': 0}, 'sin_stock'),
+                              ({'available_quantity': 1}, 'disponible'),
+                              ({'available_quantity': 2, 'status': 'paused'}, 'paused')]:
+        f = ml.filas_item({**item, **campos}, None, 'r', 'h', '2026-10-16', None)
+        assert f['disponibilidad'] == esperado
+
+
 def test_sin_credenciales_no_hace_peticiones(monkeypatch, tmp_path):
     for k in ('ML_CLIENT_ID', 'ML_CLIENT_SECRET', 'ML_REFRESH_TOKEN'):
         monkeypatch.delenv(k, raising=False)

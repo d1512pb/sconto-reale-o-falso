@@ -10,6 +10,11 @@ on:
         type: boolean
         required: false
         default: false
+      sin_publicar_datos:
+        description: 'Construir y desplegar Pages sin reemplazar archivos del release de datos'
+        type: boolean
+        required: false
+        default: false
       max_productos:
         description: '0 = lista fija completa; otro valor limita una prueba'
         required: false
@@ -141,6 +146,7 @@ jobs:
           python -m sconto.mart --paquete data/exportaciones/sconto_colab_actual.zip
           python -m pytest tests/test_mineria_web.py tests/test_publicar_web.py tests/test_compra.py tests/test_app_movil.py tests/test_catalogo.py -q
       - name: Publicar entrega analítica
+        if: ${{ !inputs.sin_publicar_datos }}
         run: |
           python - <<'PY'
           import hashlib, shutil
@@ -152,6 +158,8 @@ jobs:
           PY
           gh release upload datos data/analitica/sconto_web_run_*.zip data/analitica/sconto_web_actual.zip --clobber
       - name: Construir consulta pública
+        env:
+          SCONTO_WEB_API: ${{ vars.SCONTO_WEB_API }}
         run: python -m sconto.publicar_web
       - uses: actions/upload-pages-artifact@v3
         with:
