@@ -11,6 +11,7 @@ from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
+from sconto.decisiones_v2 import normalizar_gtin
 from sconto.fuentes.tiendas import validar_url
 from sconto.intraday import RAIZ_INTRADIA, VERSION_COTIZACION, IntradayStore, Observacion, Oferta, Trabajo
 
@@ -79,6 +80,9 @@ def normalizar(fila, ahora):
     url = _url(fila, tienda)
     modelo = _texto(fila, 'variante', opcional=True)
     sku = _texto(fila, 'sku')
+    gtin = _texto(fila, 'gtin', limite=14, opcional=True)
+    if gtin is not None and normalizar_gtin(gtin) is None:
+        raise ValueError('El GTIN observado debe ser válido e incluir su dígito de control')
     vendedor = _texto(fila, 'vendedor', opcional=True)
     condicion = _opcion(fila, 'condicion', CONDICIONES)
     disponibilidad = _opcion(fila, 'disponibilidad', ESTADOS)
@@ -104,7 +108,9 @@ def normalizar(fila, ahora):
     contexto = _texto(fila, 'contexto_costo', limite=180, opcional=True)
     if contexto is not None and contexto not in CONTEXTOS_COSTO:
         raise ValueError('contexto_costo identifica una zona general o retiro, sin domicilio')
-    promocion = _texto(fila, 'promocion_condicionada', limite=220, opcional=True)
+    promocion = fila.get('promocion_condicionada')
+    if type(promocion) is not bool:
+        promocion = _texto(fila, 'promocion_condicionada', limite=220, opcional=True)
     if total is not None and (envio is None or cargos is None or total != precio + envio + cargos or not contexto):
         raise ValueError('El costo total necesita precio, envío, cargos y contexto de entrega conciliados')
     permiso = _opcion(fila, 'alcance_permiso', PERMISOS)
@@ -114,6 +120,8 @@ def normalizar(fila, ahora):
                        identidad_verificada=comprobada, cargos_confirmados=total is not None,
                        costo_total_confirmado=float(total) if total is not None else None,
                        contexto_costo=contexto, promocion_condicionada=promocion)
+    if gtin is not None:
+        condiciones['gtin'] = normalizar_gtin(gtin)
     anuncio = Oferta(f'{tienda}:{sku}', producto, 'Sears' if tienda == 'sears' else 'Liverpool', url,
                     variante=modelo, vendedor=vendedor, condicion=condicion)
     observado = Observacion(anuncio, float(precio), 'MXN', observed_at=visto, source_updated_at=actualizado,

@@ -42,6 +42,8 @@ La copia empaquetada es privada. Conservarla en un destino privado externo antes
 
 ## Flujo de despliegue
 
+`python scripts/verificar_fly_v2.py` comprueba la sesión CLI, el tipo de organización y el número de aplicaciones. Usa el CLI oficial y sólo devuelve estados, conteos y presupuestos. Comprueba el plan, la existencia de método de pago y el gasto agregado directamente en Billing. Si el panel confirma los tres, pasa los indicadores `--pago-por-uso`, `--metodo-de-pago` y `--otros-usd <proyección-ajena-a-esta-api>`. El diagnóstico compara una estimación conservadora para 31 días con el límite del proyecto. Los indicadores reflejan lo verificado en el panel.
+
 Comprobar en la organización personal el plan, la tarjeta registrada, el consumo existente y el costo proyectado en conjunto. La estimación en iad es US$3.69 por 512 MB, US$0.15 por 1 GB de volumen y US$0.02 por 1 GB de salida durante 30 días. El plan reserva margen manteniendo la proyección total por debajo de US$4.50. El descuento de Fly aplica a una cuenta personal elegible con factura menor de US$5. [Precios Fly](https://docs.fly.io/about/pricing) · [Condiciones del descuento](https://docs.fly.io/about/free-waiver)
 
 Con una organización verificada, crear sólo la aplicación, un volumen `sconto_data` de 1 GB en `iad` y una máquina usando `fly deploy --ha=false` sobre `fly.toml`. Cargar un catálogo revisado y cotizaciones cuyo permiso cubra la publicación. Usar `/health`, buscar un producto y leer su historial o un caso de abstención. Verificar el consumo y reiniciar la única máquina para comprobar persistencia antes de configurar la URL HTTPS en GitHub Pages o el APK. La aplicación debe iniciar con la configuración privada apagada. [Volúmenes](https://docs.fly.io/volumes/overview)

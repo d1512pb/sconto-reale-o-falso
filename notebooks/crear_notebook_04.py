@@ -24,9 +24,10 @@ DEPENDENCIAS = ['numpy==2.4.6', 'pandas==3.0.6', 'pyarrow==26.0.0', 'scikit-lear
                 'matplotlib==3.11.2', 'PyYAML==6.0.3', 'tzdata==2026.5']
 
 
-def paquete_codigo():
+def paquete_codigo(archivos=None):
     buffer = BytesIO()
-    archivos = sorted((RAIZ / 'src/sconto').rglob('*.py')) + RUTAS
+    if archivos is None:
+        archivos = sorted((RAIZ / 'src/sconto').rglob('*.py')) + RUTAS
     with zipfile.ZipFile(buffer, 'w') as z:
         for ruta in archivos:
             nombre = ruta.relative_to(RAIZ).as_posix()
@@ -309,11 +310,68 @@ print('Entrega', SALIDA, '· corte', corte, '· registros limpios', len(obs))'''
     return n
 
 
+def crear_operativo():
+    archivos = [RAIZ / 'src/sconto' / (nombre + '.py') for nombre in (
+        '__init__', 'consulta_v2', 'cuaderno_operativo_v2', 'decisiones_v2', 'intraday', 'rutas')]
+    bundle = paquete_codigo(archivos)
+    sha_bundle = hashlib.sha256(bundle).hexdigest()
+    codigo_b64 = base64.b64encode(bundle).decode('ascii')
+    md, cell = nbf.v4.new_markdown_cell, nbf.v4.new_code_cell
+    return nbf.v4.new_notebook(metadata={'kernelspec': {'display_name': 'Python 3',
+        'language': 'python', 'name': 'python3'}}, cells=[
+        md('''# Sconto v2 · Consulta operativa
+
+Este cuaderno reproduce las decisiones de la API sobre la misma copia SQLite de intradía, catálogo y hora de evaluación. Trabaja sobre copias transaccionales locales. El análisis histórico y el modelo retrospectivo siguen en el cuaderno 04.
+
+Proporciona las rutas de las dos bases y una fecha ISO 8601 con huso. Puedes limitar por identificador de producto. Para reproducir la API pública deja `PRIVADAS = False`. La revisión privada requiere autorización de acceso a esa entrada. Mantén los archivos operativos en custodia privada.
+
+La comparación actual ordena totales de ofertas online verificadas y vigentes con mismo GTIN, condición, moneda y contexto de entrega. La estimación de ahorro requiere historia previa del mismo anuncio. Capturas posteriores a la base no amplían su cobertura. El registro guarda versiones, hora, hashes de las copias, estado y motivos de abstención.'''),
+        cell('''from pathlib import Path
+import os
+
+INTRADIA = Path(os.environ.get('SCONTO_OP_INTRADIA', 'intradia.sqlite3'))
+CATALOGO = Path(os.environ.get('SCONTO_OP_CATALOGO', 'catalogo.sqlite'))
+MOMENTO = os.environ.get('SCONTO_OP_MOMENTO', '2026-11-15T17:00:00-06:00')
+PRODUCTOS = [p.strip() for p in os.environ.get('SCONTO_OP_PRODUCTOS', '').split(',') if p.strip()]
+PRIVADAS = os.environ.get('SCONTO_OP_PRIVADAS') == '1'
+SALIDA = Path(os.environ.get('SCONTO_OP_SALIDA', 'decision_operativa_v2.json'))'''),
+        cell(f'''import base64, hashlib, io, json, re, sys, zipfile
+from IPython.display import JSON, display
+
+bundle = base64.b64decode({codigo_b64!r})
+sha_codigo = {sha_bundle!r}
+assert hashlib.sha256(bundle).hexdigest() == sha_codigo
+raiz = Path('sconto_v2_operativo_' + sha_codigo[:12]).resolve()
+with zipfile.ZipFile(io.BytesIO(bundle)) as archivo:
+    for nombre in archivo.namelist():
+        if not re.fullmatch(r'src/sconto/[a-z_0-9]+\\.py', nombre):
+            raise ValueError('Ruta de código inesperada')
+        destino = raiz / nombre
+        destino.parent.mkdir(parents=True, exist_ok=True)
+        destino.write_bytes(archivo.read(nombre))
+sys.path.insert(0, str(raiz / 'src'))
+import sconto
+from sconto.cuaderno_operativo_v2 import reproducir
+assert Path(sconto.__file__).is_relative_to(raiz), 'Reinicia el kernel para cargar la versión fijada'
+
+resultado = reproducir(INTRADIA, CATALOGO, MOMENTO, productos=PRODUCTOS, privadas=PRIVADAS)
+resultado['sha256_codigo'] = sha_codigo
+SALIDA.write_text(json.dumps(resultado, ensure_ascii=False, indent=2, allow_nan=False), encoding='utf-8')
+print('Regla', resultado['regla'], '· ofertas visibles', resultado['numero_ofertas'],
+      '· con historia previa suficiente', resultado['numero_ofertas_con_historia_previa'],
+      '· evaluables', resultado['numero_ofertas_evaluables'])
+display(JSON(resultado))'''),
+    ])
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--salida', type=Path, default=RAIZ / 'notebooks/04_Sconto_CRISP_DM_v2.ipynb')
+    parser.add_argument('--modo', choices=('historico', 'operativo'), default='historico')
+    parser.add_argument('--salida', type=Path)
     args = parser.parse_args()
-    nbf.write(crear(), args.salida)
+    operativo = args.modo == 'operativo'
+    nombre = '05_Sconto_Operativo_v2.ipynb' if operativo else '04_Sconto_CRISP_DM_v2.ipynb'
+    nbf.write(crear_operativo() if operativo else crear(), args.salida or RAIZ / 'notebooks' / nombre)
 
 
 if __name__ == '__main__':

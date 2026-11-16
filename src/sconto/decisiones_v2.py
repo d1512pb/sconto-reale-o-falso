@@ -76,6 +76,55 @@ def _referencia_suficiente(oferta, referencia):
             and referencia['p25'] <= referencia['mediana'] <= referencia['p75'])
 
 
+def cobertura_historica(oferta, referencia, base=None):
+    """Explica la base preevento incluso si fallan requisitos de la oferta actual."""
+    base, referencia = base or {}, referencia or {}
+    return dict(
+        suficiente=_referencia_suficiente(oferta, referencia),
+        inicio=base.get('base_inicio'), fin=base.get('base_fin'),
+        n_dias=referencia.get('n_dias', 0), amplitud_dias=referencia.get('amplitud_dias', 0),
+        min_dias=MIN_DIAS_BASE, min_amplitud_dias=AMPLITUD_BASE_DIAS,
+    )
+
+
+def normalizar_gtin(valor):
+    """Valida GTIN-8, UPC, EAN-13 o GTIN-14 y conserva un GTIN-14 canónico."""
+    if (not isinstance(valor, str) or len(valor) not in (8, 12, 13, 14)
+            or not valor.isascii() or not valor.isdecimal() or not int(valor)):
+        return None
+    suma = sum(int(n) * (3 if p % 2 == 0 else 1) for p, n in enumerate(reversed(valor[:-1])))
+    return valor.zfill(14) if (suma + int(valor[-1])) % 10 == 0 else None
+
+
+def comparar_ofertas_actuales(ofertas):
+    """Ordena totales contemporáneos comparables, sin estimar el ahorro histórico."""
+    agrupadas = defaultdict(dict)
+    for oferta in ofertas:
+        # Estas decisiones proceden de evaluar_decision en la misma consulta.
+        gtin = normalizar_gtin(oferta.get('gtin'))
+        if (not gtin or oferta.get('promocion_condicionada') is not False
+                or set(oferta['decision']['motivos']) - {'historia_insuficiente'}):
+            continue
+        clave = oferta['producto_id'], gtin, oferta['moneda'], oferta['condicion'], oferta['contexto_costo']
+        agrupadas[clave][oferta['offer_id']] = oferta
+
+    grupos = []
+    for (producto, gtin, moneda, condicion, contexto), por_oferta in sorted(agrupadas.items()):
+        if len(por_oferta) < 2:
+            continue
+        filas = sorted(por_oferta.values(), key=lambda o: (o['costo_total_confirmado'], o['offer_id']))
+        menor = filas[0]['costo_total_confirmado']
+        grupos.append(dict(producto_id=producto, gtin=gtin, moneda=moneda, condicion=condicion,
+                           contexto_costo=contexto, menor_total=menor, ofertas=[
+            dict(offer_id=o['offer_id'], vendedor=o['vendedor'], plataforma=o['plataforma'],
+                 observed_at=o['observed_at'], total=o['costo_total_confirmado'],
+                 diferencia_vs_menor=round(o['costo_total_confirmado'] - menor, 2))
+            for o in filas
+        ]))
+    return dict(estado='disponible' if grupos else 'evidencia_insuficiente',
+                motivo=None if grupos else 'menos_de_dos_ofertas_actuales_comparables', grupos=grupos)
+
+
 def evaluar_decision(oferta, referencia=None, *, ahora=None):
     """Devuelve clasificación y causas de abstención sobre la oferta exacta."""
     consultado = _instante(ahora) if ahora is not None else datetime.now(timezone.utc)

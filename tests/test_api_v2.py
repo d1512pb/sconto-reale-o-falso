@@ -7,6 +7,7 @@ pytest.importorskip('fastapi')
 from fastapi.testclient import TestClient
 
 from sconto.api_v2 import VERSION, crear_api
+from sconto.decisiones_v2 import VERSION as VERSION_MOTOR
 from sconto.importar_tienda_manual_v2 import importar as importar_cotizacion
 from sconto.intraday import IntradayStore, Observacion, Oferta, Trabajo
 from sconto.respaldo_v2 import respaldar, restaurar
@@ -46,6 +47,9 @@ def test_precio_diario_y_venta_web_permanecen_separados(tmp_path):
         assert oferta['decision']['estado'] == 'evidencia_insuficiente'
         assert 'sesion' not in respuesta.text and oferta['canal'] == 'en_linea'
         assert cliente.get('/v1/version').json()['version'] == VERSION
+        assert cliente.get('/v1/version').json()['motor'] == VERSION_MOTOR
+        estado = cliente.get('/v1/products/modelo-aplicacion/decision').json()
+        assert estado['evaluado_utc'] == AHORA.isoformat() and estado['motor'] == VERSION_MOTOR
     with TestClient(crear_api(root=tmp_path)) as cliente:
         assert cliente.get('/v1/products/modelo-aplicacion/offers').status_code == 404
         assert cliente.get('/v1/products/PROFECO-BF26-123/history').status_code == 404
