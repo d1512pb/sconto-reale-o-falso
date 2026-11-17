@@ -1,6 +1,6 @@
 # Cobertura · Preciómetro
 
-Generado 2026-11-16 desde `data/gold/observaciones` (no hay cifras a mano).
+Generado 2026-11-17 desde `data/gold/observaciones` (no hay cifras a mano).
 
 **Qué es:** cada ficha pública trae (a) un gráfico con **un punto por día**: el precio **mínimo entre tiendas** ese
 día, con la tienda y el vendedor que lo ofrecían (ventana móvil de ~90 días); y (b) las **ofertas vigentes** por
