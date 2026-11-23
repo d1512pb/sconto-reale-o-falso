@@ -118,4 +118,4 @@ qqp_nacional,2026-11-22,fallo,0,HTTPError: 404 Client Error: Not Found for url: 
 servicio_local,2026-11-22,ok,0,Ciclo local completado; la publicación del ZIP se delega exclusivamente a GitHub,,2026-11-23T02:35:50+00:00,local
 qqp_cdmx,2026-11-23,fallo,0,HTTPError: 404 Client Error: Not Found for url: https://datos.profeco.gob.mx/datos_abiertos/file.php?t=9d62040eae6dcc63e36b8ac821427647,2026-11-23T16:44:32+00:00,2026-11-23T16:45:00+00:00,local
 qqp_nacional,2026-11-23,fallo,0,HTTPError: 404 Client Error: Not Found for url: https://datos.profeco.gob.mx/datos_abiertos/file.php?t=9d62040eae6dcc63e36b8ac821427647,2026-11-23T16:44:32+00:00,2026-11-23T16:45:00+00:00,local
-servicio_local,2026-11-23,ok,0,Ciclo local completado; la publicación del ZIP se delega exclusivamente a GitHub,,2026-11-23T17:03:32+00:00,local
+servicio_local,2026-11-23,ok,0,Ciclo local completado; la publicación del ZIP se delega exclusivamente a GitHub,,2026-11-23T21:48:46+00:00,local
