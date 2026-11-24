@@ -1,9 +1,9 @@
 {
-  "fecha": "2026-11-23",
+  "fecha": "2026-11-24",
   "entorno": "local",
-  "construido_utc": "2026-11-24T02:39:37+00:00",
+  "construido_utc": "2026-11-24T16:50:50+00:00",
   "filas": 690888,
-  "paquete": "exportaciones/sconto_colab_2026-11-23.zip",
+  "paquete": "exportaciones/sconto_colab_2026-11-24.zip",
   "fuentes": {
     "qqp_cdmx": 409138,
     "preciometro": 251438,
@@ -13,7 +13,7 @@
     "amazon": 1
   },
   "salud": {
-    "fecha": "2026-11-23",
+    "fecha": "2026-11-24",
     "entorno": "local",
     "ok": true,
     "fuentes_sin_cobertura_completa": [],
