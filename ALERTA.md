@@ -1,6 +1,6 @@
 # ALERTA de recolección
 
-Fuentes con falla dos días seguidos (generado 2026-11-25T18:46:15+00:00):
+Fuentes con falla dos días seguidos (generado 2026-11-25T22:36:47+00:00):
 
 - **qqp_cdmx** (local): fallo el 2026-11-24 y el 2026-11-25. Último detalle: HTTPError: 404 Client Error: Not Found for url: https://datos.profeco.gob.mx/datos_abiertos/file.php?t=9d62040eae6dcc63e36b8ac821427647
 - **qqp_nacional** (local): fallo el 2026-11-24 y el 2026-11-25. Último detalle: HTTPError: 404 Client Error: Not Found for url: https://datos.profeco.gob.mx/datos_abiertos/file.php?t=9d62040eae6dcc63e36b8ac821427647
