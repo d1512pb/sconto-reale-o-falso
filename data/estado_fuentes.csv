@@ -184,3 +184,7 @@ mercadolibre,2026-11-24,sin_credenciales,0,API exige token (401/403 verificado 2
 qqp_cdmx,2026-11-24,fallo,0,HTTPError: 404 Client Error: Not Found for url: https://datos.profeco.gob.mx/datos_abiertos/file.php?t=9d62040eae6dcc63e36b8ac821427647,2026-11-24T16:36:56+00:00,2026-11-24T16:37:06+00:00,local
 qqp_nacional,2026-11-24,fallo,0,HTTPError: 404 Client Error: Not Found for url: https://datos.profeco.gob.mx/datos_abiertos/file.php?t=9d62040eae6dcc63e36b8ac821427647,2026-11-24T16:36:56+00:00,2026-11-24T16:37:06+00:00,local
 servicio_local,2026-11-24,ok,0,Ciclo local completado; la publicación del ZIP se delega exclusivamente a GitHub,,2026-11-25T02:39:52+00:00,local
+mercadolibre,2026-11-25,sin_credenciales,0,API exige token (401/403 verificado 2026-10-16); sin app registrada,2026-11-25T16:40:47+00:00,2026-11-25T16:40:47+00:00,github
+qqp_cdmx,2026-11-25,fallo,0,HTTPError: 404 Client Error: Not Found for url: https://datos.profeco.gob.mx/datos_abiertos/file.php?t=9d62040eae6dcc63e36b8ac821427647,2026-11-25T16:29:13+00:00,2026-11-25T16:29:24+00:00,local
+qqp_nacional,2026-11-25,fallo,0,HTTPError: 404 Client Error: Not Found for url: https://datos.profeco.gob.mx/datos_abiertos/file.php?t=9d62040eae6dcc63e36b8ac821427647,2026-11-25T16:29:13+00:00,2026-11-25T16:29:24+00:00,local
+servicio_local,2026-11-25,ok,0,Ciclo local completado; la publicación del ZIP se delega exclusivamente a GitHub,,2026-11-25T16:39:45+00:00,local
