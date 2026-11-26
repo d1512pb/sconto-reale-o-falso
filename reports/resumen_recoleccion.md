@@ -1,6 +1,6 @@
 # Resumen de la recolección
 
-Generado 2026-11-25 desde `data/gold/` (construido 2026-11-25T22:37:15+00:00). Cifras calculadas,
+Generado 2026-11-25 desde `data/gold/` (construido 2026-11-26T04:05:16+00:00). Cifras calculadas,
 no escritas a mano. Resultados de **ejecución local** salvo que se indique otra cosa; las corridas de GitHub Actions
 quedan en `data/estado/github.csv` y las de Colab no se cuentan aquí.
 
@@ -49,7 +49,7 @@ Mínimos del Avance 1 (≥4 fechas base en ≥21 días, ≥1 en el evento; alza:
 | amazon | local | bloqueado | 1 |
 | commoncrawl | local | bloqueado | 1 |
 | mercadolibre | github | sin_credenciales | 36 |
-| mercadolibre | local | sin_credenciales | 24 |
+| mercadolibre | local | sin_credenciales | 25 |
 | preciometro | github | ok | 25 |
 | preciometro | local | ok | 1 |
 | preciometro | local | parcial | 2 |
