@@ -32,7 +32,7 @@ def _origen_api(valor):
     return f'{origen.scheme}://{origen.netloc}'
 
 
-def construir(datos, salida, recursos, api=None):
+def construir(datos, salida, recursos, api=None, modelo=None):
     datos, salida, recursos = Path(datos), Path(salida), Path(recursos)
     origen_api = _origen_api(api if api is not None else os.environ.get('SCONTO_WEB_API'))
     manifest = verificar(datos)
@@ -99,6 +99,8 @@ def construir(datos, salida, recursos, api=None):
             destino = salida / archivo.relative_to(recursos)
             destino.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(archivo, destino)
+    if modelo:
+        shutil.copy2(modelo, salida / 'modelo.json')
     if origen_api:
         pagina = salida / 'index.html'
         marca = '<meta name="sconto-api" content="">'
@@ -106,8 +108,10 @@ def construir(datos, salida, recursos, api=None):
         if marca not in contenido_pagina:
             raise ValueError('La portada no tiene la configuración de Sconto API')
         pagina.write_text(contenido_pagina.replace(marca, f'<meta name="sconto-api" content="{escape(origen_api, quote=True)}">', 1), encoding='utf-8')
-    recursos_shell = ['index.html', 'styles.css', 'interfaz.css', 'app.mjs', 'motor.mjs', 'datos.mjs', 'api.mjs', 'interfaz.mjs', 'manifest.webmanifest',
+    recursos_shell = ['index.html', 'styles.css', 'interfaz.css', 'app.mjs', 'motor.mjs', 'datos.mjs', 'api.mjs', 'interfaz.mjs', 'modelo.mjs', 'manifest.webmanifest',
                       'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/logo.svg']
+    if (salida / 'modelo.json').is_file():
+        recursos_shell.append('modelo.json')
     version = hashlib.sha256(b''.join((salida / p).read_bytes() for p in recursos_shell + ['sw.js'])).hexdigest()[:16]
     trabajador = (salida / 'sw.js').read_text(encoding='utf-8').replace('__SCONTO_VERSION__', version)
     (salida / 'sw.js').write_text(trabajador, encoding='utf-8')
@@ -121,5 +125,6 @@ if __name__ == '__main__':
     p.add_argument('--salida', type=Path, default=Path('data/analitica/site'))
     p.add_argument('--recursos', type=Path, default=Path('web'))
     p.add_argument('--api', help='Origen público del API, o / para el mismo origen')
+    p.add_argument('--modelo', type=Path, help='Tarjeta del modelo para la app (modelo.json)')
     a = p.parse_args()
-    print(json.dumps(construir(a.datos, a.salida, a.recursos, a.api)))
+    print(json.dumps(construir(a.datos, a.salida, a.recursos, a.api, a.modelo)))
