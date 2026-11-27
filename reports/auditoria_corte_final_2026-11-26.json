@@ -1,0 +1,492 @@
+{
+  "fecha_corte": "2026-11-26",
+  "generado_utc": "2026-11-26T17:24:34+00:00",
+  "carpeta_corte": "data/operacion/v2/corte_final_20261126",
+  "paquete": {
+    "archivo": "sconto_colab_2026-11-26.zip",
+    "sha256": "e6e8b353942ca0f18996417910e72f513c796c5b68c819fe5fe931056d7a45e3",
+    "exportado_utc": "2026-11-26T16:58:45+00:00",
+    "filas": 690888,
+    "productos_catalogo": 1724,
+    "por_fuente": [
+      {
+        "fuente": "amazon",
+        "filas": 1,
+        "productos": 0,
+        "series": 1,
+        "fecha_min": "2026-10-16",
+        "fecha_max": "2026-10-16",
+        "captura_max": "2026-10-16",
+        "canales": [
+          "en_linea"
+        ]
+      },
+      {
+        "fuente": "preciometro",
+        "filas": 251438,
+        "productos": 1493,
+        "series": 2795,
+        "fecha_min": "2026-07-18",
+        "fecha_max": "2026-11-14",
+        "captura_max": "2026-11-14",
+        "canales": [
+          "en_linea"
+        ]
+      },
+      {
+        "fuente": "preciometro_ofertas",
+        "filas": 30184,
+        "productos": 1485,
+        "series": 10123,
+        "fecha_min": "2026-10-16",
+        "fecha_max": "2026-11-14",
+        "captura_max": "2026-11-14",
+        "canales": [
+          "en_linea"
+        ]
+      },
+      {
+        "fuente": "qqp_cdmx",
+        "filas": 409138,
+        "productos": 231,
+        "series": 26811,
+        "fecha_min": "2018-01-02",
+        "fecha_max": "2026-08-31",
+        "captura_max": "2026-10-16",
+        "canales": [
+          "tienda_fisica"
+        ]
+      },
+      {
+        "fuente": "tiendas",
+        "filas": 18,
+        "productos": 1,
+        "series": 1,
+        "fecha_min": "2026-10-20",
+        "fecha_max": "2026-11-14",
+        "captura_max": "2026-11-14",
+        "canales": [
+          "en_linea"
+        ]
+      },
+      {
+        "fuente": "wayback",
+        "filas": 109,
+        "productos": 0,
+        "series": 56,
+        "fecha_min": "2024-09-06",
+        "fecha_max": "2025-10-17",
+        "captura_max": "2026-10-16",
+        "canales": [
+          "en_linea"
+        ]
+      }
+    ],
+    "por_anio": {
+      "amazon": {
+        "2018": 0,
+        "2019": 0,
+        "2020": 0,
+        "2021": 0,
+        "2022": 0,
+        "2023": 0,
+        "2024": 0,
+        "2025": 0,
+        "2026": 1
+      },
+      "preciometro": {
+        "2018": 0,
+        "2019": 0,
+        "2020": 0,
+        "2021": 0,
+        "2022": 0,
+        "2023": 0,
+        "2024": 0,
+        "2025": 0,
+        "2026": 251438
+      },
+      "preciometro_ofertas": {
+        "2018": 0,
+        "2019": 0,
+        "2020": 0,
+        "2021": 0,
+        "2022": 0,
+        "2023": 0,
+        "2024": 0,
+        "2025": 0,
+        "2026": 30184
+      },
+      "qqp_cdmx": {
+        "2018": 45710,
+        "2019": 49186,
+        "2020": 30664,
+        "2021": 53459,
+        "2022": 51914,
+        "2023": 63024,
+        "2024": 57590,
+        "2025": 39363,
+        "2026": 18228
+      },
+      "tiendas": {
+        "2018": 0,
+        "2019": 0,
+        "2020": 0,
+        "2021": 0,
+        "2022": 0,
+        "2023": 0,
+        "2024": 0,
+        "2025": 0,
+        "2026": 18
+      },
+      "wayback": {
+        "2018": 0,
+        "2019": 0,
+        "2020": 0,
+        "2021": 0,
+        "2022": 0,
+        "2023": 0,
+        "2024": 58,
+        "2025": 51,
+        "2026": 0
+      }
+    },
+    "integridad": {
+      "duplicados_por_clave": 0,
+      "precio_no_positivo": 0,
+      "fecha_no_valida": 0,
+      "pct_descuento_fuera_de_rango": 0,
+      "series_con_canal_mezclado": 0,
+      "filas_revisar_captura": 46886,
+      "filas_precio_revisado_por_fuente": 525,
+      "exclusiones": 0,
+      "huellas_paquete_ok": {
+        "observaciones": true,
+        "exclusiones": true,
+        "productos": true,
+        "eventos": true,
+        "series_evento": true,
+        "sensibilidad": true,
+        "matriz_modelo": true,
+        "matriz_modelo_brecha": true,
+        "metadatos_modelo": true
+      }
+    },
+    "cobertura_eventos": {
+      "BF2024": {
+        "qqp_cdmx": {
+          "base": 7456,
+          "previo": 1916,
+          "evento": 4489,
+          "posterior": 1282
+        },
+        "wayback": {
+          "base": 23,
+          "previo": 10,
+          "evento": 0,
+          "posterior": 2
+        }
+      },
+      "BF2025": {
+        "qqp_cdmx": {
+          "base": 4967,
+          "previo": 1411,
+          "evento": 3275,
+          "posterior": 994
+        },
+        "wayback": {
+          "base": 7,
+          "previo": 0,
+          "evento": 0,
+          "posterior": 0
+        }
+      },
+      "BF2026": {
+        "amazon": {
+          "base": 1,
+          "previo": 0,
+          "evento": 0,
+          "posterior": 0
+        },
+        "preciometro": {
+          "base": 93589,
+          "previo": 2708,
+          "evento": 379,
+          "posterior": 0
+        },
+        "preciometro_ofertas": {
+          "base": 17132,
+          "previo": 11474,
+          "evento": 1578,
+          "posterior": 0
+        },
+        "tiendas": {
+          "base": 3,
+          "previo": 13,
+          "evento": 2,
+          "posterior": 0
+        }
+      }
+    },
+    "series_evento": [
+      {
+        "evento_id": "BF2024",
+        "plataforma_serie": "amazon",
+        "series": 4,
+        "cobertura_ahorro": 0,
+        "cobertura_alza": 0
+      },
+      {
+        "evento_id": "BF2024",
+        "plataforma_serie": "mercadolibre",
+        "series": 15,
+        "cobertura_ahorro": 0,
+        "cobertura_alza": 0
+      },
+      {
+        "evento_id": "BF2024",
+        "plataforma_serie": "qqp_cdmx",
+        "series": 3296,
+        "cobertura_ahorro": 544,
+        "cobertura_alza": 205
+      },
+      {
+        "evento_id": "BF2025",
+        "plataforma_serie": "amazon",
+        "series": 5,
+        "cobertura_ahorro": 0,
+        "cobertura_alza": 0
+      },
+      {
+        "evento_id": "BF2025",
+        "plataforma_serie": "qqp_cdmx",
+        "series": 2606,
+        "cobertura_ahorro": 298,
+        "cobertura_alza": 93
+      },
+      {
+        "evento_id": "BF2026",
+        "plataforma_serie": "amazon",
+        "series": 1,
+        "cobertura_ahorro": 0,
+        "cobertura_alza": 0
+      },
+      {
+        "evento_id": "BF2026",
+        "plataforma_serie": "liverpool",
+        "series": 1,
+        "cobertura_ahorro": 0,
+        "cobertura_alza": 0
+      },
+      {
+        "evento_id": "BF2026",
+        "plataforma_serie": "preciometro",
+        "series": 2795,
+        "cobertura_ahorro": 187,
+        "cobertura_alza": 187
+      },
+      {
+        "evento_id": "BF2026",
+        "plataforma_serie": "preciometro_ofertas",
+        "series": 10123,
+        "cobertura_ahorro": 0,
+        "cobertura_alza": 0
+      }
+    ],
+    "matriz_modelo": {
+      "filas": 485,
+      "variables": [
+        "ahorro_historico_pct",
+        "alza_previa_pct",
+        "variabilidad_base_pct"
+      ]
+    },
+    "reproduccion_avance1": {
+      "qqp_2025_filas": 39363,
+      "esperado_filas": 39363,
+      "bf2025_ahorro": 298,
+      "esperado_ahorro": 298,
+      "bf2025_alza": 93,
+      "esperado_alza": 93,
+      "ok": true
+    }
+  },
+  "piloto": {
+    "archivo": "piloto_profeco_intradia.sqlite3",
+    "sha256": "af593a741cc84d36339292fbf54912b216a2c0f76c40d9c01199705dd92ff0fc",
+    "capturas": {
+      "total": 305,
+      "por_fuente": [
+        {
+          "fuente": "profeco_buen_fin",
+          "resultado": "ok",
+          "n": 288
+        },
+        {
+          "fuente": "tiendas",
+          "resultado": "ok",
+          "n": 17
+        }
+      ],
+      "primera_utc": "2026-10-21T08:29:30.000000Z",
+      "ultima_utc": "2026-11-26T17:21:58.336573Z",
+      "dias_con_captura_profeco": [
+        "2026-11-14",
+        "2026-11-15",
+        "2026-11-16",
+        "2026-11-17",
+        "2026-11-18",
+        "2026-11-19",
+        "2026-11-20",
+        "2026-11-21",
+        "2026-11-22",
+        "2026-11-23",
+        "2026-11-24",
+        "2026-11-26"
+      ]
+    },
+    "precios_diarios": {
+      "filas_brutas": 35552,
+      "precios_unicos_anuncio_fecha": 3144,
+      "precios_profeco_unicos": 3144,
+      "conflictos_misma_fecha_distinto_precio": 0,
+      "modelos": 24,
+      "sucursales": 85,
+      "zonas": {
+        "plaza CDMX/ZMVM": 3144
+      },
+      "fecha_precio_min": "2026-09-01",
+      "fecha_precio_max": "2026-11-17",
+      "por_ventana_bf2026": {
+        "evento": 1300,
+        "base": 1238,
+        "previo": 358,
+        "fuera_de_ventanas": 248
+      },
+      "ultimos_10_dias": {
+        "2026-11-06": 39,
+        "2026-11-09": 42,
+        "2026-11-10": 30,
+        "2026-11-11": 32,
+        "2026-11-12": 16,
+        "2026-11-13": 367,
+        "2026-11-14": 306,
+        "2026-11-15": 286,
+        "2026-11-16": 286,
+        "2026-11-17": 55
+      }
+    },
+    "series_bf2026": {
+      "anuncios_producto_sucursal": 718,
+      "con_precio_en_evento": 558,
+      "con_base_previo_y_evento": 197,
+      "con_previo_evento_y_posterior": 0
+    },
+    "online": {
+      "observaciones_intradia": 17,
+      "con_vendedor": 0,
+      "con_disponibilidad": 0,
+      "plataformas": {
+        "liverpool": 17
+      },
+      "rango": [
+        "2026-10-21",
+        "2026-11-14"
+      ],
+      "ofertas_online_verificadas": 0
+    },
+    "integridad": {
+      "tablas": {
+        "trabajos": 305,
+        "intentos": 305,
+        "capturas": 305,
+        "ofertas": 719,
+        "observaciones_intradia": 17,
+        "observaciones_diarias_fuente": 35552
+      },
+      "claves_foraneas_ok": true,
+      "intentos_con_error": 0,
+      "precio_no_positivo": 0,
+      "monedas": [
+        "MXN"
+      ]
+    }
+  },
+  "fly": {
+    "archivo": "intradia.sqlite3",
+    "sha256": "a63e87ac7b12bf508ba17fa48bdc8c24e21a79ea13091b068f37a4a20d230e17",
+    "tablas": {
+      "trabajos": 48,
+      "intentos": 48,
+      "capturas": 48,
+      "ofertas": 689,
+      "observaciones_intradia": 0,
+      "observaciones_diarias_fuente": 5320
+    },
+    "fecha_precio_max": "2026-11-15",
+    "ultima_captura_utc": "2026-11-16T21:13:11.461852Z",
+    "integridad": "ok"
+  },
+  "qqp": {
+    "estado": "sin_publicacion",
+    "anio": 2026,
+    "consultado_utc": "2026-11-26T17:22:10.792595+00:00"
+  },
+  "manifiesto": {
+    "estado_operacion/2026-11-26T112205010382.json": {
+      "bytes": 334,
+      "sha256": "90e390df5318c1e367c5e7a76d29e5cd8ab9aaa1cce0ae172ca71c34d5d3a198"
+    },
+    "estado_operacion/ALERTA_diaria.md": {
+      "bytes": 694,
+      "sha256": "b1f8f4075357d43e16ce3335f5419b7b172c432a9f80d5718ab290de06a40a0d"
+    },
+    "estado_operacion/ALERTA_profeco.md": {
+      "bytes": 182,
+      "sha256": "ac2e8406ffaf96151109f1124f435bfc765032776b928f4c30c7a2742d6efc7f"
+    },
+    "fly/catalogo.sqlite": {
+      "bytes": 188416,
+      "sha256": "30be5a4e137ec8ea3b73ee1373c7f9e3cfb3fabcf9dc78b17ed4e33cde349ee4"
+    },
+    "fly/intradia.sqlite3": {
+      "bytes": 3706880,
+      "sha256": "a63e87ac7b12bf508ba17fa48bdc8c24e21a79ea13091b068f37a4a20d230e17"
+    },
+    "fly/presupuesto-fly-v2.json": {
+      "bytes": 130,
+      "sha256": "9c486a0c060e7cec9a3626ed6f8f6a99f3c5cb3aa149561cd0087b03c9edb47b"
+    },
+    "piloto_profeco_intradia.sqlite3": {
+      "bytes": 22433792,
+      "sha256": "af593a741cc84d36339292fbf54912b216a2c0f76c40d9c01199705dd92ff0fc"
+    },
+    "qqp_estado.json": {
+      "bytes": 111,
+      "sha256": "8cfc5f13be711b7d4a0ad9f97ac8022b0d949806ea30369f6e1ae331a7597fe4"
+    },
+    "sconto_colab_2026-11-26.zip": {
+      "bytes": 60516573,
+      "sha256": "e6e8b353942ca0f18996417910e72f513c796c5b68c819fe5fe931056d7a45e3"
+    },
+    "tareas_antes/Sconto_recoleccion_diaria.xml": {
+      "bytes": 2035,
+      "sha256": "7373ce8697ebbad812613eed171003dc30294913cd51ccc1b5a01182f3ce9fdb"
+    },
+    "tareas_antes/Sconto_v2_Buzon_de_cotizaciones_autorizadas.xml": {
+      "bytes": 1860,
+      "sha256": "a34e503f6ad44e0c1297e251017c1e7ea6cfc1a955ff3ca764ba95c838b19afc"
+    },
+    "tareas_antes/Sconto_v2_Piloto_PROFECO_Buen_Fin_2026.xml": {
+      "bytes": 1870,
+      "sha256": "855f9c1a21a3cdee5d5f103a1a16b15674782b7a20e3853614829aa014019338"
+    },
+    "tareas_antes/Sconto_v2_Reactivar_buzon_20261115_221210.xml": {
+      "bytes": 1794,
+      "sha256": "24f3e392b2135bd494c489852974d525373cf89eb83b0e9d623cbd0ec35b4d87"
+    },
+    "tareas_antes/Sconto_v2_Vigilancia_QQP.xml": {
+      "bytes": 1851,
+      "sha256": "d8776b1e6d437daf15725968dcb48f1fd4d8562592c49df64d22f3b558322afd"
+    }
+  }
+}
