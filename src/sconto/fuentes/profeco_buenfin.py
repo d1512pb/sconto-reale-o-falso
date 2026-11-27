@@ -14,13 +14,15 @@ import hashlib
 import json
 import re
 from collections import defaultdict
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal, InvalidOperation
+from email.utils import parsedate_to_datetime
+import os
 from pathlib import Path
 
 import requests
 
-from sconto.cliente import Bloqueado, Cliente, NoPermitido
+from sconto.cliente import MARCAS_CAPTCHA, Bloqueado, Cliente, NoPermitido
 from sconto.rutas import RAIZ
 
 API = 'https://elbuenfin.profeco.gob.mx/api/get'
@@ -38,26 +40,75 @@ CAMPOS = (
     'descripcion', 'sucursal', 'direccion', 'cp_sucursal', 'zona_sucursal',
     'fecha_precio', 'precio_mxn', 'consultado_utc', 'url', 'hash_raw', 'ruta_raw',
 )
+MAX_RESPUESTA = 2 * 1024 * 1024
 
 
 def _url_producto(categoria, producto):
     return f'{API}/producto/10/{categoria}/0/{producto}'
 
 
-def _guardar_respuesta(ruta, nombre, respuesta):
-    datos = respuesta.content
+def reintento_desde(error, ahora):
+    respuesta = getattr(error, 'respuesta', None)
+    if respuesta is None or respuesta.status_code not in {429, 503}:
+        return None
+    indicacion = respuesta.headers.get('Retry-After', '').strip()
+    try:
+        if indicacion.isascii() and indicacion.isdigit():
+            fecha = ahora + timedelta(seconds=int(indicacion))
+        else:
+            fecha = parsedate_to_datetime(indicacion)
+            if fecha.utcoffset() is None:
+                fecha = fecha.replace(tzinfo=timezone.utc)
+        return max(ahora, fecha.astimezone(timezone.utc)).isoformat()
+    except (ValueError, TypeError, OverflowError):
+        return None
+
+
+def _sincronizar(archivo):
+    archivo.flush()
+    os.fsync(archivo.fileno())
+
+
+def _completar_par(ruta, nombre):
+    """Si ambos archivos llegaron al disco, finaliza una publicación interrumpida."""
+    meta = ruta / f'{nombre}.json'
+    cuerpo = ruta / f'{nombre}.gz'
+    meta_pendiente = meta.with_suffix('.json.part')
+    cuerpo_pendiente = cuerpo.with_suffix('.gz.part')
+    if meta.exists() or not meta_pendiente.exists():
+        return
+    candidato = cuerpo if cuerpo.exists() else cuerpo_pendiente
+    registro = json.loads(meta_pendiente.read_bytes())
+    with gzip.open(candidato, 'rb') as archivo:
+        datos = archivo.read(MAX_RESPUESTA + 1)
+    if (len(datos) != registro['bytes'] or len(datos) > MAX_RESPUESTA
+            or hashlib.sha256(datos).hexdigest() != registro['sha256']):
+        raise ValueError('La respuesta interrumpida no pasó la verificación')
+    if not cuerpo.exists():
+        cuerpo_pendiente.replace(cuerpo)
+    meta_pendiente.replace(meta)
+
+
+def _guardar_respuesta(ruta, nombre, respuesta, datos=None):
+    datos = respuesta.content if datos is None else datos
+    if len(datos) > MAX_RESPUESTA:
+        raise ValueError('Respuesta oficial por encima del tamaño admitido')
     registro = dict(
         url=respuesta.url, fetched_at_utc=datetime.now(timezone.utc).isoformat(),
         http=respuesta.status_code, bytes=len(datos), sha256=hashlib.sha256(datos).hexdigest(),
     )
-    with gzip.open(ruta / f'{nombre}.gz', 'xb') as archivo:
-        archivo.write(datos)
-    with (ruta / f'{nombre}.json').open('x', encoding='utf-8') as archivo:
+    with (ruta / f'{nombre}.gz.part').open('xb') as archivo:
+        archivo.write(gzip.compress(datos, mtime=0))
+        _sincronizar(archivo)
+    with (ruta / f'{nombre}.json.part').open('x', encoding='utf-8') as archivo:
         json.dump(registro, archivo)
+        _sincronizar(archivo)
+    _completar_par(ruta, nombre)
     return registro
 
 
 def _capturar(cliente, ruta, nombre, url):
+    _completar_par(ruta, nombre)
     meta = ruta / f'{nombre}.json'
     crudo = ruta / f'{nombre}.gz'
     if meta.exists() or crudo.exists():
@@ -65,11 +116,32 @@ def _capturar(cliente, ruta, nombre, url):
             _leer(ruta, nombre, url)
             return
         raise FileExistsError(f'Captura incompleta; conservar evidencia y utilizar otro directorio: {nombre}')
-    with cliente.get(url) as respuesta:
+    if (ruta / f'{nombre}.gz.part').exists():
+        # La respuesta parcial queda en el volumen, sin ostentar una consulta completa.
+        pendiente = ruta / f'{nombre}.gz.part'
+        etiqueta = datetime.now(timezone.utc).strftime('%H%M%S%f')
+        pendiente.rename(ruta / f'{nombre}_{etiqueta}.incompleto')
+    def verificar_redireccion(respuesta, *args, **kwargs):
+        if respuesta.status_code == 401 or 300 <= respuesta.status_code < 400:
+            raise Bloqueado(f'HTTP {respuesta.status_code} en la consulta oficial', respuesta)
+
+    with cliente.get(url, stream=True, hooks={'response': verificar_redireccion}) as respuesta:
+        datos = bytearray()
+        for segmento in respuesta.iter_content(65536):
+            datos.extend(segmento)
+            if len(datos) > MAX_RESPUESTA:
+                raise ValueError('Respuesta oficial por encima del tamaño admitido')
+        contenido = bytes(datos)
+        if 'html' in respuesta.headers.get('content-type', '').casefold():
+            pagina = contenido[:20000].decode('utf-8', errors='replace').casefold()
+            if any(marca in pagina for marca in MARCAS_CAPTCHA):
+                _guardar_respuesta(ruta, f'{nombre}_bloqueo', respuesta, contenido)
+                raise Bloqueado(f'CAPTCHA en la consulta oficial: {url}')
         if respuesta.status_code == 200:
-            _guardar_respuesta(ruta, nombre, respuesta)
+            _guardar_respuesta(ruta, nombre, respuesta, contenido)
             return
-        _guardar_respuesta(ruta, f'{nombre}_http_{respuesta.status_code}', respuesta)
+        etiqueta = datetime.now(timezone.utc).strftime('%H%M%S%f')
+        _guardar_respuesta(ruta, f'{nombre}_http_{respuesta.status_code}_{etiqueta}', respuesta, contenido)
         respuesta.raise_for_status()
         raise ValueError(f'PROFECO HTTP no utilizable: {respuesta.status_code}')
 
@@ -78,26 +150,34 @@ def _consultar(ruta, destinos):
     ruta.mkdir(parents=True, exist_ok=True)
     if (ruta / 'bf_suspension.json').exists():
         raise RuntimeError('La bitácora de esta pasada contiene una suspensión')
-    cliente = Cliente(reintentos=0, timeout=(10, 35))
-    for nombre, url in destinos:
-        try:
-            _capturar(cliente, ruta, nombre, url)
-        except (Bloqueado, NoPermitido) as exc:
-            if isinstance(exc, Bloqueado) and exc.respuesta is not None:
-                _guardar_respuesta(ruta, f'{nombre}_bloqueo', exc.respuesta)
-            with (ruta / 'bf_suspension.json').open('x', encoding='utf-8') as archivo:
-                json.dump({
-                    'fetched_at_utc': datetime.now(timezone.utc).isoformat(),
-                    'url': url, 'error': str(exc),
-                }, archivo)
-            raise
-        except requests.RequestException as exc:
-            with (ruta / 'bf_fallos.jsonl').open('a', encoding='utf-8') as archivo:
-                archivo.write(json.dumps({
-                    'fetched_at_utc': datetime.now(timezone.utc).isoformat(),
-                    'url': url, 'error': type(exc).__name__,
-                }) + '\n')
-            print(f'{nombre}: {type(exc).__name__}')
+    cliente = Cliente(reintentos=0, timeout=(10, 35), detectar_captcha=False)
+    try:
+        for nombre, url in destinos:
+            try:
+                _capturar(cliente, ruta, nombre, url)
+            except (Bloqueado, NoPermitido) as exc:
+                ahora = datetime.now(timezone.utc)
+                with (ruta / 'bf_suspension.json').open('x', encoding='utf-8') as archivo:
+                    json.dump({
+                        'fetched_at_utc': ahora.isoformat(), 'siguiente_utc': reintento_desde(exc, ahora),
+                        'url': url, 'error': type(exc).__name__,
+                    }, archivo)
+                    _sincronizar(archivo)
+                if isinstance(exc, Bloqueado) and exc.respuesta is not None:
+                    with exc.respuesta as respuesta:
+                        datos = respuesta.raw.read(MAX_RESPUESTA + 1, decode_content=True)
+                        if len(datos) <= MAX_RESPUESTA:
+                            _guardar_respuesta(ruta, f'{nombre}_bloqueo', respuesta, datos)
+                raise
+            except requests.RequestException as exc:
+                with (ruta / 'bf_fallos.jsonl').open('a', encoding='utf-8') as archivo:
+                    archivo.write(json.dumps({
+                        'fetched_at_utc': datetime.now(timezone.utc).isoformat(),
+                        'url': url, 'error': type(exc).__name__,
+                    }) + '\n')
+                print(f'{nombre}: {type(exc).__name__}')
+    finally:
+        cliente.sesion.close()
 
 
 def capturar(ruta):

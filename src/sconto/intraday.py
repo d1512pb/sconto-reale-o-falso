@@ -201,9 +201,11 @@ class IntradayStore:
             yield conexion
 
     @contextmanager
-    def exclusividad_colector(self) -> Iterator[bool]:
+    def exclusividad_colector(self, nombre: str = 'colector.lock') -> Iterator[bool]:
         """El sistema operativo libera el bloqueo incluso si se interrumpe el proceso."""
-        with (self.root / 'colector.lock').open('a+b') as candado:
+        if nombre not in {'colector.lock', 'programador-nube.lock'}:
+            raise ValueError('Nombre de bloqueo desconocido')
+        with (self.root / nombre).open('a+b') as candado:
             candado.seek(0)
             adquirido = False
             if os.name == 'nt':
@@ -281,6 +283,15 @@ class IntradayStore:
             conexion.execute('INSERT INTO intentos(capture_id, trabajo_id, intento, inicio_utc) VALUES (?, ?, ?, ?)',
                              (capture_id, trabajo_id, intento, inicio))
             return Captura(trabajo, capture_id, intento)
+
+    def resultado_trabajo(self, trabajo: Trabajo) -> str | None:
+        """Distingue una captura terminada de un intento todavía sin evidencia."""
+        with self._conexion() as conexion:
+            fila = conexion.execute('''
+                SELECT resultado FROM intentos LEFT JOIN capturas USING(capture_id)
+                WHERE trabajo_id=? ORDER BY intento DESC LIMIT 1
+            ''', (trabajo.trabajo_id,)).fetchone()
+        return fila['resultado'] if fila else None
 
     def registrar(self, captura: Captura, *, fetched_at: datetime, resultado: str,
                   estado_http: int | None = None, crudo: bytes | None = None,

@@ -40,7 +40,6 @@ import json
 import logging
 import os
 import re
-import shutil
 import subprocess
 import sys
 from datetime import date, datetime, timedelta, timezone
@@ -57,6 +56,7 @@ from sconto.almacen import (ahora_utc, escribir_bronze, escribir_manifiesto, gua
 from sconto.cliente import Bloqueado, Cliente, NoPermitido
 from sconto.esquema import CLAVE, a_dataframe
 from sconto.eventos import cargar_eventos
+from sconto.fuentes.qqp_archivo import MAGIA_RAR, _tar
 from sconto.normalizar import ESTADOS_CDMX, id_estable, modelo_qqp, normalizar
 from sconto.rutas import AVANCE1, BRONZE, LOGS, QQP_2025_RAR, RAIZ, RAW, REPORTS, asegurar_directorios
 
@@ -79,7 +79,6 @@ COLS_SUCURSAL = ['cadena_comercial', 'nombre_comercial', 'direccion', 'municipio
 CLAVE_SERIE = ['serie_id', 'fecha']
 BLOQUE = 150_000
 TIPO_PRECIO = 'precio_registrado_qqp'
-MAGIA_RAR = b'Rar!\x1a\x07'
 ANIOS_HISTORICOS = range(2018, 2024)  # ya no listados en qqp.php, pero el servidor oficial aún los sirve
 WAYBACK_CDX = ('https://web.archive.org/cdx/search/cdx?url=datos.profeco.gob.mx/datos_abiertos/qqp.php'
                '&output=json&filter=statuscode:200&collapse=digest')
@@ -303,15 +302,6 @@ def actualizar(anio: int, cliente: Cliente, enlaces: dict, dias_revision_complet
 
 
 # ---------------------------------------------------------------------------------------------- lectura del RAR
-
-def _tar() -> str:
-    if os.name == 'nt':
-        return str(Path(os.environ.get('SystemRoot', r'C:\Windows')) / 'System32' / 'tar.exe')
-    t = shutil.which('bsdtar')
-    if not t:
-        raise RuntimeError('Se requiere bsdtar (libarchive-tools) para leer el RAR en este entorno.')
-    return t
-
 
 def miembros_csv(rar: Path) -> list[str]:
     listado = subprocess.run([_tar(), '-tf', str(rar)], capture_output=True, check=True)

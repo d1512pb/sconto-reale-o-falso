@@ -49,7 +49,12 @@ def test_override_impide_cualquier_llamada_al_cli():
 
 
 def test_solo_aprueba_con_facturacion_verificada_y_debajo_del_limite():
-    assert fly.presupuesto()['api_usd'] == '3.99'
+    assert fly.presupuesto()['api_usd'] == '2.44'
     assert not fly.presupuesto(Decimal('0.00'), True, False)['dentro_del_presupuesto']
-    assert fly.presupuesto(Decimal('0.50'), True, True)['dentro_del_presupuesto']
-    assert not fly.presupuesto(Decimal('0.51'), True, True)['dentro_del_presupuesto']
+    assert fly.presupuesto(Decimal('1.55'), True, True)['dentro_del_presupuesto']
+    assert not fly.presupuesto(Decimal('1.56'), True, True)['dentro_del_presupuesto']
+    respaldo = fly.presupuesto(Decimal('0.30'), True, True, salida_gb=Decimal('7'))
+    assert respaldo['api_usd'] == '2.56' and respaldo['total_usd'] == '2.86'
+    assert respaldo['dentro_del_presupuesto']
+    anterior = fly.presupuesto(Decimal('0'), True, True, salida_gb=Decimal('7'), memoria=512)
+    assert anterior['api_usd'] == '4.11' and not anterior['dentro_del_presupuesto']

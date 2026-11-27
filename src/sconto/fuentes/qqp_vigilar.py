@@ -5,16 +5,16 @@ import argparse
 import hashlib
 import json
 import re
+import shutil
 import subprocess
 from datetime import datetime, timedelta, timezone
+from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urljoin, urlsplit
 
 import requests
-from bs4 import BeautifulSoup
-
 from sconto.cliente import Bloqueado, Cliente, NoPermitido
-from sconto.fuentes.qqp import MAGIA_RAR, _tar
+from sconto.fuentes.qqp_archivo import MAGIA_RAR, _tar
 from sconto.intraday import CDMX
 from sconto.rutas import DATA, RAW
 
@@ -25,14 +25,32 @@ MUESTRA = 65536
 MAX_BYTES = 250 * 1024 * 1024
 
 
-def descubrir(html, anio):
-    objetivo = f'/docs/qqp/QQP_{anio}.rar'
-    for nodo in BeautifulSoup(html, 'html.parser').select('a[href]'):
-        url = urlsplit(urljoin(CATALOGO, nodo['href']))
+class EspacioInsuficiente(OSError):
+    """No se puede conservar el candidato respetando la reserva del volumen."""
+
+
+class EnlaceAnual(HTMLParser):
+    def __init__(self, anio):
+        super().__init__()
+        self.objetivo = f'/docs/qqp/QQP_{anio}.rar'
+        self.url = None
+
+    def handle_starttag(self, tag, attrs):
+        if tag != 'a' or self.url:
+            return
+        href = dict(attrs).get('href')
+        if not href:
+            return
+        url = urlsplit(urljoin(CATALOGO, href))
         if (url.scheme == 'https' and url.netloc == 'datos.profeco.gob.mx'
-                and url.path == objetivo and not url.query and not url.fragment):
-            return url.geturl()
-    return None
+                and url.path == self.objetivo and not url.query and not url.fragment):
+            self.url = url.geturl()
+
+
+def descubrir(html, anio):
+    parser = EnlaceAnual(anio)
+    parser.feed(html.decode('utf-8', errors='replace') if isinstance(html, bytes) else html)
+    return parser.url
 
 
 def huella_remota(cliente, url):
@@ -67,7 +85,10 @@ def _verificar_archivo(ruta):
     return len(nombres)
 
 
-def _descargar(cliente, url, salida, esperado):
+def _descargar(cliente, url, salida, esperado, reserva_bytes=0):
+    limite = min(MAX_BYTES, shutil.disk_usage(salida.parent).free - reserva_bytes)
+    if limite <= 0 or (esperado['bytes_remotos'] is not None and esperado['bytes_remotos'] > limite):
+        raise EspacioInsuficiente('No hay espacio disponible para conservar un nuevo RAR con la reserva del volumen')
     temporal = salida.with_suffix('.part')
     sha = hashlib.sha256()
     total = 0
@@ -79,8 +100,8 @@ def _descargar(cliente, url, salida, esperado):
             with temporal.open('wb') as archivo:
                 for parte in r.iter_content(1 << 20):
                     total += len(parte)
-                    if total > MAX_BYTES:
-                        raise ValueError('Archivo remoto fuera del límite de tamaño')
+                    if total > limite:
+                        raise EspacioInsuficiente('El RAR excede el límite disponible de almacenamiento')
                     sha.update(parte)
                     archivo.write(parte)
         if esperado['bytes_remotos'] not in (None, total) or _huella_local(temporal) != esperado['huella_inicio']:
@@ -100,30 +121,52 @@ def _descargar(cliente, url, salida, esperado):
         temporal.unlink(missing_ok=True)
 
 
-def vigilar(cliente, anio, salida, conocido, ahora):
+def _reconocer_version(salida, datos, ahora):
+    campos = ('url', 'bytes_remotos', 'huella_inicio', 'etag', 'ultima_modificacion')
+    manifiestos = (salida / 'estado.json', *sorted(salida.glob('QQP_*.rar.json'), reverse=True))
+    for reporte in manifiestos:
+        if not reporte.is_file():
+            continue
+        anterior = json.loads(reporte.read_bytes())
+        archivo = anterior.get('archivo', '')
+        patron = r'QQP_\d{4}\.[0-9a-f]{64}\.rar(?:\.rechazado)?'
+        if (not re.fullmatch(patron, archivo) or not all(anterior.get(k) == datos[k] for k in campos)
+                or not anterior.get('descargado_utc')):
+            continue
+        candidato = salida / archivo
+        if (candidato.is_file() and candidato.stat().st_size == anterior.get('bytes_descargados')
+                and ahora - datetime.fromisoformat(anterior['descargado_utc']) < timedelta(days=28)):
+            return anterior
+    return None
+
+
+def vigilar(cliente, anio, salida, conocido, ahora, referencia=None, reserva_bytes=0):
     with cliente.get(CATALOGO) as r:
         r.raise_for_status()
         url = descubrir(r.content, anio)
     if not url:
         return dict(estado='sin_publicacion', anio=anio)
     datos = dict(url=url, anio=anio, **huella_remota(cliente, url))
-    if conocido.is_file():
-        largo = conocido.stat().st_size
+    if conocido.is_file() or referencia:
+        largo, inicio = ((conocido.stat().st_size, _huella_local(conocido)) if conocido.is_file()
+                         else (referencia['bytes'], referencia['huella_inicio']))
         datos['bytes_preservados'] = largo
         if (datos['bytes_remotos'] is not None and datos['bytes_remotos'] < largo
-                and datos['huella_inicio'] == _huella_local(conocido)):
+                and datos['huella_inicio'] == inicio):
             # Una publicación anual más corta con el mismo inicio requiere revisión, no reemplazo.
             return dict(datos, estado='publicacion_mas_corta')
-    reporte = salida / 'estado.json'
-    anterior = json.loads(reporte.read_bytes()) if reporte.is_file() else {}
-    campos = ('url', 'bytes_remotos', 'huella_inicio', 'etag', 'ultima_modificacion')
-    sin_cambios = (anterior.get('sha256') and all(anterior.get(k) == datos[k] for k in campos)
-                   and anterior.get('descargado_utc')
-                   and ahora - datetime.fromisoformat(anterior['descargado_utc']) < timedelta(days=28))
-    if sin_cambios:
+    anterior = _reconocer_version(salida, datos, ahora)
+    if anterior:
         return {**anterior, **datos}
-    info = _descargar(cliente, url, salida / f'QQP_{anio}.rar', datos)
-    return dict(datos, **info, descargado_utc=ahora.isoformat())
+    info = _descargar(cliente, url, salida / f'QQP_{anio}.rar', datos, reserva_bytes)
+    resultado = dict(datos, **info, descargado_utc=ahora.isoformat())
+    if resultado['estado'] == 'candidato_validado':
+        registro = salida / f"{info['archivo']}.json"
+        if not registro.exists():
+            temporal = registro.with_suffix('.tmp')
+            temporal.write_text(json.dumps(resultado, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+            temporal.replace(registro)
+    return resultado
 
 
 def main(argv=None):
