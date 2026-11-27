@@ -1,6 +1,26 @@
 # Sconto reale o falso · recolección multifuente de precios
 
-**Revisión académica:** [recorrido del proyecto](REVISION_PROYECTO.md) · [app web](https://d1512pb.github.io/sconto-reale-o-falso/) · [APK Android firmado](https://github.com/d1512pb/sconto-reale-o-falso/releases/tag/android-v1.0.1) · [código Android](android/README.md).
+**Versión final · corte del 26 de noviembre de 2026:** [app con API](https://sconto-v2-api.fly.dev) · [app sin servidor (Pages)](https://d1512pb.github.io/sconto-reale-o-falso/) · [notebook final en Colab](https://colab.research.google.com/github/d1512pb/sconto-reale-o-falso/blob/main/notebooks/06_Sconto_Final_CRISP_DM.ipynb) · [APK 3.0.0](https://github.com/d1512pb/sconto-reale-o-falso/releases/tag/android-v3.0.0) · [arquitectura y cómo replicarla](docs/ARQUITECTURA.md) · [recorrido del proyecto](REVISION_PROYECTO.md).
+
+## Versión final · Buen Fin 2026
+
+¿Este precio de tecnología es bueno frente a su propia historia y conviene esperar al Buen Fin? Sconto responde con una regla validada con datos y un árbol de decisión evaluado en años que no vio.
+
+- **Datos:** 690,888 precios limpios de QQP de PROFECO (2018–2026), Preciómetro (2026) y la consulta del Buen Fin de PROFECO (2026). Son nueve ediciones del Buen Fin y 1,909 series para modelar. La recolección se congeló el 26 de noviembre ([auditoría del corte](reports/auditoria_corte_final_2026-11-26.md)).
+- **Regla de la app:** un precio es favorable si está al menos 5 % abajo de su mediana habitual y en su cuartil inferior. Se probaron 30 umbrales contra semanas normales. El 4 % separa mejor, pero el 5 % empata estadísticamente y da menos falsas alarmas ([búsqueda del umbral](reports/conclusiones/busqueda_fina_umbral.csv)).
+- **Modelo:** se compararon 174 variantes: líneas base, regresión logística, árbol de decisión, Random Forest e Isolation Forest. El árbol de profundidad 4 fue el mejor en validación ([resumen del modelo](reports/modelo_final/RESUMEN_MODELO_FINAL.md)).
+
+| Datos que el modelo no vio | Accuracy | Balanced accuracy | F1 |
+|---|---|---|---|
+| Prueba · Buen Fin 2025 (QQP, 93 series) | 0.796 | 0.784 | 0.859 |
+| Validación final · Buen Fin 2026 (Preciómetro, 187 series) | 0.722 | 0.682 | 0.794 |
+| Referencia 2025: predecir siempre "baja" | 0.774 | 0.500 | 0.873 |
+
+- **Hallazgos:** durante el evento el precio baja 9.4 % frente a su historia y regresa la semana siguiente. El 11 % de las series subió antes del evento y luego bajó; en el 22 % de ésas el precio terminó igual o más caro. La tienda más cara queda 17.5 % arriba del precio típico (precio señuelo). La regla nunca marcó como favorable una rebaja aparente ([conclusiones](reports/conclusiones/)).
+- **API:** documentación interactiva en [`/docs`](https://sconto-v2-api.fly.dev/docs). El árbol se exporta a JSON, así que el servidor no necesita scikit-learn.
+- **Reproducir:** abre el notebook 06 en Colab y ejecuta todas las celdas. Descarga el paquete congelado del release `datos` y verifica su SHA-256 antes de usarlo.
+
+La app en Fly incluye la API y es la que se usa en la demostración. La copia en Pages funciona sin servidor con los mismos datos y el mismo modelo; se publica con el workflow **Publicar versión final en Pages**.
 
 ## Sconto v2 · Buen Fin 2026
 

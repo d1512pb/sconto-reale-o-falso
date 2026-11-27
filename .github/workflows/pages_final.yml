@@ -1,0 +1,51 @@
+name: Publicar versión final en Pages
+
+# Publica la app estática del corte final (26 de noviembre de 2026) sin recolectar ni recalcular.
+# El sitio se construyó con `python -m sconto.publicar_web --modelo ... --api ""` y se guarda en el release `datos`.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  PAQUETE: sconto_web_v3_final_2026-11-26.zip
+  SHA256: 630dc8d412c9ba06d7ae96d4fedf69c0028eab9e342309d5a9b82670588277f7
+
+jobs:
+  preparar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Descargar y verificar el sitio congelado
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download datos --repo "$GITHUB_REPOSITORY" --pattern "$PAQUETE" --dir .
+          echo "$SHA256  $PAQUETE" | sha256sum -c -
+          mkdir site
+          unzip -q "$PAQUETE" -d site
+          test -f site/index.html && test -f site/modelo.json && test -f site/sw.js
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  desplegar:
+    needs: preparar
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Desplegar
+        id: deployment
+        uses: actions/deploy-pages@v4
