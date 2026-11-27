@@ -43,7 +43,31 @@ def exportar_arbol(modelo, variables, casos=None) -> dict:
                 nombres={v: NOMBRES_VARIABLES.get(v, v) for v in variables}, nodos=nodos)
 
 
-def tarjeta(resultados: Path, paquete: dict) -> dict:
+def hallazgos(conclusiones: Path) -> tuple[list[str], dict]:
+    """Frases con datos para la app, a partir de `sconto.conclusiones`."""
+    if not (conclusiones / 'conclusiones.json').is_file():
+        return [], {}
+    c = json.loads((conclusiones / 'conclusiones.json').read_text(encoding='utf-8'))
+    r = {f['poblacion']: f for f in c['resumen']}
+    d = {f['fuente']: f for f in c['dispersion']}
+    bf, normal = r['QQP sucursales · Buen Fin 2018–2025'], r['QQP sucursales · semanas normales']
+    linea, senuelo = r['Preciómetro en línea · Buen Fin 2026'], d['Preciómetro · tiendas en línea 2026']
+    fina = pd.read_csv(conclusiones / 'busqueda_fina_umbral.csv')
+    mejor = fina.loc[fina.youden_j.idxmax()]
+    empates = fina.loc[fina.equivalente_al_mejor, 'umbral_pct'].tolist()
+    frases = [
+        f"En sucursales físicas (QQP, Buen Fin 2018–2025) el {bf['pct_rebaja_real']:.0f} % de los precios bajó al menos 5 % frente a su historia; en semanas normales sólo el {normal['pct_rebaja_real']:.0f} %.",
+        f"En línea (Buen Fin 2026) más de la mitad ({100 - linea['pct_favorable']:.0f} %) no mostró una oferta clara: {linea['pct_sin_senal']:.0f} % sin señal y {linea['pct_alto']:.0f} % más caro que su historia; sólo {linea['pct_favorable']:.0f} % fue favorable.",
+        f"Subir y bajar: {bf['pct_subir_y_bajar']:.0f} % de las series subió antes del Buen Fin y bajó en el evento; en {bf['pct_subir_y_bajar_paga_igual_o_mas']:.0f} % de esos casos terminabas pagando lo mismo o más que antes.",
+        f"Si comparas contra el precio de las dos semanas previas, {bf['pct_ofertas_aparentes_sin_ahorro_real']:.0f} % de las 'ofertas' del Buen Fin y {normal['pct_ofertas_aparentes_sin_ahorro_real']:.0f} % en semanas normales no son ahorro real. La regla de Sconto no marcó ninguna como favorable.",
+        f"Precio señuelo: en línea, la tienda más cara del mismo producto y día está {senuelo['mas_cara_sobre_mediana_mediana_pct']:.1f} % arriba de la mediana (en {senuelo['pct_mas_cara_30_o_mas']:.0f} % de los casos, 30 % o más). Compararte con ella te hace ver un {senuelo['descuento_aparente_vs_mas_cara_mediana_pct']:.0f} % de 'descuento' que no existe.",
+    ]
+    umbral = dict(probados=len(fina), desde=float(fina.umbral_pct.min()), hasta=float(fina.umbral_pct.max()),
+                  mejor=float(mejor.umbral_pct), mejor_j=float(mejor.youden_j), equivalentes=[float(x) for x in empates])
+    return frases, umbral
+
+
+def tarjeta(resultados: Path, paquete: dict, conclusiones: Path | None = None) -> dict:
     r = json.loads((resultados / 'resumen.json').read_text(encoding='utf-8'))
     metricas = pd.read_csv(resultados / 'metricas_finales.csv')
     pred = pd.read_csv(resultados / 'predicciones.csv')
@@ -114,7 +138,8 @@ def tarjeta(resultados: Path, paquete: dict) -> dict:
         limites=('El modelo aprendió de sucursales físicas; en 2026 se valida con precios en línea y con 17 series de PROFECO. '
                  'No hay datos después del 17 de noviembre ni ofertas en línea verificadas con vendedor, inventario y total. '
                  'Una predicción no sustituye confirmar variante, vendedor, envío y precio final.'),
-        predicciones=predicciones)
+        predicciones=predicciones,
+        **dict(zip(('hallazgos', 'busqueda_umbral'), hallazgos(conclusiones) if conclusiones else ([], {}))))
 
 
 def main(argv=None):
@@ -122,11 +147,12 @@ def main(argv=None):
     p.add_argument('--resultados', type=Path, default=Path('reports/modelo_final'))
     p.add_argument('--modelo', type=Path, required=True, help='modelo_final.joblib')
     p.add_argument('--salida', type=Path, required=True)
+    p.add_argument('--conclusiones', type=Path, default=Path('reports/conclusiones'))
     a = p.parse_args(argv)
     import joblib
     paquete = joblib.load(a.modelo)
     a.salida.mkdir(parents=True, exist_ok=True)
-    card = tarjeta(a.resultados, paquete)
+    card = tarjeta(a.resultados, paquete, a.conclusiones)
     (a.salida / 'modelo.json').write_text(json.dumps(card, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
     datos = pd.read_csv(a.resultados / 'dataset_modelado.csv')
     arbol = exportar_arbol(paquete['modelo'], paquete['variables'], casos_por_nodo(paquete['modelo'], datos, paquete['variables']))

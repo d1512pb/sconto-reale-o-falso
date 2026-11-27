@@ -31,6 +31,7 @@ La regla de la app se puso a prueba contra **semanas normales** (prueba placebo)
 | 10 % | 47.0 | 15.3 | 31.7 | 3.1 |
 
 - **Por qué 5 %:** la separación es casi plana entre 1 % y 6 % y máxima en 4 %. Dentro de esa meseta, 5 % da menos falsas alarmas que 2 % (21.3 % contra 24.6 % de semanas normales). Con 10 % se pierde una de cada cinco rebajas reales.
+- **Búsqueda fina:** se probaron 30 umbrales, de 0.5 % a 15 % en pasos de 0.5, con IC95 por remuestreo de series (500 repeticiones). El máximo es 4 % (J = 37.4, IC95 34.9–39.9). 2 %, 3.5 %, 4.5 % y 5 % no se distinguen estadísticamente de él, y entre ellos 5 % tiene la menor tasa de falsas alarmas (`reports/conclusiones/busqueda_fina_umbral.csv`).
 - **Por qué P25:** exigir el cuartil inferior mejora J en todos los umbrales. Con 5 %, las falsas alarmas bajan de 23.5 % a 21.3 %.
 - **Por qué 4 fechas:** con 4 días en la base, la mediana de referencia se equivoca 5 % o más en 10.1 % de las series (percentil 90 del error: 5.0 %). Con 3 días el percentil 90 sube a 5.6 %, y con 5 días se pierde cerca del 40 % de las series elegibles.
 - **Etiqueta sin umbral:** cualquier bajada es 2.5 veces más frecuente en el Buen Fin que en semanas normales (J máxima entre 0 % y 1 %).

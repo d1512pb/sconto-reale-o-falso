@@ -139,6 +139,9 @@ print(f'Código {hashlib.sha256(CODIGO).hexdigest()[:12]} · paquete {SHA_PAQUET
 2. ¿Qué tamaño de bajada distingue una oferta real de una variación normal? (¿por qué 5 % y no 2 % o 10 %?)
 3. ¿Podemos **predecir**, con los precios anteriores al evento, qué productos bajarán?
 4. ¿El modelo funciona con datos que nunca vio: un año nuevo (2026) y otras fuentes?
+5. ¿La app puede detectar "estafas" como subir el precio antes del evento y luego bajarlo? ¿Con qué precisión?
+6. ¿Es cierto que la mayoría de los precios no muestra una señal clara (menos de 5 %)?
+7. ¿Existen precios señuelo que hacen parecer oferta a un precio normal?
 
 **Criterio de éxito.** Un modelo sólo es útil si supera a una línea base simple en datos futuros. Como las clases están desbalanceadas (en 2025 bajó el 77 % de las series), usamos la **balanced accuracy**: un modelo que siempre dice "baja" saca 77 % de accuracy pero 0.5 de balanced accuracy. Reportamos también accuracy, precisión, recall, F1 y AUC.
 
@@ -243,9 +246,26 @@ plt.tight_layout(); plt.show()
 mejor = regla.loc[regla.youden_j.idxmax()]
 print(f"Máxima separación con P25 en {mejor.umbral_pct:g} % (J = {mejor.youden_j:.1f}); con 5 %: J = {regla.set_index('umbral_pct').youden_j[5]:.1f}")
 '''),
+        code('''
+# Búsqueda fina: 30 umbrales de 0.5 % a 15 % con IC95 por remuestreo de series (500 repeticiones)
+from sconto import conclusiones as C
+fina = C.busqueda_umbral(ventanas_cmp)
+display(fina.loc[fina.umbral_pct.isin([1, 2, 3, 3.5, 4, 4.5, 5, 5.5, 6, 8, 10, 15])].round(2))
+fig, ax = plt.subplots(figsize=(9, 3.6))
+ax.fill_between(fina.umbral_pct, fina.j_ic95_inf, fina.j_ic95_sup, color='#2563eb', alpha=.15, label='IC95')
+ax.plot(fina.umbral_pct, fina.youden_j, 'o-', color='#2563eb', ms=3, label='J de Youden')
+ax.scatter(fina.loc[fina.equivalente_al_mejor, 'umbral_pct'], fina.loc[fina.equivalente_al_mejor, 'youden_j'], color='#ea580c', zorder=3, label='Empatan con el mejor')
+ax.axvline(5, ls='--', color='#ea580c'); ax.set_xlabel('Umbral (%)'); ax.set_ylabel('Señal − ruido (J)'); ax.legend(); ax.grid(alpha=.2)
+ax.set_title('Búsqueda fina del umbral de la regla (con P25)'); plt.tight_layout(); plt.show()
+mejor_f = fina.loc[fina.youden_j.idxmax()]
+print(f"Mejor: {mejor_f.umbral_pct:g} % (J = {mejor_f.youden_j:.1f}, IC95 {mejor_f.j_ic95_inf:.1f}–{mejor_f.j_ic95_sup:.1f}). "
+      f"Empatan estadísticamente: {', '.join(f'{u:g} %' for u in fina.loc[fina.equivalente_al_mejor, 'umbral_pct'])}. "
+      f"Con 5 % la regla se activa en {fina.set_index('umbral_pct').pct_semanas_normales[5]:.1f} % de las semanas normales.")
+'''),
         md('''**Lectura.**
 - La separación (J) es casi plana entre **1 % y 6 %** y alcanza su máximo en 4 % (37.4); **5 % (36.9) está en esa meseta**. Entre umbrales que separan igual, conviene el que da **menos falsas alarmas**: con 2 % la regla se activa en 24.6 % de las semanas normales y con 5 % en 21.3 % (lift 2.5 contra 2.7).
-- Con **10 %** la separación cae (J = 31.7) porque se pierde una de cada cinco rebajas reales del Buen Fin (de 58 % a 47 %). Por eso 5 % y no 2 % ni 10 %.
+- Con **10 %** la separación cae (J = 31.7) porque se pierde una de cada cinco rebajas reales del Buen Fin (de 58 % a 47 %).
+- **Búsqueda fina:** probamos 30 umbrales (de 0.5 % a 15 %, de medio en medio punto). El máximo está en 4 %, pero 2 %, 3.5 %, 4.5 % y 5 % empatan estadísticamente con él (la diferencia remuestreada incluye cero). Dentro de ese grupo, **5 % es el que da menos falsas alarmas** (21.3 % de semanas normales contra 22.7 % con 4 %) y el de mayor lift. Por eso usamos 5 %, y no 2 % ni 10 %.
 - Exigir además el **cuartil inferior (P25)** mejora la separación en todos los umbrales: reduce las falsas alarmas en semanas normales sin perder rebajas del evento.
 - Para la **etiqueta del modelo** cualquier bajada ya es 2.5 veces más frecuente en el Buen Fin que en semanas normales (J máxima cerca de 0–1 %), por eso "bajó" no lleva umbral adicional.
 
@@ -360,9 +380,40 @@ display(pd.DataFrame(filas).round(3))
 - **La regla simple con esa variable compite con los modelos** (balanced accuracy 0.80 en 2025 y 0.72 en 2026) y sus intervalos se traslapan con los del árbol. Es un aprendizaje importante: la señal es simple y robusta; los modelos añaden matices (nivel de precio, alza previa) y probabilidades, pero no una mejora significativa.
 - **Random Forest + puntaje de Isolation Forest** logra la mayor accuracy en 2025 (86 %), pero no fue la mejor en validación y baja en 2026: elegirlo por la prueba habría sido hacer trampa.
 - **La regresión logística y el Isolation Forest no generalizan a 2026**: en Preciómetro predicen "baja" para todo (balanced accuracy 0.50). Las variables de conteo (`n_base`: mediana de 46 días en Preciómetro contra 5 en QQP) cambian de escala entre fuentes y los modelos lineales o de rareza extrapolan mal; los árboles son más robustos a ese cambio.
-- **Isolation Forest sirve para detectar rarezas, no para predecir bajadas**: su mejor variante (contaminación 0.4) llega a 0.69 en validación, por debajo de los modelos supervisados.
+- **Isolation Forest sirve para detectar rarezas, no para predecir bajadas**: su mejor variante (contaminación 0.4) llega a 0.69 en validación, por debajo de los modelos supervisados.'''),
+        md('''---
+## 5.1 ¿La app detecta "estafas"? Rebajas reales, aparentes y precios señuelo
 
----
+Nos interesan tres trucos comunes:
+
+1. **Subir antes y bajar en el evento.** El precio sube en las semanas previas y "baja" en el Buen Fin, pero al final cuesta lo mismo o más que antes.
+2. **Sin oferta real.** El precio cambia poco (menos de 5 % frente a su historia), aunque se anuncie como oferta.
+3. **Precio señuelo.** Una tienda muestra el mismo producto mucho más caro; al compararte con ella cualquier otro precio parece una gran oferta.
+
+Para cada serie comparamos el precio del evento contra **su historia** (la base) y contra **las dos semanas previas** (lo que recuerda un comprador). "Parece oferta" si está al menos 5 % por debajo de las dos semanas previas; es **rebaja real** si está al menos 5 % por debajo de su historia. Todo se contrasta con semanas normales.'''),
+        code('''
+patrones_bf = C.clasificar(ventanas_cmp)
+s26 = C.clasificar(C.series_2026(obs, piloto, CORTE))
+grupos = {'QQP sucursales · Buen Fin 2018–2025': patrones_bf.loc[patrones_bf.real],
+          'QQP sucursales · semanas normales': patrones_bf.loc[~patrones_bf.real],
+          'PROFECO sucursales · Buen Fin 2026': s26.loc[s26.fuente.eq('profeco_bf2026')],
+          'Preciómetro en línea · Buen Fin 2026': s26.loc[s26.fuente.eq('preciometro')]}
+patrones = C.resumen_poblaciones(grupos).set_index('poblacion')
+display(patrones.T.round(1))
+dispersion = C.resumen_dispersion(C.dispersion_tiendas(obs)).set_index('fuente')
+display(dispersion.T.round(1))
+C.figuras(SALIDA, patrones.reset_index(), C.dispersion_tiendas(obs))
+from IPython.display import Image
+display(Image(str(SALIDA / 'fig_patrones_precio.png'))); display(Image(str(SALIDA / 'fig_precio_senuelo.png')))
+'''),
+        md('''**Lectura (respuestas con datos)**
+
+- **¿La mayoría no tiene una señal clara?** Depende del canal. En **sucursales físicas** (QQP 2018–2025) el 58 % de los precios del Buen Fin fue *favorable* (≥ 5 % bajo su historia y en el cuartil inferior), contra 21 % en semanas normales: ahí sí hay rebajas reales. **En línea** (Preciómetro, primeros días del Buen Fin 2026) sólo el 45 % fue favorable: **más de la mitad no mostró una oferta clara** (44 % sin señal y 10 % más caro que su historia). Tu hipótesis se confirma para las tiendas en línea.
+- **Subir y bajar:** el 11 % de las series de sucursales subió al menos 5 % antes del Buen Fin y luego bajó; es 1.5 veces más frecuente que en semanas normales (7 %). En **22 % de esos casos el comprador terminó pagando lo mismo o más** que antes de la subida, y en 28 % no hubo ahorro real. En línea (2026) fue 27 % y 33 %.
+- **Ofertas que engañan:** si comparas contra el precio de las dos semanas previas, 6 % de las "ofertas" del Buen Fin y **30 % de las de semanas normales no son ahorro real**. La regla de Sconto compara contra la historia y **no marcó ninguna de esas como favorable** (0 %): el truco de inflar el precio de referencia no la engaña.
+- **Precio señuelo:** para el mismo producto el mismo día, la tienda en línea más cara está en mediana **17.5 % arriba** del precio típico, y en 30 % de los casos 30 % o más. Comparar contra ella produce un "descuento" aparente de 15 % sin ahorro real; entre la más barata y la más cara hay 40 % de diferencia. En sucursales físicas la dispersión es menor (11 % y 22 %).
+- **¿Con qué precisión?** No existen etiquetas oficiales de "estafa", así que medimos la regla contra su definición operativa: 0 % de rebajas aparentes marcadas como favorables, y un costo de 21 % de falsas alarmas en semanas normales (precios favorables que no son del evento, pero sí son bajos frente a su historia). El modelo predictivo, por su parte, acierta con balanced accuracy de 0.78 (2025) y 0.68 (2026).'''),
+        md('''---
 ## 6. Despliegue
 
 **Arquitectura:** fuentes públicas → ETL bronze/silver/gold con huellas → modelo (scikit-learn) → **API FastAPI en Fly.io** (una máquina, volumen cifrado, límite de gasto) → **app web instalable** (PWA) y APK que funcionan sin conexión con el último corte.
@@ -410,6 +461,9 @@ print(json.dumps(manifiesto, indent=1))
 | 2. ¿Por qué 5 %? | Con el cuartil P25, 5 % está en la meseta donde mejor se separan las rebajas del Buen Fin de las variaciones normales (J máxima en 4 %). Frente a 2 % separa igual pero con menos falsas alarmas; 10 % pierde una de cada cinco rebajas reales. Cuatro días en la base mantienen el error de referencia por debajo de 5 % en 9 de cada 10 series. |
 | 3. ¿Se puede predecir? | Sí: el árbol de decisión supera claramente a la línea base (balanced accuracy 0.78 contra 0.50 en 2025). La señal principal es si el precio ya venía bajando. |
 | 4. ¿Funciona con datos nuevos? | Parcialmente: en 2026, con precios en línea que nunca vio, mantiene 0.68 de balanced accuracy y 72 % de accuracy. Los modelos lineales y el Isolation Forest no resistieron el cambio de fuente. |
+| 5. ¿La app detecta "estafas"? | Sí para el truco de inflar la referencia: ninguna rebaja aparente (subir y bajar, o comparar contra el precio reciente) fue marcada favorable. 11 % de las series subió antes del Buen Fin y bajó; en 22 % de esos casos el precio final fue igual o mayor. |
+| 6. ¿La mayoría no tiene señal clara? | En línea sí: en el Buen Fin 2026 más de la mitad (55 %) no mostró una oferta clara. En sucursales físicas no: 58 % fue favorable. |
+| 7. ¿Existen precios señuelo? | Sí: la tienda en línea más cara del mismo producto está 17.5 % arriba del precio típico (30 % o más en 3 de cada 10 casos); compararte con ella simula un 15 % de descuento. |
 
 **Aprendizajes**
 1. **Validar en el tiempo cambia las conclusiones.** Elegir por la prueba habría inflado los resultados; la validación por años muestra el desempeño real.
@@ -417,6 +471,7 @@ print(json.dumps(manifiesto, indent=1))
 3. **Una regla simple bien justificada es una línea base exigente.** Si un modelo no la supera con claridad, la app debe explicar ambas cosas.
 4. **Los umbrales se justifican con señal contra ruido** (prueba placebo), no por costumbre.
 5. **Conservar los datos es parte del modelo:** sin capturas guardadas durante el evento no hay validación 2026.
+6. **El descuento anunciado no es la referencia correcta.** Comparar contra la historia del producto, y no contra el precio reciente o la tienda más cara, es lo que separa una oferta real de una aparente.
 
 **Límites y trabajo futuro.** QQP 2026 no se publicó con el evento, no hay datos después del 17 de noviembre y no hubo ofertas en línea verificadas con vendedor, inventario y total. La misma arquitectura (colector → ETL con huellas → modelo → API → app) puede aplicarse a otras categorías o fuentes autorizadas; en este proyecto nos limitamos a tecnología.'''),
     ]

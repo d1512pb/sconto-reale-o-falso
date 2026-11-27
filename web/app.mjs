@@ -429,6 +429,10 @@ function medidor(r) {
 }
 function mostrarEvaluacion(id) {
   const valor = Number(String($('precio-visto').value).replace(/[^\d.]/g, ''));
+  if (Number.isFinite(valor) && valor > 0) {
+    const q = new URLSearchParams(location.hash.split('?')[1] || ''); q.set('precio', String(Math.round(valor)));
+    history.replaceState(null, '', '#/producto/' + encodeURIComponent(id) + '?' + q.toString());
+  }
   const r = evaluarPrecio(valor, contextoPrecio(id), modelo?.reglas);
   const caja = $('resultado-evaluador'); caja.replaceChildren();
   caja.dataset.signal = tonos[r.estado] || 'missing';
@@ -502,6 +506,13 @@ function renderModeloDialogo() {
     el('li', `Cuatro fechas: con ${u.fechas.k} fechas la mediana de referencia se equivoca menos de 5% en ${pct(1 - u.fechas.pct_error_mayor_5 / 100, 0)}% de las series; con 3 fechas el error del percentil 90 sube a ${u.fechas.error_p90_k3.toFixed(1)}%.`),
     el('li', `Semana del evento: el precio cae en promedio ${Math.abs(u.estudio.evento).toFixed(1)}% y se recupera a la semana siguiente (${u.estudio.despues >= 0 ? '+' : ''}${u.estudio.despues.toFixed(1)}%).`));
   caja.append(reglas);
+  const b = modelo.busqueda_umbral;
+  if (b?.probados) caja.append(el('p', `Búsqueda fina: probamos ${b.probados} umbrales de ${b.desde}% a ${b.hasta}%. El máximo está en ${b.mejor}%, pero ${b.equivalentes.join('%, ')}% empatan estadísticamente con él (intervalos de confianza por remuestreo); entre ellos, 5% es el que da menos falsas alarmas.`, 'muted'));
+  if (modelo.hallazgos?.length) {
+    const lista = el('ul', undefined, 'findings');
+    for (const h of modelo.hallazgos) lista.append(el('li', h));
+    caja.append(el('h3', 'Lo que descubrimos'), lista);
+  }
   caja.append(el('h3', 'Arquitectura'), el('p', modelo.arquitectura), el('p', modelo.limites, 'muted'));
   if (api) { const a = el('a', 'Probar la API del modelo ↗'); a.href = 'docs'; a.target = '_blank'; a.rel = 'noopener noreferrer'; caja.append(a); }
 }
@@ -510,6 +521,7 @@ async function ruta(foco = true) {
   if (!datos) return;
   const solicitud = ++solicitudRuta, catalogo = datos;
   const detalle = location.hash.startsWith('#/producto/');
+  if (location.hash.startsWith('#/modelo') && !$('modelo-dialogo').open) { renderModeloDialogo(); $('modelo-dialogo').showModal(); }
   $('inicio').hidden = detalle; $('detalle').hidden = !detalle;
   $('carga-detalle').hidden = true;
   if (detalle) {
@@ -546,6 +558,11 @@ async function ruta(foco = true) {
       }
     }
     $('carga-detalle').hidden = true; renderDetalle(id, foco);
+    const precioEnlace = Number(new URLSearchParams(location.hash.split('?')[1] || '').get('precio'));
+    if (Number.isFinite(precioEnlace) && precioEnlace > 0) {
+      $('precio-visto').value = String(precioEnlace); mostrarEvaluacion(id);
+      requestAnimationFrame(() => irA($('evaluador')));
+    }
   }
   else {
     const q = new URLSearchParams(location.hash.split('?')[1] || '');

@@ -175,7 +175,8 @@ def ejecutar(paquete: Path, piloto: Path | None, salida: Path, corte='2026-11-26
         'ahorro_real_pct', 'rebaja_vs_previo_pct', 'alza_previa_pct', 'veredicto_app', 'patron', 'subir_y_bajar']].to_csv(
         salida / 'patrones_por_serie.csv', index=False)
     rutas = figuras(salida, resumen, disp)
-    r = dict(resumen=resumen.round(2).to_dict(orient='records'), dispersion=rdisp.round(2).to_dict(orient='records'),
+    limpio = lambda t: t.round(2).astype(object).where(t.notna(), None).to_dict(orient='records')  # noqa: E731
+    r = dict(resumen=limpio(resumen), dispersion=limpio(rdisp),
              figuras=[p.name for p in rutas])
     (salida / 'conclusiones.json').write_text(json.dumps(r, ensure_ascii=False, indent=2, default=str), encoding='utf-8')
     return dict(resumen=resumen, dispersion=rdisp, ventanas=v, s26=s26, disp=disp)

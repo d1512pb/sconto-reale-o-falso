@@ -205,3 +205,9 @@ dialog[open]::backdrop { animation: backdrop-enter 180ms ease-out; }
 @keyframes sconto-flota{0%,100%{transform:translate(0,0)}50%{transform:translate(4px,4px)}}
 @media (max-width:390px){.model-tag{top:auto;bottom:8px;right:auto;left:8px;font-size:9px}}
 @media (prefers-reduced-motion:reduce){.verdict .badge,.verdict-head strong,.hit,.miss,.mini-arrow{animation:none}.prediction-meter span,.quick-price,.model-tag{transition:none}}
+
+.findings{padding-left:18px;font-size:14px}.findings li{margin:6px 0}
+
+/* Al saltar a una sección, deja espacio para el encabezado fijo */
+#evaluador,#prediccion,#historia,#seccion-ofertas,#resultados,#resumen{scroll-margin-top:110px}
+@media (max-width:700px){#evaluador,#prediccion,#historia,#seccion-ofertas,#resultados,#resumen{scroll-margin-top:92px}}
