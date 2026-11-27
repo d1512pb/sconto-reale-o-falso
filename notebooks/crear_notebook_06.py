@@ -266,7 +266,7 @@ print(f"Mejor: {mejor_f.umbral_pct:g} % (J = {mejor_f.youden_j:.1f}, IC95 {mejor
 - La separación (J) es casi plana entre **1 % y 6 %** y alcanza su máximo en 4 % (37.4); **5 % (36.9) está en esa meseta**. Entre umbrales que separan igual, conviene el que da **menos falsas alarmas**: con 2 % la regla se activa en 24.6 % de las semanas normales y con 5 % en 21.3 % (lift 2.5 contra 2.7).
 - Con **10 %** la separación cae (J = 31.7) porque se pierde una de cada cinco rebajas reales del Buen Fin (de 58 % a 47 %).
 - **Búsqueda fina:** probamos 30 umbrales (de 0.5 % a 15 %, de medio en medio punto). El máximo está en 4 %, pero 2 %, 3.5 %, 4.5 % y 5 % empatan estadísticamente con él (la diferencia remuestreada incluye cero). Dentro de ese grupo, **5 % es el que da menos falsas alarmas** (21.3 % de semanas normales contra 22.7 % con 4 %) y el de mayor lift. Por eso usamos 5 %, y no 2 % ni 10 %.
-- Exigir además el **cuartil inferior (P25)** mejora la separación en todos los umbrales: reduce las falsas alarmas en semanas normales sin perder rebajas del evento.
+- Exigir además el **cuartil inferior (P25)** mejora la separación en todos los umbrales: reduce las falsas alarmas en semanas normales (con 5 %, de 23.5 % a 21.3 %) y apenas reduce las rebajas detectadas del evento (de 59.4 % a 58.2 %).
 - Para la **etiqueta del modelo** cualquier bajada ya es 2.5 veces más frecuente en el Buen Fin que en semanas normales (J máxima cerca de 0–1 %), por eso "bajó" no lleva umbral adicional.
 
 ### 3.2 ¿Por qué cuatro fechas en la base?
