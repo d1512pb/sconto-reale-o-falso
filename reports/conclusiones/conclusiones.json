@@ -1,0 +1,100 @@
+{
+  "resumen": [
+    {
+      "poblacion": "QQP sucursales · Buen Fin 2018–2025",
+      "ventanas": 1705,
+      "pct_favorable": 58.24,
+      "pct_sin_senal": 35.84,
+      "pct_alto": 5.92,
+      "pct_rebaja_real": 59.41,
+      "pct_rebaja_aparente": 3.28,
+      "pct_sin_cambio": 31.5,
+      "pct_subio": 5.81,
+      "mediana_ahorro_real_pct": 8.9,
+      "pct_subir_y_bajar": 10.73,
+      "pct_subir_y_bajar_sin_ahorro_real": 28.42,
+      "pct_subir_y_bajar_paga_igual_o_mas": 22.4,
+      "pct_ofertas_aparentes_sin_ahorro_real": 6.42,
+      "pct_ofertas_aparentes_marcadas_favorables": 0.0
+    },
+    {
+      "poblacion": "QQP sucursales · semanas normales",
+      "ventanas": 6538,
+      "pct_favorable": 21.32,
+      "pct_sin_senal": 62.68,
+      "pct_alto": 16.0,
+      "pct_rebaja_real": 23.46,
+      "pct_rebaja_aparente": 5.4,
+      "pct_sin_cambio": 55.09,
+      "pct_subio": 16.04,
+      "mediana_ahorro_real_pct": 0.0,
+      "pct_subir_y_bajar": 7.31,
+      "pct_subir_y_bajar_sin_ahorro_real": 68.62,
+      "pct_subir_y_bajar_paga_igual_o_mas": 55.86,
+      "pct_ofertas_aparentes_sin_ahorro_real": 29.97,
+      "pct_ofertas_aparentes_marcadas_favorables": 0.0
+    },
+    {
+      "poblacion": "PROFECO sucursales · Buen Fin 2026",
+      "ventanas": 17,
+      "pct_favorable": 82.35,
+      "pct_sin_senal": 11.76,
+      "pct_alto": 5.88,
+      "pct_rebaja_real": 82.35,
+      "pct_rebaja_aparente": 0.0,
+      "pct_sin_cambio": 11.76,
+      "pct_subio": 5.88,
+      "mediana_ahorro_real_pct": 9.1,
+      "pct_subir_y_bajar": 11.76,
+      "pct_subir_y_bajar_sin_ahorro_real": 0.0,
+      "pct_subir_y_bajar_paga_igual_o_mas": 0.0,
+      "pct_ofertas_aparentes_sin_ahorro_real": 0.0,
+      "pct_ofertas_aparentes_marcadas_favorables": NaN
+    },
+    {
+      "poblacion": "Preciómetro en línea · Buen Fin 2026",
+      "ventanas": 187,
+      "pct_favorable": 45.45,
+      "pct_sin_senal": 44.39,
+      "pct_alto": 10.16,
+      "pct_rebaja_real": 52.94,
+      "pct_rebaja_aparente": 3.21,
+      "pct_sin_cambio": 31.02,
+      "pct_subio": 12.83,
+      "mediana_ahorro_real_pct": 5.84,
+      "pct_subir_y_bajar": 8.02,
+      "pct_subir_y_bajar_sin_ahorro_real": 33.33,
+      "pct_subir_y_bajar_paga_igual_o_mas": 26.67,
+      "pct_ofertas_aparentes_sin_ahorro_real": 9.09,
+      "pct_ofertas_aparentes_marcadas_favorables": 0.0
+    }
+  ],
+  "dispersion": [
+    {
+      "fuente": "Preciómetro · tiendas en línea 2026",
+      "producto_dia": 3415,
+      "tiendas_mediana": 5.0,
+      "mas_cara_sobre_mediana_mediana_pct": 17.49,
+      "pct_mas_cara_20_o_mas": 45.39,
+      "pct_mas_cara_30_o_mas": 30.25,
+      "pct_mas_cara_50_o_mas": 14.76,
+      "descuento_aparente_vs_mas_cara_mediana_pct": 14.89,
+      "brecha_extremos_mediana_pct": 39.53
+    },
+    {
+      "fuente": "QQP · sucursales físicas 2018–2026",
+      "producto_dia": 56240,
+      "tiendas_mediana": 4.0,
+      "mas_cara_sobre_mediana_mediana_pct": 10.79,
+      "pct_mas_cara_20_o_mas": 32.17,
+      "pct_mas_cara_30_o_mas": 18.78,
+      "pct_mas_cara_50_o_mas": 6.73,
+      "descuento_aparente_vs_mas_cara_mediana_pct": 9.74,
+      "brecha_extremos_mediana_pct": 22.26
+    }
+  ],
+  "figuras": [
+    "fig_patrones_precio.png",
+    "fig_precio_senuelo.png"
+  ]
+}
