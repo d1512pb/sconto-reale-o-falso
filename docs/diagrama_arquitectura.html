@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Arquitectura de Sconto</title>
+<style>
+  :root{--ink:#182d28;--green:#245d4d;--muted:#617068;--line:#cfdac9;--paper:#f6f7f1;--card:#fffefb;--soft:#e9f1e3;--amber:#b7791f}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.4 "Segoe UI",system-ui,sans-serif;width:1600px;padding:36px 40px}
+  h1{font-size:30px;margin:0 0 4px;letter-spacing:-.5px}
+  .sub{color:var(--muted);margin:0 0 26px;font-size:15px}
+  .flujo{display:grid;grid-template-columns:repeat(5,1fr);gap:34px;position:relative}
+  .etapa{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 16px 14px;position:relative;box-shadow:0 6px 20px #182d280d}
+  .etapa:not(:last-child)::after{content:"→";position:absolute;right:-30px;top:44%;font-size:26px;color:var(--green);font-weight:700}
+  .num{font-size:11px;letter-spacing:1.4px;color:var(--muted);text-transform:uppercase;font-weight:700}
+  h2{font-size:19px;margin:4px 0 10px;color:var(--green)}
+  .caja{background:var(--soft);border-radius:10px;padding:8px 10px;margin:7px 0;font-size:13.5px}
+  .caja b{display:block;font-size:14px}
+  .caja small{color:var(--muted)}
+  .dato{font-weight:700;color:var(--green)}
+  .pie{display:grid;grid-template-columns:2fr 1fr;gap:24px;margin-top:26px}
+  .nota{background:var(--card);border:1px dashed #9db98a;border-radius:14px;padding:14px 18px;font-size:14px}
+  .nota h3{margin:0 0 6px;font-size:16px}
+  .nota ol,.nota ul{margin:4px 0 0;padding-left:20px}
+  .tag{display:inline-block;background:#fff4dc;color:var(--amber);border-radius:999px;padding:1px 8px;font-size:11.5px;font-weight:700;margin-left:4px}
+</style>
+</head>
+<body>
+<h1>Sconto · arquitectura de datos a decisión</h1>
+<p class="sub">Del precio crudo a una respuesta explicada: ¿este precio de tecnología es bueno y bajará en el Buen Fin? · corte final 26 nov 2026</p>
+<div class="flujo">
+  <section class="etapa"><div class="num">1 · Fuentes</div><h2>Datos públicos</h2>
+    <div class="caja"><b>QQP · PROFECO</b><small>Sucursales físicas CDMX · 2018–2026</small></div>
+    <div class="caja"><b>Preciómetro</b><small>Mínimo diario entre tiendas en línea · 2026</small></div>
+    <div class="caja"><b>Consulta Buen Fin · PROFECO</b><small>24 modelos, 85 sucursales · 2026</small></div>
+    <div class="caja"><b>Wayback y tiendas</b><small>Capturas históricas puntuales</small></div>
+  </section>
+  <section class="etapa"><div class="num">2 · Recolección</div><h2>Captura con huella</h2>
+    <div class="caja"><b>Colectores programados</b><small>Programador de Windows + GitHub Actions</small></div>
+    <div class="caja"><b>Colector en la nube</b><span class="tag">opcional</span><small>Fly.io, respaldo cifrado</small></div>
+    <div class="caja"><b>Bronze</b><small>Crudos + SHA-256 + bitácora</small></div>
+    <div class="caja"><b>Corte congelado</b><small>Recolección detenida el 26 nov 2026</small></div>
+  </section>
+  <section class="etapa"><div class="num">3 · Preparación</div><h2>ETL reproducible</h2>
+    <div class="caja"><b>Silver → Gold</b><small>Normaliza precio, fecha, producto y tienda; deduplica</small></div>
+    <div class="caja"><b><span class="dato">690,888</span> precios limpios</b><small>0 duplicados · huellas verificadas</small></div>
+    <div class="caja"><b>Ventanas del Buen Fin</b><small>Base · previo · evento · 9 ediciones</small></div>
+    <div class="caja"><b><span class="dato">1,909</span> series para modelar</b><small>8 variables previas al evento</small></div>
+  </section>
+  <section class="etapa"><div class="num">4 · Minería</div><h2>Reglas y modelo</h2>
+    <div class="caja"><b>Regla 5 % + P25</b><small>Justificada contra semanas normales (30 umbrales)</small></div>
+    <div class="caja"><b>Árbol de decisión</b><small>Entrena 2018–2023 · valida 2022–2024 · prueba 2025 · valida 2026</small></div>
+    <div class="caja"><b>Bal. accuracy <span class="dato">0.78</span> (2025) · <span class="dato">0.68</span> (2026)</b><small>Línea base: 0.50</small></div>
+    <div class="caja"><b>Patrones de engaño</b><small>Subir y bajar · señuelos · sin oferta real</small></div>
+  </section>
+  <section class="etapa"><div class="num">5 · Despliegue</div><h2>Decisión en el bolsillo</h2>
+    <div class="caja"><b>API FastAPI en Fly.io</b><small>/v1/modelo · /v1/predecir · /docs</small></div>
+    <div class="caja"><b>App web instalable y APK</b><small>"¿Qué precio ves?" · predicción · tarjeta del modelo</small></div>
+    <div class="caja"><b>Funciona sin conexión</b><small>Copia del corte y fichas verificadas por SHA-256</small></div>
+    <div class="caja"><b>Notebook CRISP-DM</b><small>Reproduce todo en Colab</small></div>
+  </section>
+</div>
+<div class="pie">
+  <div class="nota"><h3>Cómo replicarlo para otros productos</h3>
+    <ol>
+      <li>Haz <i>fork</i> del repositorio y define tu lista de productos y fuentes en <code>config/</code>.</li>
+      <li>Corre los colectores (localmente o con GitHub Actions) y el ETL: <code>python -m sconto.mart</code>.</li>
+      <li>Entrena y evalúa por años: <code>python -m sconto.modelo_final</code>.</li>
+      <li>Publica la app (<code>python -m sconto.publicar_web</code>) y, si quieres servicios en línea, la API con <code>fly deploy</code> (~US$2.5/mes).</li>
+    </ol></div>
+  <div class="nota"><h3>Principios</h3>
+    <ul><li>Cada número tiene fecha y procedencia.</li><li>Nunca se usa el futuro para entrenar.</li><li>Si falta evidencia, la app lo dice.</li><li>Alcance de este proyecto: tecnología.</li></ul></div>
+</div>
+</body>
+</html>

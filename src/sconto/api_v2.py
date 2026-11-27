@@ -12,6 +12,7 @@ from typing import Annotated
 
 from fastapi import FastAPI, HTTPException, Path as PathParam, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 
 from sconto.consulta_v2 import Consulta
@@ -23,20 +24,22 @@ ID = Annotated[str, PathParam(min_length=1, max_length=96, pattern=r'^[A-Za-z0-9
 
 
 def crear_api(*, root=RAIZ_INTRADIA, catalogo=None, datos_profeco=False, privadas=False, origenes=(),
-              max_peticiones=300, reloj=lambda: datetime.now(timezone.utc)):
+              max_peticiones=300, reloj=lambda: datetime.now(timezone.utc), sitio=None, modelo=None, docs=False):
     @asynccontextmanager
     async def lifespan(api):
         api.state.consulta = Consulta(IntradayStore(root), catalogo, datos_profeco, privadas)
         yield
 
-    api = FastAPI(title='Sconto', version=VERSION, docs_url=None, redoc_url=None, openapi_url=None,
-                  lifespan=lifespan)
+    api = FastAPI(title='Sconto · API del corte final', version=VERSION, lifespan=lifespan,
+                  description=('Consulta de precios de tecnología con historia y el modelo que predice si un precio bajará '
+                               'en el Buen Fin. Proyecto de Minería de Datos, ESCOM-IPN. Datos congelados al 26 de noviembre de 2026.'),
+                  docs_url='/docs' if docs else None, redoc_url=None, openapi_url='/openapi.json' if docs else None)
     recientes = deque()
     lock = Lock()
 
     @api.middleware('http')
     async def presupuesto(request: Request, call_next):
-        if request.url.path != '/health':
+        if request.url.path.startswith('/v1/'):
             ahora = monotonic()
             with lock:
                 while recientes and ahora - recientes[0] >= 60:
@@ -46,11 +49,16 @@ def crear_api(*, root=RAIZ_INTRADIA, catalogo=None, datos_profeco=False, privada
                                         headers={'Retry-After': '60', 'Cache-Control': 'no-store'})
                 recientes.append(ahora)
         respuesta = await call_next(request)
-        respuesta.headers['Cache-Control'] = 'no-store'
+        if request.url.path.startswith('/v1/') or request.url.path == '/health':
+            respuesta.headers['Cache-Control'] = 'no-store'
+        elif 'Cache-Control' not in respuesta.headers:
+            respuesta.headers['Cache-Control'] = 'no-cache'
         return respuesta
 
     if origenes:
-        api.add_middleware(CORSMiddleware, allow_origins=list(origenes), allow_methods=['GET'], allow_headers=[])
+        api.add_middleware(CORSMiddleware, allow_origins=list(origenes), allow_methods=['GET', 'POST'],
+                           allow_headers=['Content-Type'])
+    api.add_middleware(GZipMiddleware, minimum_size=1024)
 
     @api.get('/health')
     def health():
@@ -107,6 +115,13 @@ def crear_api(*, root=RAIZ_INTRADIA, catalogo=None, datos_profeco=False, privada
         resultado = consultar(producto_id).comparacion_actual(producto_id, ahora)
         return {'version': VERSION, 'producto_id': producto_id, 'evaluado_utc': ahora.isoformat(), **resultado}
 
+    if modelo:
+        from sconto.api_modelo import registrar
+        registrar(api, Path(modelo), Path(sitio) if sitio else None)
+    if sitio:
+        from fastapi.staticfiles import StaticFiles
+        # Va al final: las rutas /v1, /health y /docs tienen prioridad sobre los archivos de la app.
+        api.mount('/', StaticFiles(directory=str(sitio), html=True), name='app')
     return api
 
 
@@ -114,4 +129,6 @@ def app():
     return crear_api(root=Path(os.getenv('SCONTO_API_DATOS', RAIZ_INTRADIA)), catalogo=os.getenv('SCONTO_API_CATALOGO'),
                      origenes=tuple(x.strip() for x in os.getenv('SCONTO_API_ORIGENES', '').split(',') if x.strip()),
                      datos_profeco=os.getenv('SCONTO_API_PROFECO') == '1',
-                     privadas=os.getenv('SCONTO_API_REVISION_PRIVADA') == '1')
+                     privadas=os.getenv('SCONTO_API_REVISION_PRIVADA') == '1',
+                     sitio=os.getenv('SCONTO_API_SITIO') or None, modelo=os.getenv('SCONTO_API_MODELO') or None,
+                     docs=os.getenv('SCONTO_API_DOCS') == '1', max_peticiones=int(os.getenv('SCONTO_API_MAX_MINUTO', '300')))

@@ -1,0 +1,10 @@
+variable,importancia,descripcion
+cambio_previo_pct,0.7339333307763579,Cambio dentro de las dos semanas previas (%)
+alza_previa_pct,0.14658606519207257,Cambio de la mediana previa frente a la base (%)
+log_precio_previo,0.08501472844406814,Nivel de precio (log de la mediana previa)
+iqr_base_pct,0.016340594366017473,Dispersión de precios en la base (IQR %)
+amplitud_base_dias,0.014625461526351075,Amplitud de la base (días)
+n_previo,0.00349981969513311,Días con precio en el previo
+iqr_previo_pct,0.0,Dispersión de precios en el previo (IQR %)
+n_base,0.0,Días con precio en la base
+dias_desde_precio,0.0,Días desde el último precio previo

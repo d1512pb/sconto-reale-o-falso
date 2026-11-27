@@ -2,6 +2,7 @@ import {buscar, normalizar, fechaMexico, edadDias, ordenarOfertas, enlaceSeguro}
 import {cargarDatos, cargarDetalle} from './datos.mjs';
 import {baseAPI, buscarSucursales, consultarProducto, registroHistorico, vistaOferta} from './api.mjs';
 import {entrada, irA} from './interfaz.mjs';
+import {cargarModelo, referenciaProducto, evaluarPrecio, textoEvaluacion, prediccionProducto} from './modelo.mjs';
 
 const $ = id => document.getElementById(id);
 const el = (tag, texto, clase) => {
@@ -24,11 +25,12 @@ const razones = {canal_fisico:'Referencia de establecimiento físico', fuente_si
 let datos, carga, cargando = false, ultimoIntento = 0, fechaMostrada = fechaMexico(), recargarTrasActualizacion = false;
 let categoria = 'todos', consulta = '', tienda = '', limite = 12, limiteOfertas = 8, anterior = '#/', promptInstalar, registro;
 let porProducto = new Map(), ofertasPorProducto = new Map();
+let modelo = null, modeloCargado = false;
 let productosVisibles = '', posicionResultados = 0, tarjetaAnterior = '', ultimaVista = '';
 const seleccionHistoria = new Map();
 const fichas = new Map();
 let solicitudRuta = 0;
-const categorias = {todos:'Todo el catálogo', foco:'Para tu compra', laptop:'Computadoras y laptops', celular:'Celulares', tablet:'Tabletas', audifonos:'Audífonos', audio:'Bocinas y audio', pantalla:'Pantallas', proyector:'Proyectores', camara:'Cámaras y lentes', streaming:'Streaming', hogar:'Hogar inteligente', otros:'Otra tecnología'};
+const categorias = {todos:'Todo el catálogo', modelo:'Con predicción del modelo', foco:'Para tu compra', laptop:'Computadoras y laptops', celular:'Celulares', tablet:'Tabletas', audifonos:'Audífonos', audio:'Bocinas y audio', pantalla:'Pantallas', proyector:'Proyectores', camara:'Cámaras y lentes', streaming:'Streaming', hogar:'Hogar inteligente', otros:'Otra tecnología'};
 function categoriaProducto(p) { return p.categoria_app || (laptop(p) ? 'laptop' : audifonos(p) ? 'audifonos' : p.familia === 'asistente' ? 'hogar' : p.familia || 'otros'); }
 
 function notificar(texto) {
@@ -96,6 +98,7 @@ async function actualizar(manual = false) {
       ofertasPorProducto.get(o.producto_canonico_id).push(o);
     }
     $('error').hidden = true; $('busqueda').disabled = false;
+    if (!modeloCargado) { modelo = await cargarModelo(); modeloCargado = true; }
     renderCategorias(); estadoConexion(); await ruta(false);
     if (manual) notificar(carga.copia ? 'Sin actualización disponible. Conservamos la copia guardada.' : 'Datos comprobados · corte ' + datos.fecha_corte + '.');
   } catch (error) {
@@ -129,7 +132,8 @@ function renderCategorias() {
 }
 function filtrarProductos() {
   let lista = consulta.trim() ? buscar(consulta, datos.productos, datos.busqueda) : [...datos.productos];
-  lista = lista.filter(p => categoria === 'todos' || categoriaProducto(p) === categoria || categoria === 'foco' && (laptop(p) || audifonos(p)) && !p.es_paquete);
+  lista = lista.filter(p => categoria === 'todos' || categoriaProducto(p) === categoria || categoria === 'foco' && (laptop(p) || audifonos(p)) && !p.es_paquete
+    || categoria === 'modelo' && Boolean(prediccionProducto(modelo, p.producto_canonico_id)));
   if (tienda) lista = lista.filter(p => (ofertasPorProducto.get(p.producto_canonico_id) || []).some(o => normalizar(o.plataforma).toLowerCase() === tienda));
   if (!consulta.trim()) {
     const hoy = fechaMexico(), recientes = new Set(lista.filter(p => registroEnTienda(p.producto_canonico_id, tienda, hoy)?.dias === 0).map(p => p.producto_canonico_id));
@@ -163,6 +167,8 @@ function renderProductos(desde = 0) {
     a.dataset.producto = p.producto_canonico_id;
     const art = el('div', undefined, 'product-art');
     art.append(el('span', categoriaNombre(p), 'art-label'), ilustracion(p), el('span', '↗', 'art-arrow'));
+    const pred = prediccionProducto(modelo, p.producto_canonico_id);
+    if (pred) art.append(el('span', pred.acierto ? '✦ Modelo acertó' : '✦ Modelo falló', 'model-tag ' + (pred.acierto ? 'hit' : 'miss')));
     const body = el('div', undefined, 'card-body'), registro = registroEnTienda(p.producto_canonico_id, tienda);
     const tiendas = new Set((ofertasPorProducto.get(p.producto_canonico_id) || []).map(o => o.plataforma));
     body.append(el('span', p.marca || categoriaNombre(p), 'card-brand'), el('h3', p.nombre),
@@ -299,8 +305,12 @@ function renderResumen(id) {
       el('p', mejor.plataforma + ' · ' + mejor.fecha));
     const precio = el('div', money(mejor.total), 'summary-price'); precio.append(el('small', 'Costo total confirmado')); box.append(texto, precio);
   } else {
-    texto.append(badge(null), el('h2', 'Falta evidencia comparable' + (filtro ? ' en ' + nombreTienda : '')),
-      el('p', 'Consulta las comprobaciones disponibles y los registros del catálogo.'));
+    const c = fichas.has(id) ? contextoPrecio(id) : null;
+    box.dataset.signal = 'neutral'; box.classList.remove('warning');
+    texto.append(el('p', 'Sin oferta en línea verificada' + (filtro ? ' en ' + nombreTienda : '') + ' hoy', 'eyebrow'),
+      el('h2', '¿Viste un precio? Compáralo con su historia.'),
+      el('p', c?.puntos?.length ? `Tenemos ${c.puntos.length} días de precios de este producto. Escribe el precio que encontraste y te decimos si es favorable, alto o normal.`
+        : 'Revisa la historia disponible y confirma el precio final en la tienda.'));
     box.append(texto);
   }
 }
@@ -330,7 +340,9 @@ function renderEvidencia(id) {
   }
   const filtro = $('tienda-ofertas').value;
   const ofertas = evidencia.ofertas.filter(o => coincideTienda(o, filtro));
-  estado.textContent = ofertas.length ? '' : 'Sin comprobaciones online para esta selección.';
+  // Sin comprobaciones en línea el panel no aporta: el comparador de precio cubre ese caso.
+  if (!ofertas.length) { contenedor.hidden = true; return; }
+  estado.textContent = '';
   for (const oferta of ofertas) {
     const o = vistaOferta(oferta), art = el('article', undefined, 'offer');
     art.append(el('strong', o.plataforma || 'Tienda'), badge({indicador:o.estado}),
@@ -377,14 +389,139 @@ function renderDetalle(id, foco, completo = true) {
   $('ilustracion').replaceChildren(ilustracion(p)); $('atributos').textContent = 'Confirma la variante y el código del fabricante antes de comprar.' + (p.es_paquete ? ' Este registro corresponde a un paquete.' : '');
   renderResumen(id);
   if (!completo) return;
-  grafico(p); renderOfertas(id);
+  grafico(p); renderOfertas(id); renderEvaluador(id); renderPrediccion(id);
   if (foco) $('nombre-producto').focus({preventScroll: true});
+}
+
+// ---------------------------------------------------------------- v3: comparador de precio y modelo
+const pct = (v, d = 1) => (Number.isFinite(v) ? (100 * v).toFixed(d) : '—');
+let evaluadorProducto = '';
+function contextoPrecio(id) {
+  const evento = datos.ventanas.find(e => e.evento_id === datos.evento_actual);
+  return referenciaProducto(fichas.get(id), id, evento);
+}
+function renderEvaluador(id) {
+  if (evaluadorProducto !== id) { $('precio-visto').value = ''; $('resultado-evaluador').replaceChildren(); evaluadorProducto = id; }
+  const c = contextoPrecio(id);
+  $('precio-visto').placeholder = c?.ref?.mediana_base ? 'Ej. ' + Math.round(c.ref.mediana_base * .93) : 'Ej. 3499';
+  const rapidos = $('precios-rapidos'); rapidos.replaceChildren();
+  if (!c?.ref?.mediana_base) return;
+  rapidos.append(el('span', 'Probar con:', 'quick-label'));
+  for (const [texto, valor] of [['Mínimo histórico', c.minimo], ['Mediana habitual', c.ref.mediana_base], ['10% más caro', c.ref.mediana_base * 1.1]]) {
+    if (!Number.isFinite(valor)) continue;
+    const b = el('button', undefined, 'quick-price'); b.type = 'button';
+    b.append(el('small', texto), el('strong', money(Math.round(valor))));
+    b.addEventListener('click', () => { $('precio-visto').value = String(Math.round(valor)); mostrarEvaluacion(id); });
+    rapidos.append(b);
+  }
+}
+function medidor(r) {
+  const valores = [r.precio, r.p25, r.mediana, r.p75, r.minimo].filter(Number.isFinite);
+  const lo = Math.min(...valores) * .97, hi = Math.max(...valores) * 1.03, x = v => ((v - lo) / (hi - lo || 1) * 100).toFixed(1) + '%';
+  const barra = el('div', undefined, 'meter');
+  barra.setAttribute('aria-hidden', 'true');
+  const zona = el('span', undefined, 'meter-band'); zona.style.left = x(r.p25); zona.style.width = `calc(${x(r.p75)} - ${x(r.p25)})`;
+  barra.append(zona);
+  for (const [v, clase, texto] of [[r.mediana, 'meter-median', 'Mediana'], [r.precio, 'meter-price', 'Tu precio']]) {
+    const m = el('span', undefined, clase); m.style.left = x(v); m.append(el('small', texto)); barra.append(m);
+  }
+  return barra;
+}
+function mostrarEvaluacion(id) {
+  const valor = Number(String($('precio-visto').value).replace(/[^\d.]/g, ''));
+  if (Number.isFinite(valor) && valor > 0) {
+    const q = new URLSearchParams(location.hash.split('?')[1] || ''); q.set('precio', String(Math.round(valor)));
+    history.replaceState(null, '', '#/producto/' + encodeURIComponent(id) + '?' + q.toString());
+  }
+  const r = evaluarPrecio(valor, contextoPrecio(id), modelo?.reglas);
+  const caja = $('resultado-evaluador'); caja.replaceChildren();
+  caja.dataset.signal = tonos[r.estado] || 'missing';
+  if (r.estado === 'invalido') { caja.append(el('p', r.motivo, 'muted')); return; }
+  const cabeza = el('div', undefined, 'verdict-head');
+  cabeza.append(badge({indicador: r.estado}), el('strong', money(r.precio)));
+  caja.append(cabeza);
+  if (r.estado !== 'evidencia_insuficiente') {
+    caja.append(medidor(r));
+    const marca = caja.querySelector('.meter-price'), mediana = caja.querySelector('.meter-median');
+    if (marca && mediana && !matchMedia('(prefers-reduced-motion: reduce)').matches)
+      marca.animate([{left: mediana.style.left}, {left: marca.style.left}], {duration: 750, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'backwards', delay: 120});
+  }
+  const lista = el('ul'); for (const linea of textoEvaluacion(r, money)) lista.append(el('li', linea));
+  caja.append(lista);
+  const u = modelo?.umbrales?.regla_app;
+  if (u && r.estado !== 'evidencia_insuficiente') caja.append(el('p', `Por qué ${u.umbral_pct}%: en el Buen Fin ${pct(u.pct_buen_fin / 100, 0)}% de los precios cumplieron esta regla, contra ${pct(u.pct_semanas_normales / 100, 0)}% en semanas normales (QQP 2018–2025).`, 'muted'));
+  caja.append(el('p', 'Confirma variante, vendedor, envío y precio total antes de comprar. El historial es el mínimo entre tiendas, no el de una sola tienda.', 'muted'));
+  entrada(caja.children);
+}
+function renderPrediccion(id) {
+  const p = prediccionProducto(modelo, id);
+  $('prediccion').hidden = !p;
+  if (!p) return;
+  const caja = $('contenido-prediccion'); caja.replaceChildren();
+  const parecidos = Math.round(p.pct_bajaron_parecidos ?? 100 * p.prob_bajada), general = Math.round(modelo.tasa_general_bajada ?? 60);
+  const meta = el('div', undefined, 'prediction-meter');
+  const barra = el('span'); barra.style.width = '0%'; meta.append(barra);
+  requestAnimationFrame(() => requestAnimationFrame(() => { barra.style.width = parecidos + '%'; }));
+  const marca = el('i'); marca.style.left = general + '%'; marca.title = 'Promedio general'; meta.append(marca);
+  caja.append(el('p', `Antes del Buen Fin 2026 este producto tenía un patrón de precios parecido al de ${p.casos_parecidos?.toLocaleString('es-MX') ?? 'varias'} series de Buen Fin anteriores (2018–2025). De ellas bajó el ${parecidos}%; en general baja el ${general}%.`), meta,
+    el('p', p.prediccion ? 'Predicción del modelo: bajará.' : 'Predicción del modelo: no bajará.', 'prediction-call'));
+  if (Number.isFinite(p.bajada_pct)) {
+    const real = p.bajo ? `Resultado observado: bajó ${Math.abs(p.bajada_pct).toFixed(1)}% frente a las dos semanas previas.` : `Resultado observado: no bajó (${p.bajada_pct <= 0 ? 'subió o se mantuvo' : 'sin cambio'}).`;
+    caja.append(el('p', real), el('p', p.acierto ? '✓ El modelo acertó en este producto.' : '✗ El modelo falló en este producto.', p.acierto ? 'hit' : 'miss'));
+  }
+  caja.append(el('p', `${modelo.modelo.familia} entrenado con ${modelo.modelo.entrenamiento}. En datos que no vio, acierta con balanced accuracy de ${pct(modelo.modelo.bal_acc_2026, 0)}% en 2026.`, 'muted'));
+}
+function tablaMetricas(filas, conjunto) {
+  const t = el('table', undefined, 'metric-table'), cab = el('tr');
+  for (const h of ['Modelo', 'Accuracy', 'Bal. acc.', 'F1', 'AUC']) cab.append(el('th', h));
+  const thead = el('thead'); thead.append(cab); const tbody = el('tbody');
+  for (const f of filas.filter(f => f.conjunto === conjunto)) {
+    const tr = el('tr'); if (f.familia === modelo.modelo.familia) tr.className = 'chosen';
+    const celda = el('td', undefined, 'bar-cell'), barra = el('i');
+    barra.style.width = Math.max(0, (f.balanced_accuracy - .4) / .6 * 100).toFixed(0) + '%';
+    celda.append(barra, el('span', pct(f.balanced_accuracy)));
+    tr.append(el('td', f.familia), el('td', pct(f.accuracy)), celda, el('td', pct(f.f1)), el('td', Number.isFinite(f.auc) ? f.auc.toFixed(2) : '—'));
+    tbody.append(tr);
+  }
+  t.append(thead, tbody); return t;
+}
+function renderModeloDialogo() {
+  const caja = $('contenido-modelo'); caja.replaceChildren();
+  if (!modelo) { caja.append(el('p', 'La tarjeta del modelo no está disponible en esta copia.', 'muted')); return; }
+  caja.append(el('p', modelo.pregunta), el('p', modelo.etiqueta, 'muted'));
+  const esquema = el('ol', undefined, 'schema');
+  for (const e of modelo.esquema) { const li = el('li'); li.append(el('strong', e.etapa + ' · '), e.descripcion); esquema.append(li); }
+  caja.append(el('h3', 'Entrenamiento, validación y prueba'), esquema);
+  for (const conjunto of modelo.conjuntos) { caja.append(el('h3', conjunto), tablaMetricas(modelo.metricas, conjunto)); }
+  caja.append(el('p', `Modelo elegido con la validación 2022–2024 (sin mirar la prueba): ${modelo.modelo.familia} · ${modelo.modelo.variante}.`, 'muted'));
+  if (modelo.importancias?.length) {
+    const lista = el('ul'); for (const v of modelo.importancias.slice(0, 4)) lista.append(el('li', `${v.descripcion}: ${pct(v.importancia, 0)}%`));
+    caja.append(el('h3', 'Qué mira el modelo'), lista);
+  }
+  const u = modelo.umbrales;
+  caja.append(el('h3', 'Por qué 5%, P25 y cuatro fechas'));
+  const reglas = el('ul');
+  reglas.append(el('li', `Umbral: con ${u.regla_app.umbral_pct}% y P25, ${pct(u.regla_app.pct_buen_fin / 100, 0)}% de los precios del Buen Fin cumplen la regla contra ${pct(u.regla_app.pct_semanas_normales / 100, 0)}% de semanas normales (J de Youden ${u.regla_app.youden_j.toFixed(1)}; máximo ${u.regla_app.mejor_j.toFixed(1)} en ${u.regla_app.mejor_umbral}%). Entre 1% y 6% la separación es casi igual; 5% da menos falsas alarmas que 2% y con 10% se pierde una de cada cinco rebajas reales.`),
+    el('li', `P25: exigir además el cuartil inferior reduce las falsas alarmas de ${pct(u.regla_app.normal_sin_p25 / 100, 1)}% a ${pct(u.regla_app.pct_semanas_normales / 100, 1)}% de semanas normales.`),
+    el('li', `Cuatro fechas: con ${u.fechas.k} fechas la mediana de referencia se equivoca menos de 5% en ${pct(1 - u.fechas.pct_error_mayor_5 / 100, 0)}% de las series; con 3 fechas el error del percentil 90 sube a ${u.fechas.error_p90_k3.toFixed(1)}%.`),
+    el('li', `Semana del evento: el precio cae en promedio ${Math.abs(u.estudio.evento).toFixed(1)}% y se recupera a la semana siguiente (${u.estudio.despues >= 0 ? '+' : ''}${u.estudio.despues.toFixed(1)}%).`));
+  caja.append(reglas);
+  const b = modelo.busqueda_umbral;
+  if (b?.probados) caja.append(el('p', `Búsqueda fina: probamos ${b.probados} umbrales de ${b.desde}% a ${b.hasta}%. El máximo está en ${b.mejor}%, pero ${b.equivalentes.join('%, ')}% empatan estadísticamente con él (intervalos de confianza por remuestreo); entre ellos, 5% es el que da menos falsas alarmas.`, 'muted'));
+  if (modelo.hallazgos?.length) {
+    const lista = el('ul', undefined, 'findings');
+    for (const h of modelo.hallazgos) lista.append(el('li', h));
+    caja.append(el('h3', 'Lo que descubrimos'), lista);
+  }
+  caja.append(el('h3', 'Arquitectura'), el('p', modelo.arquitectura), el('p', modelo.limites, 'muted'));
+  if (api) { const a = el('a', 'Probar la API del modelo ↗'); a.href = 'docs'; a.target = '_blank'; a.rel = 'noopener noreferrer'; caja.append(a); }
 }
 function productoActual() { try { return decodeURIComponent((location.hash.split('/producto/')[1] || '').split('?')[0]); } catch { return ''; } }
 async function ruta(foco = true) {
   if (!datos) return;
   const solicitud = ++solicitudRuta, catalogo = datos;
   const detalle = location.hash.startsWith('#/producto/');
+  if (location.hash.startsWith('#/modelo') && !$('modelo-dialogo').open) { renderModeloDialogo(); $('modelo-dialogo').showModal(); }
   $('inicio').hidden = detalle; $('detalle').hidden = !detalle;
   $('carga-detalle').hidden = true;
   if (detalle) {
@@ -421,6 +558,11 @@ async function ruta(foco = true) {
       }
     }
     $('carga-detalle').hidden = true; renderDetalle(id, foco);
+    const precioEnlace = Number(new URLSearchParams(location.hash.split('?')[1] || '').get('precio'));
+    if (Number.isFinite(precioEnlace) && precioEnlace > 0) {
+      $('precio-visto').value = String(precioEnlace); mostrarEvaluacion(id);
+      requestAnimationFrame(() => irA($('evaluador')));
+    }
   }
   else {
     const q = new URLSearchParams(location.hash.split('?')[1] || '');
@@ -489,6 +631,9 @@ $('compartir').addEventListener('click', async () => {
   try { await navigator.clipboard.writeText(location.href); notificar('Enlace copiado.'); } catch { notificar('Puedes copiar la dirección de esta página desde el navegador.'); }
 });
 $('acerca').addEventListener('click', () => $('informacion').showModal());
+$('form-evaluador').addEventListener('submit', e => { e.preventDefault(); if (datos) mostrarEvaluacion(productoActual()); });
+for (const b of [$('ver-modelo'), $('abrir-modelo')]) b.addEventListener('click', () => { renderModeloDialogo(); $('modelo-dialogo').showModal(); });
+$('enlace-api').hidden = !api;
 $('instalar').addEventListener('click', () => { $('instalar-nativo').hidden = !promptInstalar; $('instalacion').showModal(); });
 for (const b of document.querySelectorAll('[data-close]')) b.addEventListener('click', () => b.closest('dialog').close());
 window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); promptInstalar = e; });

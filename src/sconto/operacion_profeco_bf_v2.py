@@ -73,7 +73,8 @@ def ejecutar(dia, crudos, salida, store, sin_red=False):
             datos['error'] = 'Otro proceso está importando precios'
             return datos
         try:
-            store.vencidos()
+            # El bloqueo exclusivo confirma que no hay otro importador activo.
+            store.vencidos(tolerancia=timedelta(microseconds=1))
             ingesta = importar(crudos, store)
             filas, faltantes = fuente.observaciones(crudos)
             limpias, descartadas = fuente.consolidar_observaciones(filas)
@@ -90,6 +91,21 @@ def ejecutar(dia, crudos, salida, store, sin_red=False):
     if datos['estado'] != 'bloqueado':
         datos['estado'] = 'ok' if (not faltantes and not ingesta['rechazadas'] and limpias and not datos['error']) else 'parcial'
     return datos
+
+
+def registrar_estado(operacion, hoy, estado, *, sin_red=False, guardar=True):
+    carpeta = operacion / 'ejecuciones'
+    if estado and guardar:
+        ahora = datetime.now(timezone.utc)
+        estado['reportado_utc'] = ahora.isoformat()
+        estado['modo'] = 'reproduccion' if sin_red else 'consulta'
+        # El archivo pertenece a la fecha cuya evidencia se concilia, incluso en una reproducción posterior.
+        etiqueta = estado['fecha_cdmx'] + ahora.astimezone(CDMX).strftime('T%H%M%S%f')
+        _escribir(carpeta / f'{etiqueta}.json', json.dumps(estado, ensure_ascii=False, indent=2) + '\n')
+    avisos = evaluar(carpeta, hoy, estado)
+    _escribir(operacion / 'ALERTA.md', '# Continuidad PROFECO Buen Fin\n\n' + '\n'.join(
+        '- ' + a for a in avisos or ['Sin alertas de recolección al momento de esta revisión.']) + '\n')
+    return avisos
 
 
 def main(argv=None):
@@ -112,14 +128,9 @@ def main(argv=None):
     else:
         estado = ejecutar(hoy, args.crudos / hoy.isoformat(), args.salida / hoy.isoformat(),
                           IntradayStore(args.almacen), args.sin_red)
-        estado['reportado_utc'] = datetime.now(timezone.utc).isoformat()
-        estado['modo'] = 'reproduccion' if args.sin_red else 'consulta'
-        etiqueta = datetime.now(CDMX).strftime('%Y-%m-%dT%H%M%S%f')
-        _escribir(carpeta / f'{etiqueta}.json', json.dumps(estado, ensure_ascii=False, indent=2) + '\n')
+    avisos = registrar_estado(args.operacion, hoy, estado, sin_red=args.sin_red, guardar=not args.revisar)
+    if not args.revisar:
         print(json.dumps(estado, ensure_ascii=False))
-    avisos = evaluar(carpeta, hoy, estado)
-    _escribir(args.operacion / 'ALERTA.md', '# Continuidad PROFECO Buen Fin\n\n' + '\n'.join(
-        '- ' + a for a in avisos or ['Sin alertas de recolección al momento de esta revisión.']) + '\n')
     return 2 if avisos else 0
 
 

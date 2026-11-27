@@ -10,10 +10,10 @@ public class NavigationPolicyTest {
         assertTrue(NavigationPolicy.internal(NavigationPolicy.START + "index.html"));
     }
     @Test public void noConfiaEnDominiosParecidosNiRutasAjenas() {
-        for (String url : new String[]{"https://d1512pb.github.io.ejemplo.com/sconto-reale-o-falso/",
-                "https://d1512pb.github.io/otro/", "http://d1512pb.github.io/sconto-reale-o-falso/",
-                "https://usuario@d1512pb.github.io/sconto-reale-o-falso/", "file:///index.html",
-                "https://d1512pb.github.io/sconto-reale-o-falso/../otro/", "javascript:alert(1)", null}) {
+        for (String url : new String[]{"https://sconto-v2-api.fly.dev.ejemplo.com/",
+                "https://sconto-v2-api.fly.dev/docs", "http://sconto-v2-api.fly.dev/",
+                "https://usuario@sconto-v2-api.fly.dev/", "file:///index.html",
+                "https://sconto-v2-api.fly.dev/../otro/", "javascript:alert(1)", null}) {
             assertFalse(url, NavigationPolicy.internal(url));
         }
     }

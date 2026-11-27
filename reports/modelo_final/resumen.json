@@ -1,0 +1,92 @@
+{
+  "version": "sconto-modelo-final-2026-11-26",
+  "corte": "2026-11-26",
+  "generado_utc": "2026-11-27T04:43:29+00:00",
+  "ventanas": {
+    "buen_fin": 1705,
+    "semanas_normales": 6538
+  },
+  "dataset": [
+    {
+      "evento_id": "BF2018",
+      "poblacion": "QQP sucursales CDMX",
+      "series": 115,
+      "bajaron": 65,
+      "productos": 63
+    },
+    {
+      "evento_id": "BF2019",
+      "poblacion": "QQP sucursales CDMX",
+      "series": 313,
+      "bajaron": 216,
+      "productos": 103
+    },
+    {
+      "evento_id": "BF2020",
+      "poblacion": "QQP sucursales CDMX",
+      "series": 102,
+      "bajaron": 50,
+      "productos": 42
+    },
+    {
+      "evento_id": "BF2021",
+      "poblacion": "QQP sucursales CDMX",
+      "series": 320,
+      "bajaron": 182,
+      "productos": 85
+    },
+    {
+      "evento_id": "BF2022",
+      "poblacion": "QQP sucursales CDMX",
+      "series": 310,
+      "bajaron": 181,
+      "productos": 94
+    },
+    {
+      "evento_id": "BF2023",
+      "poblacion": "QQP sucursales CDMX",
+      "series": 247,
+      "bajaron": 150,
+      "productos": 78
+    },
+    {
+      "evento_id": "BF2024",
+      "poblacion": "QQP sucursales CDMX",
+      "series": 205,
+      "bajaron": 103,
+      "productos": 92
+    },
+    {
+      "evento_id": "BF2025",
+      "poblacion": "QQP sucursales CDMX",
+      "series": 93,
+      "bajaron": 72,
+      "productos": 53
+    },
+    {
+      "evento_id": "BF2026",
+      "poblacion": "PROFECO sucursales CDMX/ZMVM",
+      "series": 17,
+      "bajaron": 14,
+      "productos": 8
+    },
+    {
+      "evento_id": "BF2026",
+      "poblacion": "Preciómetro mínimo en línea",
+      "series": 187,
+      "bajaron": 110,
+      "productos": 187
+    }
+  ],
+  "modelo_elegido": {
+    "familia": "Árbol de decisión",
+    "variante": "profundidad=4, hoja>=10, pesos=balanced, 8 variables + precio",
+    "bal_acc_validacion": 0.7852665652335551
+  },
+  "figuras": [
+    "fig_umbral_ruido_vs_buen_fin.png",
+    "fig_estudio_evento.png",
+    "fig_comparacion_modelos.png",
+    "fig_matrices_confusion.png"
+  ]
+}

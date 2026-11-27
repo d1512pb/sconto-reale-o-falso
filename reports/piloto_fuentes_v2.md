@@ -1,0 +1,28 @@
+# Verificación de fuentes durante El Buen Fin 2026
+
+Corte de la muestra del 14 de noviembre de 2026, hora de Ciudad de México. El Buen Fin abarca del 13 al 17 de noviembre. [Consumidores — El Buen Fin](https://www.elbuenfin.org/consumidores)
+
+## Evidencia nueva
+
+La consulta pública de PROFECO sirvió 82 fichas de audio y cómputo para la plaza CDMX. Se seleccionaron los 9 modelos de computadoras portátiles y los 6 de audífonos disponibles, además de 9 modelos de audio. Las 24 fichas devolvieron HTTP 200. Un corte de conexión transitorio se resolvió con una segunda solicitud al modelo afectado tras terminar la pasada. El archivo de precios por sucursal contiene 2,211 observaciones con fecha de levantamiento entre el 1 de septiembre y el 13 de noviembre, que pertenecen a 613 series producto–sucursal. Se conservaron 15 filas excluidas en un registro aparte, 11 repetidas y 4 con precios incompatibles para la misma sucursal y fecha.
+
+El 13 de noviembre tiene 367 observaciones en los 24 modelos, con 186 registros de sucursales con CP de CDMX y 181 de sucursales con CP del Estado de México. En esa fecha aparecen 44 observaciones de Liverpool, 15 de Sears, 134 de audífonos y 79 de portátiles. Los precios corresponden a establecimientos físicos y tienen resolución diaria. PROFECO presenta precios de referencia de menudeo al momento del levantamiento. Las fichas brindan nombre y dirección de sucursal sin identificador numérico, y carecen de hora de levantamiento, vendedor web, envío, cupón, stock y precio tachado. [Consulta de PROFECO para El Buen Fin](https://elbuenfin.profeco.gob.mx/)
+
+Para el Lenovo IdeaPad 82XQ0009LM se conservaron dos respuestas HTTP 200 de la misma consulta, a las 14:17:51 y 14:28:12, separadas por 10 minutos y 21 segundos. El cuerpo coincide byte por byte. Cada intento tiene fecha de consulta y evidencia propia. El historial retornado contiene levantamientos diarios, y la segunda consulta conserva las mismas fechas. El SHA-256 del cuerpo es `b84b97916acb8b980e68a5809ffcaea4e9843aaa9d8f59650a3e15b3dc6de97f`. [Consulta del modelo](https://elbuenfin.profeco.gob.mx/api/get/producto/10/4/0/35251)
+
+Crudos privados en `data/raw/piloto_p0_v2/`. Para reproducir el análisis local sin red, ejecutar `python -m sconto.fuentes.profeco_buenfin`. El archivo inicial `data/analitica/piloto_p0_v2/profeco_bf2026_observaciones.csv` conservó su SHA-256 `2dcb7f48e636a9c3174f3532531d585b7209db34365ce798ce8dac7161026730` después de la reconsulta. La misma carpeta contiene las exclusiones.
+
+## Evidencia preservada de la operación anterior
+
+El snapshot operativo del 14 de noviembre conserva 690,888 filas. Dentro de las dos primeras fechas del evento hay 379 mínimos diarios de Preciómetro, 1,578 ofertas fechadas al consultar el agregador y dos capturas directas previas de Liverpool. Estos tres tipos de dato tienen procedencia y semántica distintas. El raw antiguo de Preciómetro inspeccionado contiene campos de actualización en el producto agrupado. Las ofertas individuales carecen de esos campos, así que desconocemos cuándo actualizó su precio el minorista.
+
+La ficha en línea del Sony HT-S20R, SKU Liverpool 1097521774, figura con $3,899 y $6,699 tachados en los crudos archivados del 13 y 14 de noviembre a las 09:17:27 y 09:13:28, respectivamente. El agregador registró $3,899 ambas fechas. PROFECO también reportó $3,899 en dos sucursales el 13. Cada medición conserva su canal, hora disponible y referencia. La ficha directa archivada documenta el precio publicado, mientras quedan por verificar vendedor efectivo, disponibilidad y costo total.
+
+## Acceso y cobertura
+
+- Preciómetro devuelve robots HTTP 200 y permite la ruta de fichas, mientras la sección 7.3 de sus términos exige autorización escrita para scraping, copia y distribución. En los crudos existentes del producto 1960, las ofertas individuales carecen de fecha y hora propia. [Términos de Preciómetro](https://preciometro.com/terminos-y-condiciones)
+- Sears devuelve robots HTTP 200 y la ruta de ficha queda fuera de las exclusiones. La referencia oficial indexada de sus términos excluye herramientas de extracción y compilación de listas de precios. La versión de producción consultada devolvió la página que requiere JavaScript. [Términos Sears](https://www.sears.com.mx/terminos-condiciones) · [Referencia indexada del sitio de Sears](https://pwa-gamma.dev.sears.com.mx/terminos-condiciones)
+- Liverpool devuelve robots HTTP 200 y permite las rutas. Su licencia de uso enlazada reserva la reproducción fuera de uso personal no comercial a quienes tengan autorización previa escrita. Los dos casos del índice web y las dos capturas previas de Liverpool se identifican como tales en la auditoría. [Términos completos de Liverpool, sección 2](https://assetsia.liverpool.com.mx/assets/pdf/Terminos-Legales.pdf)
+- El enlace histórico de PROFECO QQP devuelve 404. Se descubrió el nuevo catálogo y un RAR 2026 de 20,772,376 bytes cuyo contenido completo coincide con el prefijo del RAR local anterior de 59,971,365 bytes. El extractor detectó truncamiento al leer marzo. La ficha de metadatos indica cobertura hasta el 31 de agosto. Se mantiene el RAR completo, con 18,228 filas tecnológicas de CDMX y 129,219 nacionales en 2026 hasta agosto. El portal de consulta específica del evento constituye una fuente adicional. [Nuevo catálogo de PROFECO](https://datos.profeco.gob.mx/index.php) · [Metadatos QQP](https://datos.profeco.gob.mx/docs/qqp/QQP_metadatos_dataset.csv)
+- Mercado Libre quedó evaluado sin credenciales oficiales configuradas. Amazon directo sigue deshabilitado. El inventario de cobertura, decisiones y límites está en `fuentes_v2.csv`.
+

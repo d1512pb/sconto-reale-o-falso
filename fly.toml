@@ -1,5 +1,7 @@
 app = 'sconto-v2-api'
 primary_region = 'iad'
+kill_signal = 'SIGTERM'
+kill_timeout = '15s'
 
 [build]
   dockerfile = 'Dockerfile'
@@ -7,6 +9,9 @@ primary_region = 'iad'
 [env]
   SCONTO_API_ORIGENES = 'https://d1512pb.github.io'
   SCONTO_API_PROFECO = '0'
+  SCONTO_CONTACTO = 'https://github.com/d1512pb/sconto-reale-o-falso'
+  SCONTO_CORTE_ESTIMADO = '1'
+  SCONTO_API_MAX_MINUTO = '900'
 
 [[mounts]]
   source = 'sconto_data'
@@ -31,4 +36,9 @@ primary_region = 'iad'
 
 [[vm]]
   size = 'shared-cpu-1x'
-  memory = '512mb'
+  memory = '256mb'
+
+[[restart]]
+  policy = 'on-failure'
+  retries = 5
+  processes = ['app']

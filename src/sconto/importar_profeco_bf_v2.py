@@ -90,8 +90,11 @@ def importar(origen: Path, store: IntradayStore) -> dict:
             else:
                 observaciones, duplicados, conflictos = [], 0, []
             resumen['conflictos'].extend(dict(conflicto, archivo=nombre) for conflicto in conflictos)
-            captura = store.tomar(Trabajo(FUENTE, url, hora))
+            trabajo = Trabajo(FUENTE, url, hora, max_intentos=2)
+            captura = store.tomar(trabajo)
             if captura is None:
+                if store.resultado_trabajo(trabajo) in {None, 'interrumpido'}:
+                    raise ValueError('La captura previa sigue incompleta')
                 resumen['repetidas'] += 1
                 continue
             if http in {401, 403, 429, 503} or 300 <= http < 400:

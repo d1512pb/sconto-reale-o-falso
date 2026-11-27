@@ -49,11 +49,12 @@ def verificar(ejecutable, *, ejecutar=subprocess.run, entorno=None):
     return {'sesion_autenticada': True, 'organizacion': 'personal', 'aplicaciones': len(apps)}
 
 
-def presupuesto(otros=None, pago_por_uso=False, metodo_de_pago=False):
-    # Precios de iad documentados. Dimensiona un ciclo de 31 días y 1 GB de salida en Norteamérica.
-    estimado = ((Decimal('3.69') + Decimal('0.15')) * 31 / 30 + Decimal('0.02')).quantize(
+def presupuesto(otros=None, pago_por_uso=False, metodo_de_pago=False, *, salida_gb=Decimal('1'), memoria=256):
+    # Precios de iad documentados. Dimensiona 31 días y la transferencia prevista en Norteamérica.
+    computo = {256: Decimal('2.19'), 512: Decimal('3.69')}[memoria]
+    estimado = ((computo + Decimal('0.15')) * 31 / 30 + Decimal('0.02') * salida_gb).quantize(
         Decimal('0.01'), rounding=ROUND_CEILING)
-    limite = Decimal('4.50')
+    limite = Decimal('4.00')
     total = estimado + otros if otros is not None else None
     confirmado = pago_por_uso and metodo_de_pago and total is not None
     return {'api_usd': str(estimado), 'total_usd': str(total) if total is not None else None,
@@ -74,6 +75,10 @@ def _usd(texto):
 def main(av=None):
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--otros-usd', type=_usd, help='Proyección mensual de gastos ajenos a esta API, verificada en Billing')
+    p.add_argument('--salida-gb', type=_usd, default=Decimal('1'),
+                   help='Transferencia saliente mensual proyectada, incluidos los respaldos remotos')
+    p.add_argument('--memoria', type=int, choices=(256, 512), default=256,
+                   help='Memoria en MB de la única máquina en Ashburn')
     p.add_argument('--pago-por-uso', action='store_true', help='El panel confirma Pay As You Go')
     p.add_argument('--metodo-de-pago', action='store_true', help='El panel confirma un método de pago registrado')
     args = p.parse_args(av)
@@ -85,7 +90,8 @@ def main(av=None):
     except VerificacionFlyError as error:
         print(json.dumps({'verificado': False, 'motivo': str(error)}, ensure_ascii=False))
         return 2
-    estado['presupuesto'] = presupuesto(args.otros_usd, args.pago_por_uso, args.metodo_de_pago)
+    estado['presupuesto'] = presupuesto(args.otros_usd, args.pago_por_uso, args.metodo_de_pago,
+                                        salida_gb=args.salida_gb, memoria=args.memoria)
     print(json.dumps(estado, ensure_ascii=False))
     return 0 if estado['presupuesto']['dentro_del_presupuesto'] else 2
 

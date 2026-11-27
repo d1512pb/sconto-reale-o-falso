@@ -16,10 +16,10 @@ $original[0].EndBoundary = '2026-12-01T23:59:59'
 Set-ScheduledTask -TaskName $nombreCampana -Trigger $original | Out-Null
 if (-not (Get-ScheduledTask -TaskName $nombrePermanente -ErrorAction SilentlyContinue)) {
     $usuario = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
-    $powershell = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
-    $script = Join-Path $raiz 'scripts\correr_revision_qqp_v2.ps1'
-    $argsTarea = '-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File "' + $script + '"'
-    $accion = New-ScheduledTaskAction -Execute $powershell -WorkingDirectory $raiz -Argument $argsTarea
+    $wscript = Join-Path $env:SystemRoot 'System32\wscript.exe'
+    $lanzador = Join-Path $raiz 'scripts\ejecutar_tarea_sin_ventana.vbs'
+    $argsTarea = '//B //Nologo "' + $lanzador + '" qqp'
+    $accion = New-ScheduledTaskAction -Execute $wscript -WorkingDirectory $raiz -Argument $argsTarea
     $ajustes = New-ScheduledTaskSettingsSet -StartWhenAvailable -AllowStartIfOnBatteries `
         -DontStopIfGoingOnBatteries -ExecutionTimeLimit (New-TimeSpan -Minutes 20) -MultipleInstances IgnoreNew
     $disparador = New-ScheduledTaskTrigger -Weekly -DaysOfWeek Sunday -At ([DateTime]::new(2026, 11, 22, 12, 5, 0))

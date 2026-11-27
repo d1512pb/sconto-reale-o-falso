@@ -1,10 +1,10 @@
 $ErrorActionPreference = 'Stop'
 $raiz = Split-Path -Parent $PSScriptRoot
-$script = Join-Path $raiz 'scripts\correr_local.ps1'
+$lanzador = Join-Path $raiz 'scripts\ejecutar_tarea_sin_ventana.vbs'
 $usuario = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
-$powershell = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
-$accion = New-ScheduledTaskAction -Execute $powershell -WorkingDirectory $raiz `
-    -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$script`" -Publicar"
+$wscript = Join-Path $env:SystemRoot 'System32\wscript.exe'
+$accion = New-ScheduledTaskAction -Execute $wscript -WorkingDirectory $raiz `
+    -Argument ('//B //Nologo "' + $lanzador + '" diario')
 $ajustes = New-ScheduledTaskSettingsSet -StartWhenAvailable -DontStopIfGoingOnBatteries -AllowStartIfOnBatteries `
     -ExecutionTimeLimit (New-TimeSpan -Hours 3) -MultipleInstances IgnoreNew
 $disparadores = @((New-ScheduledTaskTrigger -Daily -At '12:30'), (New-ScheduledTaskTrigger -Daily -At '20:30'), (New-ScheduledTaskTrigger -AtLogOn -User $usuario))
